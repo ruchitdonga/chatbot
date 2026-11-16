@@ -1,0 +1,27 @@
+# AI disclosure shown as the first bot message of every conversation (ETH-4).
+# Translations were machine-written by an AI assistant and are NOT reviewed by native speakers.
+# Change review_status per locale to "native-reviewed" after a fluent speaker checks it.
+
+review_status:
+  en-US: source text
+  es-ES: unreviewed
+  de-DE: unreviewed
+  fr-FR: unreviewed
+  ja-JP: unreviewed
+  hi-IN: unreviewed
+  ar-SA: unreviewed
+  sw-KE: unreviewed
+  am-ET: unreviewed
+  ta-IN: unreviewed
+
+message:
+  en-US: "Hello! I am an AI assistant, not a human. If I can't help you, I will connect you to a person."
+  es-ES: "¡Hola! Soy un asistente de inteligencia artificial, no una persona. Si no puedo ayudarte, te pondré en contacto con una persona."
+  de-DE: "Hallo! Ich bin ein KI-Assistent, kein Mensch. Wenn ich Ihnen nicht helfen kann, verbinde ich Sie mit einer Person."
+  fr-FR: "Bonjour ! Je suis un assistant d'intelligence artificielle, pas un humain. Si je ne peux pas vous aider, je vous mettrai en relation avec une personne."
+  ja-JP: "こんにちは！私はAIアシスタントで、人間ではありません。お手伝いできない場合は、担当者におつなぎします。"
+  hi-IN: "नमस्ते! मैं एक एआई सहायक हूँ, इंसान नहीं। अगर मैं आपकी मदद नहीं कर पाया, तो मैं आपको किसी व्यक्ति से जोड़ दूँगा।"
+  ar-SA: "مرحبًا! أنا مساعد ذكاء اصطناعي ولست إنسانًا. إذا لم أتمكن من مساعدتك، فسأحوّلك إلى موظف بشري."
+  sw-KE: "Habari! Mimi ni msaidizi wa akili bandia (AI), si binadamu. Nisipoweza kukusaidia, nitakuunganisha na mtu."
+  am-ET: "ሰላም! እኔ የሰው ሰራሽ አስተውሎት (AI) ረዳት ነኝ፣ ሰው አይደለሁም። ልረዳዎት ካልቻልኩ ከሰው ጋር አገናኝዎታለሁ።"
+  ta-IN: "வணக்கம்! நான் ஒரு செயற்கை நுண்ணறிவு (AI) உதவியாளர், மனிதர் அல்ல. என்னால் உதவ முடியாவிட்டால், உங்களை ஒரு நபருடன் இணைப்பேன்."

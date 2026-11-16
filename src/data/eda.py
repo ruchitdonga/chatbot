@@ -1,0 +1,272 @@
+"""Phase 1 EDA for the configured MASSIVE locales.
+
+Writes reports/dataset_stats.json, reports/dataset_report.md and
+reports/figures/utterance_length.png, all regenerated from the raw files.
+Run from the repo root: python -m src.data.eda
+"""
+import json
+import statistics
+from collections import Counter
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+
+from src.data.load import ROOT, configured_locales, load_config, load_locale, parse_slots, strip_markup  # noqa: E402
+
+
+def majority(judgments, predicate):
+    """True when more than half of the annotators' judgments satisfy predicate."""
+    return bool(judgments) and sum(predicate(j) for j in judgments) * 2 > len(judgments)
+
+
+def percentile(values, q):
+    values = sorted(values)
+    return values[min(len(values) - 1, int(q * len(values)))]
+
+
+def locale_stats(records):
+    intents = Counter(r["intent"] for r in records)
+    train_intents = Counter(r["intent"] for r in records if r["partition"] == "train")
+    slots = Counter()
+    with_slots = malformed = empty_values = markup_mismatch = 0
+    for r in records:
+        parsed = parse_slots(r["annot_utt"])
+        if parsed is None:
+            malformed += 1
+            continue
+        with_slots += bool(parsed)
+        for label, value in parsed:
+            slots[label] += 1
+            empty_values += not value.strip()
+        # Compare without whitespace: annotations add spaces around slots in unspaced scripts.
+        if "".join(strip_markup(r["annot_utt"]).split()) != "".join(r["utt"].split()):
+            markup_mismatch += 1
+
+    texts = [(" ".join(r["utt"].split()).casefold(), r["partition"]) for r in records]
+    text_counts = Counter(t for t, _ in texts)
+    partitions_of = {}
+    for t, p in texts:
+        partitions_of.setdefault(t, set()).add(p)
+
+    chars = [len(r["utt"]) for r in records]
+    words = [len(r["utt"].split()) for r in records]
+    judged = [r.get("judgments", []) for r in records]
+    return {
+        "records": len(records),
+        "partitions": dict(Counter(r["partition"] for r in records)),
+        "intent_count": len(intents),
+        "slot_type_count": len(slots),
+        "slot_mentions": sum(slots.values()),
+        "utterances_with_slots": with_slots,
+        "missing_values": sum(
+            1 for r in records if not r.get("utt", "").strip() or not r.get("intent") or r.get("annot_utt") is None
+        ),
+        "duplicate_ids": len(records) - len({r["id"] for r in records}),
+        "duplicate_utterances": sum(c - 1 for c in text_counts.values() if c > 1),
+        "texts_in_multiple_partitions": sum(1 for parts in partitions_of.values() if len(parts) > 1),
+        "malformed_annotations": malformed,
+        "empty_slot_values": empty_values,
+        "markup_text_mismatch": markup_mismatch,
+        "train_intent_min": min(train_intents.values()),
+        "train_intent_max": max(train_intents.values()),
+        "chars": {"median": statistics.median(chars), "p95": percentile(chars, 0.95), "max": max(chars)},
+        "words": {"median": statistics.median(words), "p95": percentile(words, 0.95), "max": max(words)},
+        "judgments": {
+            "records_judged": sum(bool(j) for j in judged),
+            # Score meanings from the MASSIVE README: 0 = "No" for intent_score and slots_score.
+            "majority_intent_mismatch": sum(majority(j, lambda x: x.get("intent_score") == 0) for j in judged),
+            "majority_slot_mismatch": sum(majority(j, lambda x: x.get("slots_score") == 0) for j in judged),
+            "majority_not_target_language": sum(
+                majority(j, lambda x: "target" not in str(x.get("language_identification", ""))) for j in judged
+            ),
+        },
+        "intents": dict(intents),
+        "slots": dict(slots),
+    }
+
+
+def cross_locale_checks(data):
+    partition_of, conflicts = {}, set()
+    for records in data.values():
+        for r in records:
+            if partition_of.setdefault(r["id"], r["partition"]) != r["partition"]:
+                conflicts.add(r["id"])
+    id_sets = [{r["id"] for r in records} for records in data.values()]
+    common = set.intersection(*id_sets)
+    intent_sets = [frozenset(r["intent"] for r in records) for records in data.values()]
+    return {
+        "ids_with_partition_conflict": len(conflicts),
+        "ids_in_all_locales": len(common),
+        "ids_missing_from_some_locale": len(set.union(*id_sets) - common),
+        "same_intent_set_in_all_locales": len(set(intent_sets)) == 1,
+    }
+
+
+def tier_of(cfg):
+    langs = cfg["languages"]
+    return {loc: tier for tier in ("high_resource", "mid_resource", "low_resource") for loc in langs[tier]}
+
+
+def pct(n, d):
+    return f"{100 * n / d:.1f}%" if d else "n/a"
+
+
+def write_report(cfg, stats, cross, union_intents, union_slots, path):
+    locales = list(stats)
+    tiers = tier_of(cfg)
+    total = sum(s["records"] for s in stats.values())
+    lines = [
+        "# Dataset Report",
+        "",
+        "Generated by `python -m src.data.eda` from the raw MASSIVE files. Do not edit by hand; "
+        "the data-quality analysis is in `reports/data_quality_issues.md`.",
+        "",
+        "## Overview",
+        "",
+        f"- Dataset: MASSIVE {cfg['dataset']['version']} (licence {cfg['dataset']['licence']})",
+        f"- Locales analysed: {len(locales)} ({', '.join(locales)})",
+        f"- Utterances: {total:,}",
+        f"- Distinct intents across these locales: {len(union_intents)}",
+        f"- Distinct slot types across these locales: {len(union_slots)}",
+        "",
+        "## Size and length per locale",
+        "",
+        "| Locale | Tier | Records | Train | Dev | Test | Intents | Slot types | Utterances with slots "
+        "| Median words | Median chars | p95 chars |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for loc, s in stats.items():
+        p = s["partitions"]
+        lines.append(
+            f"| {loc} | {tiers[loc].split('_')[0]} | {s['records']:,} | {p.get('train', 0):,} | {p.get('dev', 0):,} "
+            f"| {p.get('test', 0):,} | {s['intent_count']} | {s['slot_type_count']} "
+            f"| {pct(s['utterances_with_slots'], s['records'])} | {s['words']['median']} "
+            f"| {s['chars']['median']} | {s['chars']['p95']} |"
+        )
+    lines += [
+        "",
+        "Word counts split on whitespace, so they are not meaningful for ja-JP, which is written without spaces; "
+        "use character counts there.",
+        "",
+        "## Data-quality checks per locale",
+        "",
+        "Judgment columns count utterances where most annotators answered \"No\" (intent or slots), "
+        "or where most did not mark the text as the target language. en-US has no judgments.",
+        "",
+        "| Locale | Missing | Duplicate IDs | Duplicate utterances | Texts in >1 partition | Malformed markup "
+        "| Empty slot values | Markup ≠ text | Intent mismatch | Slot mismatch | Not target language |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for loc, s in stats.items():
+        j = s["judgments"]
+        judged = j["records_judged"]
+        lines.append(
+            f"| {loc} | {s['missing_values']} | {s['duplicate_ids']} | {s['duplicate_utterances']} "
+            f"| {s['texts_in_multiple_partitions']} | {s['malformed_annotations']} | {s['empty_slot_values']} "
+            f"| {s['markup_text_mismatch']} "
+            + (
+                f"| {j['majority_intent_mismatch']} ({pct(j['majority_intent_mismatch'], judged)}) "
+                f"| {j['majority_slot_mismatch']} ({pct(j['majority_slot_mismatch'], judged)}) "
+                f"| {j['majority_not_target_language']} ({pct(j['majority_not_target_language'], judged)}) |"
+                if judged
+                else "| n/a | n/a | n/a |"
+            )
+        )
+    lines += ["", "## Resource tiers", "", "| Tier | Locales | Mean median chars | Mean intent mismatch "
+              "| Mean slot mismatch | Mean duplicate utterances |", "|---|---|---|---|---|---|"]
+    for tier in ("high_resource", "mid_resource", "low_resource"):
+        group = [s for loc, s in stats.items() if tiers[loc] == tier]
+        judged = [s for s in group if s["judgments"]["records_judged"]]
+
+        def mean_rate(key):
+            if not judged:
+                return "n/a"
+            return f"{statistics.mean(s['judgments'][key] / s['judgments']['records_judged'] for s in judged) * 100:.1f}%"
+
+        lines.append(
+            f"| {tier.split('_')[0]} | {', '.join(l for l in locales if tiers[l] == tier)} "
+            f"| {statistics.mean(s['chars']['median'] for s in group):.1f} | {mean_rate('majority_intent_mismatch')} "
+            f"| {mean_rate('majority_slot_mismatch')} | {statistics.mean(s['duplicate_utterances'] for s in group):.1f} |"
+        )
+    lines += [
+        "",
+        "Judgment means exclude en-US, which has no judgments.",
+        "",
+        "## Class balance (train partition)",
+        "",
+        "| Locale | Smallest intent | Largest intent | Ratio |",
+        "|---|---|---|---|",
+    ]
+    for loc, s in stats.items():
+        lines.append(
+            f"| {loc} | {s['train_intent_min']} | {s['train_intent_max']} "
+            f"| {s['train_intent_max'] / s['train_intent_min']:.1f}x |"
+        )
+    first = stats[locales[0]]
+    rare_intents = sorted(first["intents"].items(), key=lambda kv: kv[1])[:5]
+    rare_slots = sorted(first["slots"].items(), key=lambda kv: kv[1])[:5]
+    common_slots = sorted(first["slots"].items(), key=lambda kv: -kv[1])[:5]
+    lines += [
+        "",
+        f"Rarest intents in {locales[0]} (all partitions): "
+        + ", ".join(f"`{k}` ({v})" for k, v in rare_intents),
+        "",
+        f"Most frequent slot types in {locales[0]}: " + ", ".join(f"`{k}` ({v})" for k, v in common_slots),
+        "",
+        f"Rarest slot types in {locales[0]}: " + ", ".join(f"`{k}` ({v})" for k, v in rare_slots),
+        "",
+        "## Cross-locale checks",
+        "",
+        f"- IDs present in every locale: {cross['ids_in_all_locales']:,}",
+        f"- IDs missing from at least one locale: {cross['ids_missing_from_some_locale']}",
+        f"- IDs assigned to different partitions in different locales: {cross['ids_with_partition_conflict']}",
+        f"- Same intent set in every locale: {'yes' if cross['same_intent_set_in_all_locales'] else 'no'}",
+        "",
+        "## Figure",
+        "",
+        "![Utterance length per locale](figures/utterance_length.png)",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_figure(data, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.boxplot([[len(r["utt"]) for r in records] for records in data.values()], showfliers=False)
+    ax.set_xticks(range(1, len(data) + 1), list(data))
+    ax.set_ylabel("Characters per utterance")
+    ax.set_title("Utterance length per locale (outliers hidden)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
+def main():
+    cfg = load_config()
+    data = {loc: load_locale(cfg, loc) for loc in configured_locales(cfg)}
+    stats = {loc: locale_stats(records) for loc, records in data.items()}
+    cross = cross_locale_checks(data)
+    union_intents = set().union(*(s["intents"] for s in stats.values()))
+    union_slots = set().union(*(s["slots"] for s in stats.values()))
+
+    reports = ROOT / cfg["paths"]["reports"]
+    reports.mkdir(parents=True, exist_ok=True)
+    out = {
+        "dataset_version": cfg["dataset"]["version"],
+        "locales": stats,
+        "cross_locale": cross,
+        "distinct_intents": sorted(union_intents),
+        "distinct_slot_types": sorted(union_slots),
+    }
+    (reports / "dataset_stats.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_report(cfg, stats, cross, union_intents, union_slots, reports / "dataset_report.md")
+    write_figure(data, reports / "figures" / "utterance_length.png")
+    print(f"{sum(s['records'] for s in stats.values()):,} utterances, {len(union_intents)} intents, "
+          f"{len(union_slots)} slot types; report written to {reports / 'dataset_report.md'}")
+
+
+if __name__ == "__main__":
+    main()

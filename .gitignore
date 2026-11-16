@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data and model artefacts (never committed; licence and size)
+data/raw/
+data/processed/
+artifacts/
+checkpoints/
+*.onnx
+*.pt
+*.safetensors
+*.bin
+*.ftz
+
+# Experiment tracking and logs
+mlruns/
+mlartifacts/
+logs/
+*.log
+
+# Secrets
+.env

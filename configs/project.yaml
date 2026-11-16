@@ -1,0 +1,99 @@
+# Central project configuration. Code reads every seed, locale, model name,
+# threshold and path from here; nothing is hard-coded elsewhere.
+
+project:
+  name: multilingual-support-chatbot
+  seed: 42
+
+dataset:
+  name: MASSIVE
+  version: "1.1"
+  url: https://amazon-massive-nlu-dataset.s3.amazonaws.com/amazon-massive-dataset-1.1.tar.gz
+  sha256: 4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577  # archive downloaded 2026-11-16
+  licence: CC-BY-4.0
+  raw_dir: data/raw
+  splits_dir: data/splits
+  partitions: [train, dev, test]
+
+# Proposed set; change status to "confirmed" once the team approves it.
+languages:
+  status: proposed
+  high_resource: [en-US, es-ES, de-DE, fr-FR, ja-JP]
+  mid_resource: [hi-IN, ar-SA]
+  low_resource: [sw-KE, am-ET, ta-IN]
+
+training_runs:
+  run_a_train_locales: high_resource  # transfer gap, pre-mitigation table
+  run_b_train_locales: all            # mitigation and deployed model; locales are already equal-sized
+
+models:
+  primary: bert-base-multilingual-cased  # spec's main model; trained and evaluated
+  comparison: xlm-roberta-base
+  # Team decision 2026-11-16: mBERT maps 97% of am-ET tokens to [UNK], so XLM-R is served.
+  deployed: xlm-roberta-base
+  # Run B with the out_of_scope intent (data/oos_train): same test accuracy, better routing and coverage.
+  deployed_checkpoint: artifacts/runs/xlm-roberta-base-runB-oos/best
+
+# Identical for mBERT and XLM-R so the Run A comparison is fair; Optuna tunes the deployed model in Run B.
+training:
+  max_length: 160  # longest example is 149 tokens (mBERT, ta-IN), so nothing is truncated
+  batch_size: 32
+  learning_rate: 3.0e-5
+  epochs: 5
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  dropout: 0.1
+  slot_loss_weight: 1.0  # λ in loss = intent CE + λ * slot CE
+  early_stopping_patience: 2  # epochs without dev improvement
+
+evaluation:
+  # Headline slot F1: seqeval entity-level on token BIO tags. XLM-R splits 14% of ja-JP slots
+  # mid-token (reports/alignment_report.md), so character-exact F1 is reported only as secondary.
+  slot_f1_primary: seqeval_token_entity
+  slot_f1_secondary: char_span_exact
+
+targets:
+  mean_intent_accuracy: 0.85
+  mean_slot_micro_f1: 0.75
+  max_gap_below_mean_pp: 10
+  safe_fallback_routing: 0.95
+  median_nlu_latency_ms: 300
+  end_to_end_turn_s: 1.0
+
+# Signed off by the user on 2026-11-16 (reports/fallback_report.md): hand off when energy (logsumexp of
+# temperature-scaled intent logits) is below the threshold, or when the model predicts out_of_scope.
+fallback:
+  method: energy
+  threshold: 7.036
+  temperature: 1.3928
+  unsupported_language_min_prob: 0.5  # fastText top language outside the ten with at least this probability
+
+retraining:
+  psi_threshold: 0.25
+  min_utterances: 1000
+  fallback_rate_multiplier: 2.0
+
+logging:
+  log_raw_text: false
+  allowed_fields: [intent, slot_labels, locale, confidence, latency_ms, model_version, handoff, handoff_reason]
+
+# MASSIVE slot types whose values can be personal data (reports/data_minimisation_policy.md).
+privacy:
+  pii_slot_types:
+    direct_identifier: [person, email_address]
+    location: [place_name]
+    personal_context: [personal_info, relation]
+
+serving:
+  onnx_dir: artifacts/onnx  # export_onnx writes <run name>/model.onnx, model.quant.onnx, meta.json
+  intra_op_threads: 4  # NFR-4 is measured on a 4-core CPU
+  # fastText lid.176.bin (CC BY-SA 3.0), https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
+  # SHA-256 7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e. Swahili detection is only ~67%
+  # on MASSIVE dev, so a language hint from the client overrides detection.
+  language_id_model: artifacts/models/lid.176.bin
+  event_log: logs/nlu_events.jsonl
+
+paths:
+  artifacts: artifacts
+  reports: reports
+  mlflow_tracking_uri: mlruns

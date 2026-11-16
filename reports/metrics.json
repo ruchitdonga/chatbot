@@ -1,0 +1,1948 @@
+{
+  "test": {
+    "bert-base-multilingual-cased-runA": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8839946200403497,
+            "intent_macro_f1": 0.8639362765928373,
+            "slot_f1": 0.7859125607217211,
+            "slot_f1_char_exact": 0.7859125607217211
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.8668459986550101,
+            "intent_macro_f1": 0.8385630285672454,
+            "slot_f1": 0.7127196798329564,
+            "slot_f1_char_exact": 0.7127196798329564
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8507061197041023,
+            "intent_macro_f1": 0.8248019138736662,
+            "slot_f1": 0.7400412087912088,
+            "slot_f1_char_exact": 0.7400412087912088
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8708809683927371,
+            "intent_macro_f1": 0.8294641547610841,
+            "slot_f1": 0.7141606861543848,
+            "slot_f1_char_exact": 0.7141606861543848
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.8604572965702757,
+            "intent_macro_f1": 0.8264332559198394,
+            "slot_f1": 0.696260884411815,
+            "slot_f1_char_exact": 0.6740652211029537
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.4347679892400807,
+            "intent_macro_f1": 0.37217061992823347,
+            "slot_f1": 0.32540517785729317,
+            "slot_f1_char_exact": 0.32540517785729317
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.39475453934095495,
+            "intent_macro_f1": 0.3305574313449045,
+            "slot_f1": 0.30722029044794436,
+            "slot_f1_char_exact": 0.30722029044794436
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.1788836583725622,
+            "intent_macro_f1": 0.12152533897979362,
+            "slot_f1": 0.13842696629213483,
+            "slot_f1_char_exact": 0.13842696629213483
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.027908540685944856,
+            "intent_macro_f1": 0.013210179081760526,
+            "slot_f1": 0.009893992932862193,
+            "slot_f1_char_exact": 0.009893992932862193
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.34936112979152656,
+            "intent_macro_f1": 0.2941676598336855,
+            "slot_f1": 0.163855421686747,
+            "slot_f1_char_exact": 0.163855421686747
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.5718560860793545,
+          "intent_macro_f1": 0.531482985888305,
+          "slot_f1": 0.45938968691290666,
+          "slot_f1_char_exact": 0.4571701205820206
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8831696579749407,
+            "intent_macro_f1": 0.8634472703085688,
+            "slot_f1": 0.785053256504278,
+            "slot_f1_char_exact": 0.785053256504278
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8611698379140239,
+            "intent_macro_f1": 0.8244996648046519,
+            "slot_f1": 0.7082365552974809,
+            "slot_f1_char_exact": 0.7082365552974809
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.8467995802728226,
+            "intent_macro_f1": 0.819780694821426,
+            "slot_f1": 0.737100737100737,
+            "slot_f1_char_exact": 0.737100737100737
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8654390934844193,
+            "intent_macro_f1": 0.8209192721849646,
+            "slot_f1": 0.7105263157894737,
+            "slot_f1_char_exact": 0.7105263157894737
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8532706902782797,
+            "intent_macro_f1": 0.8156639559965366,
+            "slot_f1": 0.6933380331335919,
+            "slot_f1_char_exact": 0.672541416989778
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.4332981344596973,
+            "intent_macro_f1": 0.3687205919734214,
+            "slot_f1": 0.32746249184605347,
+            "slot_f1_char_exact": 0.32746249184605347
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.3971501644135915,
+            "intent_macro_f1": 0.33595200109953954,
+            "slot_f1": 0.30158385766977647,
+            "slot_f1_char_exact": 0.30158385766977647
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.1840228245363766,
+            "intent_macro_f1": 0.12254229228851934,
+            "slot_f1": 0.13817330210772832,
+            "slot_f1_char_exact": 0.13817330210772832
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.028232833739979087,
+            "intent_macro_f1": 0.013258038544173992,
+            "slot_f1": 0.010104655359076146,
+            "slot_f1_char_exact": 0.010104655359076146
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.3521923620933522,
+            "intent_macro_f1": 0.2957928969114477,
+            "slot_f1": 0.1627225602884832,
+            "slot_f1_char_exact": 0.1627225602884832
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.5704745179167483,
+          "intent_macro_f1": 0.528057667893325,
+          "slot_f1": 0.45743017650966794,
+          "slot_f1_char_exact": 0.45535051489528655
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8839946200403497,
+            "intent_macro_f1": 0.8639362765928373,
+            "slot_f1": 0.7859125607217211,
+            "slot_f1_char_exact": 0.7859125607217211
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.8678607637715444,
+            "intent_macro_f1": 0.8393213381596177,
+            "slot_f1": 0.7143356643356643,
+            "slot_f1_char_exact": 0.7143356643356643
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8592592592592593,
+            "intent_macro_f1": 0.8325622292250997,
+            "slot_f1": 0.7467948717948718,
+            "slot_f1_char_exact": 0.7467948717948718
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8741084165477889,
+            "intent_macro_f1": 0.832653083951911,
+            "slot_f1": 0.7197618161518422,
+            "slot_f1_char_exact": 0.7197618161518422
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8630508474576272,
+            "intent_macro_f1": 0.8290970321779539,
+            "slot_f1": 0.6978664831383344,
+            "slot_f1_char_exact": 0.6754989676531314
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.44045564376941665,
+            "intent_macro_f1": 0.3770127328188872,
+            "slot_f1": 0.3269148480958494,
+            "slot_f1_char_exact": 0.3269148480958494
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.4033064206074587,
+            "intent_macro_f1": 0.3308400386083533,
+            "slot_f1": 0.30941064638783267,
+            "slot_f1_char_exact": 0.30941064638783267
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.17796030116358658,
+            "intent_macro_f1": 0.12090743037795995,
+            "slot_f1": 0.13911060433295325,
+            "slot_f1_char_exact": 0.13911060433295325
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.02671232876712329,
+            "intent_macro_f1": 0.012899038850667212,
+            "slot_f1": 0.0101010101010101,
+            "slot_f1_char_exact": 0.0101010101010101
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.35739814152966404,
+            "intent_macro_f1": 0.29725904496531946,
+            "slot_f1": 0.16118421052631576,
+            "slot_f1_char_exact": 0.16118421052631576
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.5754106742913819,
+          "intent_macro_f1": 0.5336488245728608,
+          "slot_f1": 0.4611392715586396,
+          "slot_f1_char_exact": 0.4589025200101193
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.6811925577224838,
+        "slot_f1": 0.6257602103451692
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.5718560860793545,
+          "flagged": {
+            "hi-IN": 13.7,
+            "ar-SA": 17.7,
+            "sw-KE": 39.3,
+            "am-ET": 54.4,
+            "ta-IN": 22.2
+          }
+        },
+        "slot_f1": {
+          "mean": 0.45938968691290666,
+          "flagged": {
+            "hi-IN": 13.4,
+            "ar-SA": 15.2,
+            "sw-KE": 32.1,
+            "am-ET": 44.9,
+            "ta-IN": 29.6
+          }
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 15672,
+          "baseline_only_correct": 755,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 3529,
+          "baseline_only_correct": 5254,
+          "p_value": 4.718691229018777e-76
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "weather_query",
+          "pred": "general_quirky",
+          "count": 242
+        },
+        {
+          "gold": "play_music",
+          "pred": "play_radio",
+          "count": 236
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "play_radio",
+          "count": 226
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "general_quirky",
+          "count": 207
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "general_quirky",
+          "count": 181
+        },
+        {
+          "gold": "email_query",
+          "pred": "general_quirky",
+          "count": 166
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "play_radio",
+          "count": 156
+        },
+        {
+          "gold": "weather_query",
+          "pred": "play_radio",
+          "count": 156
+        },
+        {
+          "gold": "news_query",
+          "pred": "general_quirky",
+          "count": 154
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 145
+        }
+      ]
+    },
+    "bert-base-multilingual-cased-runB": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.879287155346335,
+            "intent_macro_f1": 0.8484720916678812,
+            "slot_f1": 0.7803108808290156,
+            "slot_f1_char_exact": 0.7803108808290156
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.8520511096166778,
+            "intent_macro_f1": 0.814664488033721,
+            "slot_f1": 0.7114350164844699,
+            "slot_f1_char_exact": 0.7114350164844699
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8507061197041023,
+            "intent_macro_f1": 0.8151131511065854,
+            "slot_f1": 0.7427109974424553,
+            "slot_f1_char_exact": 0.7427109974424553
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8641560188298588,
+            "intent_macro_f1": 0.8329335880762858,
+            "slot_f1": 0.7110723626852659,
+            "slot_f1_char_exact": 0.7110723626852659
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.8607935440484197,
+            "intent_macro_f1": 0.8345225692777585,
+            "slot_f1": 0.7105352881009205,
+            "slot_f1_char_exact": 0.6880327309921582
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8402824478816409,
+            "intent_macro_f1": 0.8002976709873783,
+            "slot_f1": 0.6865570435667062,
+            "slot_f1_char_exact": 0.6865570435667062
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.8016139878950908,
+            "intent_macro_f1": 0.7494097587753556,
+            "slot_f1": 0.7112504353883664,
+            "slot_f1_char_exact": 0.7112504353883664
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.824142568930733,
+            "intent_macro_f1": 0.7929067603113513,
+            "slot_f1": 0.6878181201221581,
+            "slot_f1_char_exact": 0.6878181201221581
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.10793544048419637,
+            "intent_macro_f1": 0.03881965462395956,
+            "slot_f1": 0.04694214876033058,
+            "slot_f1_char_exact": 0.04694214876033058
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8264963012777404,
+            "intent_macro_f1": 0.7937496566303553,
+            "slot_f1": 0.6693849813115869,
+            "slot_f1_char_exact": 0.6693849813115869
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7707464694014795,
+          "intent_macro_f1": 0.7320889389490632,
+          "slot_f1": 0.6458017274691275,
+          "slot_f1_char_exact": 0.6435514717582513
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8784287165594311,
+            "intent_macro_f1": 0.8479571358472295,
+            "slot_f1": 0.7794194333391273,
+            "slot_f1_char_exact": 0.7794194333391273
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8460183227625088,
+            "intent_macro_f1": 0.8086915617911775,
+            "slot_f1": 0.7071606697541859,
+            "slot_f1_char_exact": 0.7071606697541859
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.8471493529206016,
+            "intent_macro_f1": 0.8072196845236317,
+            "slot_f1": 0.7397594561617569,
+            "slot_f1_char_exact": 0.7397594561617569
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8590651558073654,
+            "intent_macro_f1": 0.8267332975637188,
+            "slot_f1": 0.7082285303629178,
+            "slot_f1_char_exact": 0.7082285303629178
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8547162992410553,
+            "intent_macro_f1": 0.8279409561485493,
+            "slot_f1": 0.7070422535211268,
+            "slot_f1_char_exact": 0.6859154929577465
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.8363252375923971,
+            "intent_macro_f1": 0.7956754665937079,
+            "slot_f1": 0.6812074681556447,
+            "slot_f1_char_exact": 0.6812074681556447
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.7957617829740592,
+            "intent_macro_f1": 0.7360424825978041,
+            "slot_f1": 0.6965835641735919,
+            "slot_f1_char_exact": 0.6965835641735919
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.8149072753209701,
+            "intent_macro_f1": 0.7782481417011036,
+            "slot_f1": 0.6828671328671329,
+            "slot_f1_char_exact": 0.6828671328671329
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.1094457999302893,
+            "intent_macro_f1": 0.038969387591416715,
+            "slot_f1": 0.047875927174645984,
+            "slot_f1_char_exact": 0.047875927174645984
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.8210749646393211,
+            "intent_macro_f1": 0.7877506453803106,
+            "slot_f1": 0.664568030779993,
+            "slot_f1_char_exact": 0.664568030779993
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7662892907747998,
+          "intent_macro_f1": 0.725522875973865,
+          "slot_f1": 0.6414712466290122,
+          "slot_f1_char_exact": 0.6393585705726743
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.879287155346335,
+            "intent_macro_f1": 0.8484720916678812,
+            "slot_f1": 0.7803108808290156,
+            "slot_f1_char_exact": 0.7803108808290156
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.852990875295708,
+            "intent_macro_f1": 0.8152465508381886,
+            "slot_f1": 0.7130404463040447,
+            "slot_f1_char_exact": 0.7130404463040447
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8624338624338624,
+            "intent_macro_f1": 0.8267467398247422,
+            "slot_f1": 0.7498233215547704,
+            "slot_f1_char_exact": 0.7498233215547704
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8676890156918687,
+            "intent_macro_f1": 0.8383336401149023,
+            "slot_f1": 0.7177868548087634,
+            "slot_f1_char_exact": 0.7177868548087634
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8633898305084746,
+            "intent_macro_f1": 0.836697912787739,
+            "slot_f1": 0.7124935555937447,
+            "slot_f1_char_exact": 0.689809245574841
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.8477735588539869,
+            "intent_macro_f1": 0.8067497299753655,
+            "slot_f1": 0.690414730683187,
+            "slot_f1_char_exact": 0.690414730683187
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.8323721645520954,
+            "intent_macro_f1": 0.7745611892319627,
+            "slot_f1": 0.71677471636953,
+            "slot_f1_char_exact": 0.71677471636953
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.8254620123203286,
+            "intent_macro_f1": 0.7941550385720689,
+            "slot_f1": 0.6900947459086995,
+            "slot_f1_char_exact": 0.6900947459086995
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.1065068493150685,
+            "intent_macro_f1": 0.038822502357155626,
+            "slot_f1": 0.045899426257171784,
+            "slot_f1_char_exact": 0.045899426257171784
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.8309506790564689,
+            "intent_macro_f1": 0.7990833828323809,
+            "slot_f1": 0.6724890829694323,
+            "slot_f1_char_exact": 0.6724890829694323
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7768856003374196,
+          "intent_macro_f1": 0.7378868778202387,
+          "slot_f1": 0.6489127761278359,
+          "slot_f1_char_exact": 0.6466443451259456
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.27520735261152207,
+        "slot_f1": 0.263164492377067
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.7707464694014795,
+          "flagged": {
+            "am-ET": 66.3
+          }
+        },
+        "slot_f1": {
+          "mean": 0.6458017274691275,
+          "flagged": {
+            "am-ET": 59.9
+          }
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 21112,
+          "baseline_only_correct": 280,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 5027,
+          "baseline_only_correct": 837,
+          "p_value": 0.0
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "general_quirky",
+          "pred": "qa_factoid",
+          "count": 185
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "calendar_query",
+          "count": 93
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 90
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "calendar_query",
+          "count": 83
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "play_music",
+          "count": 82
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "news_query",
+          "count": 82
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "calendar_set",
+          "count": 80
+        },
+        {
+          "gold": "play_radio",
+          "pred": "play_music",
+          "count": 75
+        },
+        {
+          "gold": "weather_query",
+          "pred": "qa_factoid",
+          "count": 71
+        },
+        {
+          "gold": "play_music",
+          "pred": "qa_factoid",
+          "count": 70
+        }
+      ]
+    },
+    "xlm-roberta-base-runA": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8934095494283792,
+            "intent_macro_f1": 0.865740272079195,
+            "slot_f1": 0.791220186657449,
+            "slot_f1_char_exact": 0.791220186657449
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.874915938130464,
+            "intent_macro_f1": 0.8443692328804192,
+            "slot_f1": 0.7233454294107482,
+            "slot_f1_char_exact": 0.7233454294107482
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8718897108271688,
+            "intent_macro_f1": 0.83461676006461,
+            "slot_f1": 0.7602058319039451,
+            "slot_f1_char_exact": 0.7612349914236708
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8799596503026227,
+            "intent_macro_f1": 0.842923550291884,
+            "slot_f1": 0.7364354697102721,
+            "slot_f1_char_exact": 0.7367866549604917
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.8739071956960323,
+            "intent_macro_f1": 0.8319296856417292,
+            "slot_f1": 0.7264927934111187,
+            "slot_f1_char_exact": 0.619790773452238
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.7726967047747142,
+            "intent_macro_f1": 0.7029202254234815,
+            "slot_f1": 0.6148800276195407,
+            "slot_f1_char_exact": 0.615225271879855
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.6540013449899126,
+            "intent_macro_f1": 0.5362308317713536,
+            "slot_f1": 0.520508166969147,
+            "slot_f1_char_exact": 0.5219600725952812
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.5141223940820444,
+            "intent_macro_f1": 0.4208799718305329,
+            "slot_f1": 0.39677363995194787,
+            "slot_f1_char_exact": 0.39746009953663974
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.5568258238063215,
+            "intent_macro_f1": 0.4521165435521915,
+            "slot_f1": 0.4057586664140936,
+            "slot_f1_char_exact": 0.41182042053419216
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.6970410221923335,
+            "intent_macro_f1": 0.6186205398308869,
+            "slot_f1": 0.4119743406985032,
+            "slot_f1_char_exact": 0.4123307198859586
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7588769334229994,
+          "intent_macro_f1": 0.6950347613366283,
+          "slot_f1": 0.6087594552746765,
+          "slot_f1_char_exact": 0.5991174620336525
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8929901794784965,
+            "intent_macro_f1": 0.8656202791140858,
+            "slot_f1": 0.7903983301443729,
+            "slot_f1_char_exact": 0.7903983301443729
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8692741367159972,
+            "intent_macro_f1": 0.8283705688443656,
+            "slot_f1": 0.7198581560283687,
+            "slot_f1_char_exact": 0.7198581560283687
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.8688352570828961,
+            "intent_macro_f1": 0.8319054758278897,
+            "slot_f1": 0.758681164503683,
+            "slot_f1_char_exact": 0.7597334268677656
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8757082152974505,
+            "intent_macro_f1": 0.8392012251244225,
+            "slot_f1": 0.7330562082053135,
+            "slot_f1_char_exact": 0.7334176757636002
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8684495843874233,
+            "intent_macro_f1": 0.8223210435473728,
+            "slot_f1": 0.7223404255319149,
+            "slot_f1_char_exact": 0.6202374623427255
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.7729672650475184,
+            "intent_macro_f1": 0.7023729623069728,
+            "slot_f1": 0.6124265622218266,
+            "slot_f1_char_exact": 0.6127826241766068
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.6572890025575447,
+            "intent_macro_f1": 0.5304689539681356,
+            "slot_f1": 0.5061491160645658,
+            "slot_f1_char_exact": 0.5076863950807071
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.5217546362339515,
+            "intent_macro_f1": 0.42253914180422764,
+            "slot_f1": 0.4002846468599893,
+            "slot_f1_char_exact": 0.40099626400996263
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.5555942837225514,
+            "intent_macro_f1": 0.44599798530698664,
+            "slot_f1": 0.4054942928999806,
+            "slot_f1_char_exact": 0.4116850454633391
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.6941301272984441,
+            "intent_macro_f1": 0.6162012260407033,
+            "slot_f1": 0.40676097740216793,
+            "slot_f1_char_exact": 0.4071284218261988
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7576992687822274,
+          "intent_macro_f1": 0.6904998861885161,
+          "slot_f1": 0.6055449879862184,
+          "slot_f1_char_exact": 0.5963923801703648
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8934095494283792,
+            "intent_macro_f1": 0.865740272079195,
+            "slot_f1": 0.791220186657449,
+            "slot_f1_char_exact": 0.791220186657449
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.8756336600202771,
+            "intent_macro_f1": 0.8449069240129462,
+            "slot_f1": 0.7248741537927443,
+            "slot_f1_char_exact": 0.7248741537927443
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8793650793650793,
+            "intent_macro_f1": 0.8419583781391191,
+            "slot_f1": 0.7653750444365447,
+            "slot_f1_char_exact": 0.7664415215072876
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8833808844507846,
+            "intent_macro_f1": 0.8456212014180378,
+            "slot_f1": 0.7447604790419162,
+            "slot_f1_char_exact": 0.7451347305389222
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8762711864406779,
+            "intent_macro_f1": 0.8337779041762247,
+            "slot_f1": 0.7281838603767063,
+            "slot_f1_char_exact": 0.6214162348877376
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.7787366240938902,
+            "intent_macro_f1": 0.7102897140576719,
+            "slot_f1": 0.6182391037983547,
+            "slot_f1_char_exact": 0.6185891825660773
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.6839677047289504,
+            "intent_macro_f1": 0.552945145401918,
+            "slot_f1": 0.5256087321578504,
+            "slot_f1_char_exact": 0.5272879932829554
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.5126625598904859,
+            "intent_macro_f1": 0.4204098986938115,
+            "slot_f1": 0.3969412582551269,
+            "slot_f1_char_exact": 0.39763642683350714
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.5565068493150684,
+            "intent_macro_f1": 0.45287475998329396,
+            "slot_f1": 0.4088974854932302,
+            "slot_f1_char_exact": 0.4147001934235977
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.7005003573981415,
+            "intent_macro_f1": 0.6226286004938105,
+            "slot_f1": 0.41002277904328016,
+            "slot_f1_char_exact": 0.4104024297646166
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.7640434455131734,
+          "intent_macro_f1": 0.6991152798456028,
+          "slot_f1": 0.6114123083053202,
+          "slot_f1_char_exact": 0.6017703053254895
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.28948666218336694,
+        "slot_f1": 0.34270439319719176
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.7588769334229994,
+          "flagged": {
+            "ar-SA": 10.5,
+            "sw-KE": 24.5,
+            "am-ET": 20.2
+          }
+        },
+        "slot_f1": {
+          "mean": 0.6087594552746765,
+          "flagged": {
+            "sw-KE": 21.2,
+            "am-ET": 20.3,
+            "ta-IN": 19.7
+          }
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 20804,
+          "baseline_only_correct": 325,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 6148,
+          "baseline_only_correct": 2311,
+          "p_value": 0.0
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "general_quirky",
+          "pred": "qa_factoid",
+          "count": 161
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 125
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "calendar_query",
+          "count": 116
+        },
+        {
+          "gold": "play_music",
+          "pred": "play_radio",
+          "count": 99
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "calendar_query",
+          "count": 87
+        },
+        {
+          "gold": "weather_query",
+          "pred": "general_quirky",
+          "count": 85
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "general_quirky",
+          "count": 78
+        },
+        {
+          "gold": "cooking_recipe",
+          "pred": "general_quirky",
+          "count": 77
+        },
+        {
+          "gold": "alarm_set",
+          "pred": "calendar_set",
+          "count": 68
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "calendar_set",
+          "count": 64
+        }
+      ]
+    },
+    "xlm-roberta-base-runB": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8954270342972428,
+            "intent_macro_f1": 0.8708300028679833,
+            "slot_f1": 0.7942945523285788,
+            "slot_f1_char_exact": 0.7942945523285788
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.874915938130464,
+            "intent_macro_f1": 0.8528241549425444,
+            "slot_f1": 0.7234627275850223,
+            "slot_f1_char_exact": 0.7234627275850223
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8728984532616005,
+            "intent_macro_f1": 0.8431276373566147,
+            "slot_f1": 0.7615134394795411,
+            "slot_f1_char_exact": 0.7621982537236776
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8782784129119031,
+            "intent_macro_f1": 0.8330142829936711,
+            "slot_f1": 0.7337401918047078,
+            "slot_f1_char_exact": 0.7347863993025283
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.874915938130464,
+            "intent_macro_f1": 0.839135440762393,
+            "slot_f1": 0.7312381933711144,
+            "slot_f1_char_exact": 0.6251287332646757
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8718897108271688,
+            "intent_macro_f1": 0.8322490466951425,
+            "slot_f1": 0.7176430517711172,
+            "slot_f1_char_exact": 0.717983651226158
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.8190988567585743,
+            "intent_macro_f1": 0.7794391776427967,
+            "slot_f1": 0.7226832641770402,
+            "slot_f1_char_exact": 0.7226832641770402
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.85137861466039,
+            "intent_macro_f1": 0.8112920440041005,
+            "slot_f1": 0.6980844210883201,
+            "slot_f1_char_exact": 0.6984234616036616
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.839609952925353,
+            "intent_macro_f1": 0.7992171428700905,
+            "slot_f1": 0.6935566569817125,
+            "slot_f1_char_exact": 0.6952657665356349
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8493611297915266,
+            "intent_macro_f1": 0.8299123038244792,
+            "slot_f1": 0.6948130277442702,
+            "slot_f1_char_exact": 0.6955023263829054
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8627774041694687,
+          "intent_macro_f1": 0.8291041233959815,
+          "slot_f1": 0.7271029526331424,
+          "slot_f1_char_exact": 0.7169729136129883
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8950220115137149,
+            "intent_macro_f1": 0.8707339015562564,
+            "slot_f1": 0.7934970598408855,
+            "slot_f1_char_exact": 0.7934970598408855
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8696264975334743,
+            "intent_macro_f1": 0.8374432583485064,
+            "slot_f1": 0.720352422907489,
+            "slot_f1_char_exact": 0.720352422907489
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.869884575026233,
+            "intent_macro_f1": 0.8394237263980505,
+            "slot_f1": 0.7589707684228952,
+            "slot_f1_char_exact": 0.7596709259583407
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8742917847025495,
+            "intent_macro_f1": 0.8268858768577558,
+            "slot_f1": 0.7298850574712644,
+            "slot_f1_char_exact": 0.7309626436781609
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8695337911095049,
+            "intent_macro_f1": 0.8309679172218456,
+            "slot_f1": 0.7276920347702679,
+            "slot_f1_char_exact": 0.626241134751773
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.8690601900739177,
+            "intent_macro_f1": 0.8279244920675646,
+            "slot_f1": 0.7136842105263157,
+            "slot_f1_char_exact": 0.7140350877192982
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.8165875045670442,
+            "intent_macro_f1": 0.76789921405978,
+            "slot_f1": 0.7093108504398827,
+            "slot_f1_char_exact": 0.7093108504398827
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.844151212553495,
+            "intent_macro_f1": 0.8031832156029713,
+            "slot_f1": 0.6929793922458959,
+            "slot_f1_char_exact": 0.6933286762137617
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.8337399790867899,
+            "intent_macro_f1": 0.787334495316322,
+            "slot_f1": 0.6894507410636443,
+            "slot_f1_char_exact": 0.6911944202266782
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.8451202263083452,
+            "intent_macro_f1": 0.8265143549757891,
+            "slot_f1": 0.6900833776831649,
+            "slot_f1_char_exact": 0.690792974986695
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8587017772475068,
+          "intent_macro_f1": 0.8218310452404841,
+          "slot_f1": 0.7225905915371705,
+          "slot_f1_char_exact": 0.7129386196722964
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8954270342972428,
+            "intent_macro_f1": 0.8708300028679833,
+            "slot_f1": 0.7942945523285788,
+            "slot_f1_char_exact": 0.7942945523285788
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.8756336600202771,
+            "intent_macro_f1": 0.8532155822487346,
+            "slot_f1": 0.725327812284334,
+            "slot_f1_char_exact": 0.725327812284334
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8818342151675485,
+            "intent_macro_f1": 0.8533616360626627,
+            "slot_f1": 0.7672107877927609,
+            "slot_f1_char_exact": 0.7679205110007097
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8812410841654779,
+            "intent_macro_f1": 0.8360084669395487,
+            "slot_f1": 0.7412353923205343,
+            "slot_f1_char_exact": 0.7419773696902244
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8772881355932204,
+            "intent_macro_f1": 0.8411875944955556,
+            "slot_f1": 0.7335293100466885,
+            "slot_f1_char_exact": 0.6270307639128933
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.8778046254746289,
+            "intent_macro_f1": 0.8375704877045432,
+            "slot_f1": 0.7216459197787,
+            "slot_f1_char_exact": 0.7219917012448133
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.8481353325643983,
+            "intent_macro_f1": 0.8017405750619349,
+            "slot_f1": 0.7274561226548316,
+            "slot_f1_char_exact": 0.7274561226548316
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.8528405201916496,
+            "intent_macro_f1": 0.8132574552773749,
+            "slot_f1": 0.7009458297506448,
+            "slot_f1_char_exact": 0.7012897678417884
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.8414383561643836,
+            "intent_macro_f1": 0.8034158033529395,
+            "slot_f1": 0.696927374301676,
+            "slot_f1_char_exact": 0.6986731843575419
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.8538241601143675,
+            "intent_macro_f1": 0.8348361145631978,
+            "slot_f1": 0.7002583979328166,
+            "slot_f1_char_exact": 0.7009966777408638
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8685467123753193,
+          "intent_macro_f1": 0.8345423718574475,
+          "slot_f1": 0.7308831499191565,
+          "slot_f1_char_exact": 0.720695846305658
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.03250392288724491,
+        "slot_f1": 0.05336511897569196
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.8627774041694687,
+          "flagged": {}
+        },
+        "slot_f1": {
+          "mean": 0.7271029526331424,
+          "flagged": {}
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 23765,
+          "baseline_only_correct": 196,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 7629,
+          "baseline_only_correct": 702,
+          "p_value": 0.0
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "general_quirky",
+          "pred": "qa_factoid",
+          "count": 156
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "news_query",
+          "count": 97
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 92
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "calendar_query",
+          "count": 90
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "calendar_query",
+          "count": 81
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "calendar_set",
+          "count": 56
+        },
+        {
+          "gold": "play_radio",
+          "pred": "play_music",
+          "count": 53
+        },
+        {
+          "gold": "transport_query",
+          "pred": "transport_traffic",
+          "count": 49
+        },
+        {
+          "gold": "weather_query",
+          "pred": "general_quirky",
+          "count": 46
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "recommendation_events",
+          "count": 39
+        }
+      ]
+    },
+    "xlm-roberta-base-runB-oos": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8950907868190988,
+            "intent_macro_f1": 0.8588328120518302,
+            "slot_f1": 0.7957432200480604,
+            "slot_f1_char_exact": 0.7957432200480604
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.875252185608608,
+            "intent_macro_f1": 0.8246358574013223,
+            "slot_f1": 0.7247722193570569,
+            "slot_f1_char_exact": 0.7247722193570569
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8685272360457297,
+            "intent_macro_f1": 0.8373304449983136,
+            "slot_f1": 0.752084396801089,
+            "slot_f1_char_exact": 0.7531053258465202
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8745796906523201,
+            "intent_macro_f1": 0.8288828334930951,
+            "slot_f1": 0.7338079527695781,
+            "slot_f1_char_exact": 0.7341552352839034
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.8772696704774714,
+            "intent_macro_f1": 0.8280164312925197,
+            "slot_f1": 0.7365526722804605,
+            "slot_f1_char_exact": 0.6303675712813466
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8715534633490248,
+            "intent_macro_f1": 0.821122485183746,
+            "slot_f1": 0.7205456095481672,
+            "slot_f1_char_exact": 0.7205456095481672
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.8197713517148622,
+            "intent_macro_f1": 0.7662621798752637,
+            "slot_f1": 0.7259490379615184,
+            "slot_f1_char_exact": 0.7262957184954065
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.8422999327505044,
+            "intent_macro_f1": 0.7862906696409672,
+            "slot_f1": 0.7093378607809846,
+            "slot_f1_char_exact": 0.7093378607809846
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.8332212508406187,
+            "intent_macro_f1": 0.7707484247802869,
+            "slot_f1": 0.6939816388983339,
+            "slot_f1_char_exact": 0.6950017001020061
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8422999327505044,
+            "intent_macro_f1": 0.8010680432899441,
+            "slot_f1": 0.699585635359116,
+            "slot_f1_char_exact": 0.6999309392265193
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8599865501008741,
+          "intent_macro_f1": 0.8123190182007288,
+          "slot_f1": 0.7292360243804367,
+          "slot_f1_char_exact": 0.7189255399969972
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8946833728411785,
+            "intent_macro_f1": 0.8587229642648647,
+            "slot_f1": 0.7949559509414407,
+            "slot_f1_char_exact": 0.7949559509414407
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8703312191684285,
+            "intent_macro_f1": 0.8197175088409799,
+            "slot_f1": 0.7213693312158109,
+            "slot_f1_char_exact": 0.7213693312158109
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.8649877579573277,
+            "intent_macro_f1": 0.8317352965353602,
+            "slot_f1": 0.7503913724125936,
+            "slot_f1_char_exact": 0.7514350321795096
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8700424929178471,
+            "intent_macro_f1": 0.8249694908572865,
+            "slot_f1": 0.7300679299249196,
+            "slot_f1_char_exact": 0.7304254558455489
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8720636067943621,
+            "intent_macro_f1": 0.8217216370373391,
+            "slot_f1": 0.7324693768862063,
+            "slot_f1_char_exact": 0.630943931866572
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.8690601900739177,
+            "intent_macro_f1": 0.817280451379233,
+            "slot_f1": 0.7151387425360028,
+            "slot_f1_char_exact": 0.7151387425360028
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.814760686883449,
+            "intent_macro_f1": 0.751638257127718,
+            "slot_f1": 0.7139705882352942,
+            "slot_f1_char_exact": 0.7143382352941177
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.8345221112696148,
+            "intent_macro_f1": 0.7769504184683712,
+            "slot_f1": 0.7044421126267926,
+            "slot_f1_char_exact": 0.7044421126267926
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.8274660160334611,
+            "intent_macro_f1": 0.7595289897030956,
+            "slot_f1": 0.6911994445408783,
+            "slot_f1_char_exact": 0.6922409303940288
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.8369872701555869,
+            "intent_macro_f1": 0.7961427223310898,
+            "slot_f1": 0.6945086191576328,
+            "slot_f1_char_exact": 0.6948640483383685
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8554904724095174,
+          "intent_macro_f1": 0.8058407736545339,
+          "slot_f1": 0.7248513468477571,
+          "slot_f1_char_exact": 0.7150153771238192
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8950907868190988,
+            "intent_macro_f1": 0.8588328120518302,
+            "slot_f1": 0.7957432200480604,
+            "slot_f1_char_exact": 0.7957432200480604
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.8759716120310916,
+            "intent_macro_f1": 0.8252050610010807,
+            "slot_f1": 0.7261740331491712,
+            "slot_f1_char_exact": 0.7261740331491712
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8772486772486773,
+            "intent_macro_f1": 0.8469152958183297,
+            "slot_f1": 0.7583774250440917,
+            "slot_f1_char_exact": 0.7594356261022928
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8769614835948645,
+            "intent_macro_f1": 0.8308153961809398,
+            "slot_f1": 0.740453790813503,
+            "slot_f1_char_exact": 0.7408227264342373
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8796610169491526,
+            "intent_macro_f1": 0.8300158807479922,
+            "slot_f1": 0.7378439176328084,
+            "slot_f1_char_exact": 0.6312694569353166
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.8784949948222299,
+            "intent_macro_f1": 0.8271059052101282,
+            "slot_f1": 0.7244421380384017,
+            "slot_f1_char_exact": 0.7244421380384017
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.8485198000768935,
+            "intent_macro_f1": 0.8015079667845089,
+            "slot_f1": 0.7339003645200486,
+            "slot_f1_char_exact": 0.7343053867962738
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.8429158110882957,
+            "intent_macro_f1": 0.7874832295101212,
+            "slot_f1": 0.7112869924294563,
+            "slot_f1_char_exact": 0.7112869924294563
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.8342465753424657,
+            "intent_macro_f1": 0.7718407237201176,
+            "slot_f1": 0.6971170545328239,
+            "slot_f1_char_exact": 0.6981590830149357
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.8477483917083631,
+            "intent_macro_f1": 0.8071585503544487,
+            "slot_f1": 0.701974534046872,
+            "slot_f1_char_exact": 0.7023436058313343
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8656859149681132,
+          "intent_macro_f1": 0.8186880821379499,
+          "slot_f1": 0.7327313470255238,
+          "slot_f1_char_exact": 0.722398226877948
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.03887020847343636,
+        "slot_f1": 0.047623713905104226
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.8599865501008741,
+          "flagged": {}
+        },
+        "slot_f1": {
+          "mean": 0.7292360243804367,
+          "flagged": {}
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 23688,
+          "baseline_only_correct": 202,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 7585,
+          "baseline_only_correct": 741,
+          "p_value": 0.0
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "general_quirky",
+          "pred": "qa_factoid",
+          "count": 172
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "calendar_query",
+          "count": 99
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "calendar_query",
+          "count": 93
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 88
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "news_query",
+          "count": 78
+        },
+        {
+          "gold": "play_radio",
+          "pred": "play_music",
+          "count": 58
+        },
+        {
+          "gold": "calendar_query",
+          "pred": "calendar_set",
+          "count": 53
+        },
+        {
+          "gold": "transport_query",
+          "pred": "transport_traffic",
+          "count": 52
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "weather_query",
+          "count": 39
+        },
+        {
+          "gold": "lists_remove",
+          "pred": "calendar_remove",
+          "count": 39
+        }
+      ]
+    },
+    "xlm-roberta-base-runB-oos-int8": {
+      "full": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8880295897780767,
+            "intent_macro_f1": 0.855870747739658,
+            "slot_f1": 0.7765158133845886,
+            "slot_f1_char_exact": 0.7765158133845886
+          },
+          "es-ES": {
+            "n": 2974,
+            "intent_accuracy": 0.871217215870881,
+            "intent_macro_f1": 0.8220267188713163,
+            "slot_f1": 0.7035614525139664,
+            "slot_f1_char_exact": 0.7039106145251396
+          },
+          "de-DE": {
+            "n": 2974,
+            "intent_accuracy": 0.8742434431741762,
+            "intent_macro_f1": 0.8401996365766885,
+            "slot_f1": 0.7477806788511749,
+            "slot_f1_char_exact": 0.7491731940818103
+          },
+          "fr-FR": {
+            "n": 2974,
+            "intent_accuracy": 0.8759246805648958,
+            "intent_macro_f1": 0.8243621874782302,
+            "slot_f1": 0.7163070392642378,
+            "slot_f1_char_exact": 0.7173682348779625
+          },
+          "ja-JP": {
+            "n": 2974,
+            "intent_accuracy": 0.8655010087424344,
+            "intent_macro_f1": 0.8166162698546433,
+            "slot_f1": 0.713162034609334,
+            "slot_f1_char_exact": 0.6111111111111112
+          },
+          "hi-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8638197713517148,
+            "intent_macro_f1": 0.8041505984404665,
+            "slot_f1": 0.7074496056091147,
+            "slot_f1_char_exact": 0.708150744960561
+          },
+          "ar-SA": {
+            "n": 2974,
+            "intent_accuracy": 0.8090114324142569,
+            "intent_macro_f1": 0.7682044391365651,
+            "slot_f1": 0.6928431197572729,
+            "slot_f1_char_exact": 0.6935570230233804
+          },
+          "sw-KE": {
+            "n": 2974,
+            "intent_accuracy": 0.8332212508406187,
+            "intent_macro_f1": 0.777186677222709,
+            "slot_f1": 0.6862745098039216,
+            "slot_f1_char_exact": 0.6862745098039216
+          },
+          "am-ET": {
+            "n": 2974,
+            "intent_accuracy": 0.8180901143241426,
+            "intent_macro_f1": 0.7548754431381794,
+            "slot_f1": 0.6575101250220109,
+            "slot_f1_char_exact": 0.6592709984152139
+          },
+          "ta-IN": {
+            "n": 2974,
+            "intent_accuracy": 0.8369199731002017,
+            "intent_macro_f1": 0.7811879064868185,
+            "slot_f1": 0.6728807597608161,
+            "slot_f1_char_exact": 0.6735842419978896
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8535978480161399,
+          "intent_macro_f1": 0.8044680624945275,
+          "slot_f1": 0.7074285138576438,
+          "slot_f1_char_exact": 0.6978916486181579
+        }
+      },
+      "unseen_in_train": {
+        "by_locale": {
+          "en-US": {
+            "n": 2953,
+            "intent_accuracy": 0.8872333220453776,
+            "intent_macro_f1": 0.855482070702349,
+            "slot_f1": 0.775589166373549,
+            "slot_f1_char_exact": 0.775589166373549
+          },
+          "es-ES": {
+            "n": 2838,
+            "intent_accuracy": 0.8657505285412262,
+            "intent_macro_f1": 0.8162217691338767,
+            "slot_f1": 0.7000358808754934,
+            "slot_f1_char_exact": 0.7003946896304271
+          },
+          "de-DE": {
+            "n": 2859,
+            "intent_accuracy": 0.8709338929695698,
+            "intent_macro_f1": 0.8340518809468832,
+            "slot_f1": 0.745817016731933,
+            "slot_f1_char_exact": 0.7472410110359557
+          },
+          "fr-FR": {
+            "n": 2824,
+            "intent_accuracy": 0.8707507082152974,
+            "intent_macro_f1": 0.8175685616130122,
+            "slot_f1": 0.7129832239241429,
+            "slot_f1_char_exact": 0.7140773158278629
+          },
+          "ja-JP": {
+            "n": 2767,
+            "intent_accuracy": 0.8601373328514637,
+            "intent_macro_f1": 0.8099590735792072,
+            "slot_f1": 0.7084537572254335,
+            "slot_f1_char_exact": 0.6109406029969309
+          },
+          "hi-IN": {
+            "n": 2841,
+            "intent_accuracy": 0.8609644491376276,
+            "intent_macro_f1": 0.7988949522824265,
+            "slot_f1": 0.7019508670520231,
+            "slot_f1_char_exact": 0.7026734104046243
+          },
+          "ar-SA": {
+            "n": 2737,
+            "intent_accuracy": 0.8048958713920351,
+            "intent_macro_f1": 0.7539821177873758,
+            "slot_f1": 0.6784157665340156,
+            "slot_f1_char_exact": 0.6791737729770703
+          },
+          "sw-KE": {
+            "n": 2804,
+            "intent_accuracy": 0.8252496433666191,
+            "intent_macro_f1": 0.7654487307543101,
+            "slot_f1": 0.6809738503155996,
+            "slot_f1_char_exact": 0.6809738503155996
+          },
+          "am-ET": {
+            "n": 2869,
+            "intent_accuracy": 0.8117811084001394,
+            "intent_macro_f1": 0.7427504390458584,
+            "slot_f1": 0.6545585326380147,
+            "slot_f1_char_exact": 0.6563567703650423
+          },
+          "ta-IN": {
+            "n": 2828,
+            "intent_accuracy": 0.832036775106082,
+            "intent_macro_f1": 0.7765440297359375,
+            "slot_f1": 0.6672704220249954,
+            "slot_f1_char_exact": 0.66799492845499
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8489733632025438,
+          "intent_macro_f1": 0.7970903625581236,
+          "slot_f1": 0.7026048483695201,
+          "slot_f1_char_exact": 0.6935415518382053
+        }
+      },
+      "judge_clean": {
+        "by_locale": {
+          "en-US": {
+            "n": 2974,
+            "intent_accuracy": 0.8880295897780767,
+            "intent_macro_f1": 0.855870747739658,
+            "slot_f1": 0.7765158133845886,
+            "slot_f1_char_exact": 0.7765158133845886
+          },
+          "es-ES": {
+            "n": 2959,
+            "intent_accuracy": 0.871916187901318,
+            "intent_macro_f1": 0.8226451444790157,
+            "slot_f1": 0.7057172921781831,
+            "slot_f1_char_exact": 0.7060680462995441
+          },
+          "de-DE": {
+            "n": 2835,
+            "intent_accuracy": 0.8821869488536155,
+            "intent_macro_f1": 0.8494513188527093,
+            "slot_f1": 0.7541456380677722,
+            "slot_f1_char_exact": 0.7555875991348234
+          },
+          "fr-FR": {
+            "n": 2804,
+            "intent_accuracy": 0.8783880171184023,
+            "intent_macro_f1": 0.8267082070242628,
+            "slot_f1": 0.7235482052245817,
+            "slot_f1_char_exact": 0.7239240744221012
+          },
+          "ja-JP": {
+            "n": 2950,
+            "intent_accuracy": 0.8684745762711864,
+            "intent_macro_f1": 0.818777219217239,
+            "slot_f1": 0.7149894440534833,
+            "slot_f1_char_exact": 0.6129769650079128
+          },
+          "hi-IN": {
+            "n": 2897,
+            "intent_accuracy": 0.8722816706938212,
+            "intent_macro_f1": 0.8097824303334148,
+            "slot_f1": 0.7120754045882981,
+            "slot_f1_char_exact": 0.7127867686288458
+          },
+          "ar-SA": {
+            "n": 2601,
+            "intent_accuracy": 0.8427527873894656,
+            "intent_macro_f1": 0.8012499599889548,
+            "slot_f1": 0.6999376169681846,
+            "slot_f1_char_exact": 0.7007693907257225
+          },
+          "sw-KE": {
+            "n": 2922,
+            "intent_accuracy": 0.8336755646817249,
+            "intent_macro_f1": 0.7782482458380514,
+            "slot_f1": 0.6885420361830437,
+            "slot_f1_char_exact": 0.6885420361830437
+          },
+          "am-ET": {
+            "n": 2920,
+            "intent_accuracy": 0.8188356164383561,
+            "intent_macro_f1": 0.7564752615112762,
+            "slot_f1": 0.6608040201005027,
+            "slot_f1_char_exact": 0.6625987078248384
+          },
+          "ta-IN": {
+            "n": 2798,
+            "intent_accuracy": 0.8413152251608291,
+            "intent_macro_f1": 0.7850564782033219,
+            "slot_f1": 0.6778195488721804,
+            "slot_f1_char_exact": 0.6785714285714285
+          }
+        },
+        "mean": {
+          "intent_accuracy": 0.8597856184286796,
+          "intent_macro_f1": 0.8104265013187903,
+          "slot_f1": 0.7114095019620817,
+          "slot_f1_char_exact": 0.701834083018285
+        }
+      },
+      "transfer_gap": {
+        "intent_accuracy": 0.04557274153777169,
+        "slot_f1": 0.05924360552907748
+      },
+      "fairness": {
+        "intent_accuracy": {
+          "mean": 0.8535978480161399,
+          "flagged": {}
+        },
+        "slot_f1": {
+          "mean": 0.7074285138576438,
+          "flagged": {}
+        }
+      },
+      "significance_vs_baselines": {
+        "majority": {
+          "model_only_correct": 23519,
+          "baseline_only_correct": 223,
+          "p_value": 0.0
+        },
+        "bag_of_embeddings": {
+          "model_only_correct": 7444,
+          "baseline_only_correct": 790,
+          "p_value": 0.0
+        }
+      },
+      "top_confusions": [
+        {
+          "gold": "general_quirky",
+          "pred": "qa_factoid",
+          "count": 174
+        },
+        {
+          "gold": "qa_factoid",
+          "pred": "general_quirky",
+          "count": 107
+        },
+        {
+          "gold": "calendar_set",
+          "pred": "calendar_query",
+          "count": 106
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "calendar_query",
+          "count": 81
+        },
+        {
+          "gold": "general_quirky",
+          "pred": "news_query",
+          "count": 74
+        },
+        {
+          "gold": "play_radio",
+          "pred": "play_music",
+          "count": 67
+        },
+        {
+          "gold": "cooking_recipe",
+          "pred": "general_quirky",
+          "count": 66
+        },
+        {
+          "gold": "news_query",
+          "pred": "general_quirky",
+          "count": 51
+        },
+        {
+          "gold": "play_audiobook",
+          "pred": "play_music",
+          "count": 51
+        },
+        {
+          "gold": "weather_query",
+          "pred": "general_quirky",
+          "count": 49
+        }
+      ]
+    }
+  }
+}

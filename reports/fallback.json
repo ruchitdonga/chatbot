@@ -1,0 +1,141 @@
+{
+  "checkpoint": "artifacts/runs/xlm-roberta-base-runB-oos/best",
+  "temperature": 1.3928024003194956,
+  "ece_before": 0.07612424124081732,
+  "ece_after": 0.0200950850363852,
+  "target_routing": 0.95,
+  "oos_class": true,
+  "heldout_routed_by_oos_class": 0.509090909090909,
+  "method": "energy",
+  "recommended_threshold": 7.035995388031006,
+  "tune_routing": 0.9636363636363636,
+  "heldout_routing": 0.9090909090909091,
+  "methods": {
+    "max_prob": {
+      "threshold": 0.92,
+      "tune_routing": 0.9636363636363636,
+      "dev_coverage": 0.6951795376291195,
+      "heldout_routing": 0.8909090909090909
+    },
+    "margin": {
+      "threshold": 0.88,
+      "tune_routing": 0.9636363636363636,
+      "dev_coverage": 0.7099360550909986,
+      "heldout_routing": 0.8727272727272727
+    },
+    "energy": {
+      "threshold": 7.035995388031006,
+      "tune_routing": 0.9636363636363636,
+      "dev_coverage": 0.7792424987702902,
+      "heldout_routing": 0.9090909090909091
+    }
+  },
+  "heldout_by_category": {
+    "support_out_of_domain": {
+      "n": 25,
+      "routed": 0.92
+    },
+    "adversarial": {
+      "n": 10,
+      "routed": 0.7
+    },
+    "mixed_language": {
+      "n": 10,
+      "routed": 1.0
+    },
+    "gibberish": {
+      "n": 3,
+      "routed": 1.0
+    },
+    "empty": {
+      "n": 1,
+      "routed": 1.0
+    },
+    "symbols": {
+      "n": 2,
+      "routed": 1.0
+    },
+    "very_long": {
+      "n": 1,
+      "routed": 1.0
+    },
+    "unsupported_language": {
+      "n": 3,
+      "routed": 1.0
+    }
+  },
+  "heldout_by_language": {
+    "en-US": {
+      "n": 4,
+      "routed": 0.75
+    },
+    "es-ES": {
+      "n": 6,
+      "routed": 1.0
+    },
+    "de-DE": {
+      "n": 4,
+      "routed": 0.75
+    },
+    "fr-FR": {
+      "n": 5,
+      "routed": 0.8
+    },
+    "ja-JP": {
+      "n": 4,
+      "routed": 1.0
+    },
+    "hi-IN": {
+      "n": 5,
+      "routed": 0.6
+    },
+    "ar-SA": {
+      "n": 4,
+      "routed": 1.0
+    },
+    "sw-KE": {
+      "n": 5,
+      "routed": 1.0
+    },
+    "am-ET": {
+      "n": 4,
+      "routed": 1.0
+    },
+    "ta-IN": {
+      "n": 5,
+      "routed": 1.0
+    },
+    "none": {
+      "n": 6,
+      "routed": 1.0
+    },
+    "ru-RU": {
+      "n": 1,
+      "routed": 1.0
+    },
+    "it-IT": {
+      "n": 1,
+      "routed": 1.0
+    },
+    "pl-PL": {
+      "n": 1,
+      "routed": 1.0
+    }
+  },
+  "dev_coverage": 0.7792424987702902,
+  "dev_fallback_rate": 0.22075750122970983,
+  "dev_accuracy_when_answered": 0.9521525059967176,
+  "dev_wrong_answers_share": 0.037284800787014266,
+  "dev_fallback_rate_by_locale": {
+    "en-US": 0.1839645843580915,
+    "es-ES": 0.19527791441219877,
+    "de-DE": 0.1977373339891786,
+    "fr-FR": 0.20560747663551404,
+    "ja-JP": 0.1844564682734875,
+    "hi-IN": 0.21101819970486968,
+    "ar-SA": 0.29168716182980814,
+    "sw-KE": 0.23413674372848003,
+    "am-ET": 0.24987702902115105,
+    "ta-IN": 0.2538121003443188
+  }
+}

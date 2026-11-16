@@ -1,0 +1,34 @@
+# Demo business the chatbot supports (decision 2026-11-16). FeastFleet is FICTIONAL: a student demo, not a real company.
+# The NLU model is unchanged; this file decides what the bot answers itself and what goes to a human.
+
+name: FeastFleet
+fictional: true
+description: Fictional food-delivery app used to demonstrate the multilingual support chatbot.
+
+# MASSIVE intents the bot answers itself (with the mock backend).
+answered_intents:
+  - takeaway_order     # order food
+  - takeaway_query     # ask about an order
+  - general_greet
+  - datetime_query
+  - weather_query
+
+# Any other MASSIVE intent gets a polite "I can't help with that here" (no handoff).
+# Predicted out_of_scope, or low confidence, goes to a human agent.
+
+# MASSIVE's catch-all intent: reply "I can't help with that here - shall I connect you to an agent?" and hand off
+# if the user agrees (decision 2026-11-16). Chosen after inspecting held-out challenge misses, so the model-level
+# NFR-3 figure (90.9%) is reported unchanged and this system-level rule is reported separately.
+offer_handoff_intents:
+  - general_quirky
+handoff_topics:
+  - missing items
+  - wrong order
+  - food quality
+  - rider behaviour
+  - money back
+  - payment problems
+  - cancellations
+  - account and address
+  - allergies and food safety
+  - complaints and requests for a person
