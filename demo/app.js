@@ -1,154 +1,396 @@
-// FeastFleet demo chat (fictional business). Talks to Rasa's REST channel through the nginx proxy (/webhooks/...).
-// Nothing is stored in the browser: a page reload starts a new conversation.
+// FeastFleet storefront (FeastFleet is a fictional brand): menu, cart, checkout, order status and tracking.
+// Orders go to the orders API (/api/..., src/shop/app.py). Card payments are simulated: the card number, expiry and
+// CVC are checked here and never leave the page; only the brand and last four digits are sent.
 "use strict";
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const view = $("view");
+  const money = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
+  const fmt = (cents) => money.format(cents / 100);
+  const CART_KEY = "feastfleet-cart", LAST_ORDER_KEY = "feastfleet-last-order";
+  const STEP_LABELS = { confirmed: "Order confirmed", preparing: "Preparing your food", on_the_way: "On the way",
+                        delivered: "Delivered", ready: "Ready for pickup" };
+  let menu = null, category = "All", pollTimer = null, fulfilment = "delivery", refreshCheckout = null;
+  let cart = read(localStorage, CART_KEY) || {};
 
-const LANGS = [
-  ["", "Auto-detect"], ["en-US", "English"], ["es-ES", "Español"], ["de-DE", "Deutsch"], ["fr-FR", "Français"],
-  ["ja-JP", "日本語"], ["hi-IN", "हिन्दी"], ["ar-SA", "العربية"], ["sw-KE", "Kiswahili"], ["am-ET", "አማርኛ"], ["ta-IN", "தமிழ்"],
-];
-
-// Suggestion chips and the menu-card order sentence per language (AI-written, unreviewed, like the bot replies).
-const PHRASES = {
-  "en-US": { order: "I want to order a {dish}", chips: ["I want to order a pizza", "Where is my order?", "My food arrived cold, I want a refund"] },
-  "es-ES": { order: "Quiero pedir {dish}", chips: ["Quiero pedir una pizza", "¿Dónde está mi pedido?", "La comida llegó fría y quiero un reembolso"] },
-  "de-DE": { order: "Ich möchte {dish} bestellen", chips: ["Ich möchte eine Pizza bestellen", "Wo ist meine Bestellung?", "Das Essen kam kalt an, ich will mein Geld zurück"] },
-  "fr-FR": { order: "Je veux commander {dish}", chips: ["Je veux commander une pizza", "Où est ma commande ?", "Le repas est arrivé froid, je veux être remboursé"] },
-  "ja-JP": { order: "{dish}を注文したい", chips: ["ピザを注文したい", "注文はどこですか", "料理が冷めていたので返金してほしい"] },
-  "hi-IN": { order: "मुझे {dish} ऑर्डर करना है", chips: ["मुझे पिज़्ज़ा ऑर्डर करना है", "मेरा ऑर्डर कहाँ है", "खाना ठंडा आया और मुझे पैसे वापस चाहिए"] },
-  "ar-SA": { order: "أريد أن أطلب {dish}", chips: ["أريد أن أطلب بيتزا", "أين طلبي", "وصل الطعام باردًا وأريد استرداد أموالي"] },
-  "sw-KE": { order: "Nataka kuagiza {dish}", chips: ["Nataka kuagiza pizza", "Oda yangu iko wapi", "Chakula kilifika kikiwa baridi, nataka kurudishiwa pesa"] },
-  "am-ET": { order: "{dish} ማዘዝ እፈልጋለሁ", chips: ["ፒዛ ማዘዝ እፈልጋለሁ", "ትዕዛዜ የት ደረሰ", "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ"] },
-  "ta-IN": { order: "எனக்கு {dish} ஆர்டர் செய்ய வேண்டும்", chips: ["எனக்கு பிட்சா ஆர்டர் செய்ய வேண்டும்", "என் ஆர்டர் எங்கே இருக்கிறது", "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்"] },
-};
-
-const $ = (id) => document.getElementById(id);
-const chat = $("chat"), launcher = $("chat-launcher"), messages = $("messages"), input = $("input");
-const langSelect = $("lang"), chips = $("chips"), composer = $("composer");
-
-let sender = newSender();
-let busy = false;
-
-function newSender() { return "web-" + crypto.randomUUID(); }
-function phrases() { return PHRASES[langSelect.value] || PHRASES["en-US"]; }
-
-function openChat(focus = true) {
-  chat.hidden = false;
-  launcher.setAttribute("aria-expanded", "true");
-  if (focus) input.focus();
-}
-function closeChat() {
-  chat.hidden = true;
-  launcher.setAttribute("aria-expanded", "false");
-  launcher.focus();
-}
-
-function bubble(kind, text) {
-  $("empty")?.remove();
-  const el = document.createElement("div");
-  el.className = `msg ${kind}`;
-  el.dir = "auto";  // right-to-left for Arabic, per message
-  el.textContent = text;
-  messages.append(el);
-  messages.scrollTop = messages.scrollHeight;
-  return el;
-}
-
-function quickReplies(buttons) {
-  const row = document.createElement("div");
-  row.className = "quick";
-  for (const b of buttons) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = b.title;
-    btn.addEventListener("click", () => {
-      row.querySelectorAll("button").forEach((x) => (x.disabled = true));
-      send(b.payload, b.title);
-    });
-    row.append(btn);
-  }
-  messages.append(row);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function renderChips() {
-  chips.replaceChildren(...phrases().chips.map((text) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.dir = "auto";
-    b.textContent = text;
-    b.addEventListener("click", () => send(text));
-    return b;
-  }));
-}
-
-function restart(note) {
-  sender = newSender();
-  messages.replaceChildren();
-  if (note) bubble("system", note);
-}
-
-async function send(message, shown = message) {
-  if (busy || !message.trim()) return;
-  busy = true;
-  composer.querySelector(".send").disabled = true;
-  bubble("user", shown);
-  const typing = document.createElement("div");
-  typing.className = "typing";
-  typing.setAttribute("aria-label", "Assistant is typing");
-  typing.append(document.createElement("span"), document.createElement("span"), document.createElement("span"));
-  messages.append(typing);
-  messages.scrollTop = messages.scrollHeight;
-  try {
-    const body = { sender, message };
-    if (langSelect.value) body.metadata = { language: langSelect.value };
-    const res = await fetch("/webhooks/rest/webhook", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    typing.remove();
-    for (const reply of await res.json()) {
-      if (reply.text) bubble("bot", reply.text);
-      if (reply.buttons?.length) quickReplies(reply.buttons);
+  // ---------- helpers ----------
+  function h(tag, attrs = {}, ...children) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else if (k === "class") el.className = v;
+      else el.setAttribute(k, v === true ? "" : v);
     }
-  } catch (err) {
-    typing.remove();
-    bubble("system", "The assistant is unavailable right now. Please try again in a moment.");
-    console.error(err);
-  } finally {
-    busy = false;
-    composer.querySelector(".send").disabled = false;
+    for (const c of children.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : String(c));
+    return el;
   }
-}
+  function read(store, key) { try { return JSON.parse(store.getItem(key)); } catch { return null; } }
+  function write(store, key, value) { try { store.setItem(key, JSON.stringify(value)); } catch { /* storage off */ } }
 
-// Wiring
-langSelect.append(...LANGS.map(([value, label]) => new Option(label, value)));
-langSelect.addEventListener("change", () => {
-  renderChips();
-  // The bot keeps the first language of a conversation, so a new language means a new conversation.
-  if (messages.querySelector(".msg")) restart(`New conversation: ${langSelect.selectedOptions[0].text}`);
-});
-renderChips();
+  async function api(path, options = {}) {
+    const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const err = new Error(typeof data.detail === "string" ? data.detail : "Please check your details and try again.");
+      err.status = res.status;
+      throw err;
+    }
+    return data;
+  }
 
-launcher.addEventListener("click", () => openChat());
-$("close").addEventListener("click", closeChat);
-$("restart").addEventListener("click", () => restart("New conversation"));
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !chat.hidden) closeChat(); });
+  let toastTimer;
+  function toast(text) {
+    const t = $("toast");
+    t.textContent = text;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (t.hidden = true), 2200);
+  }
 
-composer.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (busy) return;  // keep the typed text until the previous reply arrives
-  const text = input.value;
-  input.value = "";
-  send(text);
-});
+  // ---------- cart ----------
+  function lines() {
+    return menu ? Object.entries(cart).map(([id, qty]) => ({ item: menu.byId[id], qty })).filter((l) => l.item) : [];
+  }
+  function sums(mode = fulfilment) {
+    const subtotal = lines().reduce((s, l) => s + l.item.price * l.qty, 0);
+    const fee = mode === "pickup" || subtotal === 0 || subtotal >= menu.free_delivery_from ? 0 : menu.delivery_fee;
+    return { subtotal, fee, total: subtotal + fee };
+  }
+  function setQty(id, qty) {
+    if (qty <= 0) delete cart[id]; else cart[id] = Math.min(qty, 20);
+    write(localStorage, CART_KEY, cart);
+    renderCart();
+    // On checkout, update the totals without rebuilding the form (keeps what the customer typed).
+    if (refreshCheckout && lines().length) refreshCheckout();
+    else if (!location.hash.startsWith("#/order")) route(false);
+  }
+  function stepper(id, qty) {
+    const name = menu.byId[id].name;
+    return h("div", { class: "stepper" },
+      h("button", { type: "button", "aria-label": `Remove one ${name}`, onclick: () => setQty(id, qty - 1) }, "−"),
+      h("span", { "aria-live": "polite" }, qty),
+      h("button", { type: "button", "aria-label": `Add one ${name}`, onclick: () => setQty(id, qty + 1) }, "+"));
+  }
 
-document.querySelectorAll("[data-open-chat]").forEach((el) => el.addEventListener("click", () => {
-  openChat();
-  const [order, track] = phrases().chips;
-  input.value = { order, track }[el.dataset.openChat] ?? "";  // "help" just opens the chat
-}));
+  function renderCart() {
+    const count = Object.values(cart).reduce((a, b) => a + b, 0);
+    $("cart-count").textContent = count;
+    $("cart-count").hidden = count === 0;
+    if (!menu) return;
+    const body = $("cart-body"), foot = $("cart-foot");
+    const ls = lines();
+    if (!ls.length) {
+      body.replaceChildren(h("div", { class: "empty-cart" }, h("p", { class: "big" }, "🛒"),
+        h("p", {}, "Your cart is empty."), h("button", { class: "btn btn-ghost", type: "button", onclick: closeCart }, "Browse the menu")));
+      foot.replaceChildren();
+      return;
+    }
+    body.replaceChildren(...ls.map(({ item, qty }) => h("div", { class: "cart-line" },
+      h("span", { class: "cart-emoji", "aria-hidden": "true" }, item.emoji),
+      h("div", { class: "cart-info" }, h("p", { class: "cart-name" }, item.name), h("p", { class: "muted" }, fmt(item.price))),
+      stepper(item.id, qty))));
+    const s = sums("delivery");
+    const more = menu.free_delivery_from - s.subtotal;
+    foot.replaceChildren(
+      more > 0 ? h("p", { class: "free-hint" }, `Add ${fmt(more)} more for free delivery`) : h("p", { class: "free-hint ok" }, "You get free delivery"),
+      h("div", { class: "sum-row" }, h("span", {}, "Subtotal"), h("span", {}, fmt(s.subtotal))),
+      h("div", { class: "sum-row" }, h("span", {}, "Delivery"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
+      h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(s.total))),
+      h("a", { class: "btn btn-primary block", href: "#/checkout", onclick: closeCart }, "Go to checkout"));
+  }
+  function openCart() {
+    $("cart").hidden = false; $("scrim").hidden = false;
+    $("cart-btn").setAttribute("aria-expanded", "true");
+    $("cart-close").focus();
+  }
+  function closeCart() {
+    $("cart").hidden = true; $("scrim").hidden = true;
+    $("cart-btn").setAttribute("aria-expanded", "false");
+  }
 
-document.querySelectorAll("[data-dish]").forEach((el) => el.addEventListener("click", () => {
-  openChat(false);
-  send(phrases().order.replace("{dish}", el.dataset.dish));
-}));
+  // ---------- pages ----------
+  function renderHome() {
+    const cats = ["All", ...new Set(menu.items.map((m) => m.category))];
+    const shown = menu.items.filter((m) => category === "All" || m.category === category);
+    view.replaceChildren(
+      h("section", { class: "hero wrap" },
+        h("div", { class: "hero-text" },
+          h("h1", {}, "Dinner from your neighbourhood, delivered."),
+          h("p", { class: "lede" }, "Pizza, biryani, sushi, shawarma, doro wat and more, from kitchens near you. Questions about an order? Our assistant answers in ten languages."),
+          h("div", { class: "hero-actions" },
+            h("button", { class: "btn btn-primary", type: "button",
+                          onclick: () => $("menu").scrollIntoView({ behavior: "smooth" }) }, "Order now"),
+            h("a", { class: "btn btn-ghost", href: "#/track" }, "Track an order"))),
+        h("div", { class: "hero-art", "aria-hidden": "true" },
+          h("div", { class: "plate plate-a" }, "🍕"), h("div", { class: "plate plate-b" }, "🍜"), h("div", { class: "plate plate-c" }, "🍛"))),
+      h("ul", { class: "perks wrap", "aria-label": "Why FeastFleet" },
+        h("li", {}, h("strong", {}, "~30 min"), " delivery"),
+        h("li", {}, h("strong", {}, "Free delivery"), ` over ${fmt(menu.free_delivery_from)}`),
+        h("li", {}, h("strong", {}, "Card or cash"), " on delivery"),
+        h("li", {}, h("strong", {}, "Help in 10 languages"))),
+      h("section", { class: "menu wrap", id: "menu", "aria-labelledby": "menu-title" },
+        h("div", { class: "section-head" }, h("h2", { id: "menu-title" }, "Menu")),
+        h("div", { class: "cats", role: "group", "aria-label": "Categories" }, cats.map((c) =>
+          h("button", { type: "button", class: "cat", "aria-pressed": String(c === category),
+                        onclick: () => { category = c; route(false); } }, c))),
+        h("ul", { class: "cards" }, shown.map((m, i) => h("li", { class: "card" },
+          h("div", { class: `card-art art-${i % 6}`, "aria-hidden": "true" }, m.emoji),
+          h("div", { class: "card-body" },
+            h("h3", {}, m.name), h("p", {}, m.desc),
+            h("div", { class: "card-foot" }, h("span", { class: "price" }, fmt(m.price)),
+              cart[m.id] ? stepper(m.id, cart[m.id])
+                : h("button", { class: "btn btn-small", type: "button", "aria-label": `Add ${m.name} to cart`,
+                                onclick: () => { setQty(m.id, 1); toast(`${m.name} added to cart`); } }, "Add"))))))));
+  }
+
+  function field(label, input, hint) {
+    const id = input.id;
+    return h("div", { class: "field" }, h("label", { for: id }, label), input,
+      hint ? h("p", { class: "hint-text" }, hint) : null, h("p", { class: "error", id: `${id}-error` }));
+  }
+  function radioCard(name, value, title, sub, checked, onchange) {
+    return h("label", { class: "radio-card" },
+      h("input", { type: "radio", name, value, checked, onchange }),
+      h("span", {}, h("strong", {}, title), h("span", { class: "muted" }, sub)));
+  }
+  function luhn(num) {
+    let sum = 0;
+    for (let i = 0; i < num.length; i++) {
+      let d = +num[num.length - 1 - i];
+      if (i % 2) { d *= 2; if (d > 9) d -= 9; }
+      sum += d;
+    }
+    return num.length >= 12 && sum % 10 === 0;
+  }
+  function brand(num) {
+    return /^4/.test(num) ? "Visa" : /^(5[1-5]|2[2-7])/.test(num) ? "Mastercard" : /^3[47]/.test(num) ? "Amex" : "Card";
+  }
+
+  function renderCheckout() {
+    if (!lines().length) {
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "Checkout"),
+        h("p", {}, "Your cart is empty."), h("a", { class: "btn btn-primary", href: "#/" }, "Browse the menu")));
+      return;
+    }
+    let payMethod = "card";
+    const name = h("input", { id: "c-name", autocomplete: "name", maxlength: "80", required: true });
+    const phone = h("input", { id: "c-phone", type: "tel", autocomplete: "tel", maxlength: "25", required: true, placeholder: "+49 30 1234567" });
+    const address = h("textarea", { id: "c-address", autocomplete: "street-address", rows: "2", maxlength: "200" });
+    const notes = h("input", { id: "c-notes", maxlength: "200", placeholder: "Gate code, floor, allergies…" });
+    // Card fields: autocomplete off so the browser neither fills in nor saves a real card here.
+    const cardNo = h("input", { id: "p-number", inputmode: "numeric", autocomplete: "off", maxlength: "23", placeholder: "4242 4242 4242 4242" });
+    const cardName = h("input", { id: "p-name", autocomplete: "off", maxlength: "60" });
+    const expiry = h("input", { id: "p-expiry", inputmode: "numeric", autocomplete: "off", maxlength: "5", placeholder: "MM/YY" });
+    const cvc = h("input", { id: "p-cvc", inputmode: "numeric", autocomplete: "off", maxlength: "4", placeholder: "123" });
+    cardNo.addEventListener("input", () => {
+      cardNo.value = cardNo.value.replace(/\D/g, "").slice(0, 19).replace(/(\d{4})(?=\d)/g, "$1 ");
+    });
+    expiry.addEventListener("input", () => {
+      const d = expiry.value.replace(/\D/g, "").slice(0, 4);
+      expiry.value = d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
+    });
+    cvc.addEventListener("input", () => (cvc.value = cvc.value.replace(/\D/g, "")));
+
+    const addressField = field("Delivery address", address);
+    const cardPanel = h("div", { class: "card-panel" },
+      h("p", { class: "test-mode" }, h("strong", {}, "Test mode"),
+        " Use 4242 4242 4242 4242 with any future date and any CVC (4000 0000 0000 0002 is declined). Card details stay on this page; only the last four digits are sent."),
+      field("Card number", cardNo),
+      field("Name on card", cardName),
+      h("div", { class: "two" }, field("Expiry", expiry), field("CVC", cvc)));
+    const codTitle = h("strong", {}, "Cash on delivery");
+    const codSub = h("span", { class: "muted" }, "Pay the rider when your food arrives");
+    const codCard = h("label", { class: "radio-card" },
+      h("input", { type: "radio", name: "pay", value: "cod", onchange: () => setPay("cod") }), h("span", {}, codTitle, codSub));
+    const payError = h("p", { class: "error", id: "pay-error", role: "alert" });
+    const formError = h("p", { class: "error form-error", role: "alert" });
+    const summary = h("div", { class: "summary-lines" });
+    const placeBtn = h("button", { class: "btn btn-primary block", type: "submit" });
+
+    function setPay(m) { payMethod = m; cardPanel.hidden = m !== "card"; payError.textContent = ""; }
+    function setMode(m) {
+      fulfilment = m;
+      addressField.hidden = m !== "delivery";
+      codTitle.textContent = m === "pickup" ? "Pay at pickup" : "Cash on delivery";
+      codSub.textContent = m === "pickup" ? "Pay in the shop when you collect" : "Pay the rider when your food arrives";
+      renderSummary();
+    }
+    function renderSummary() {
+      const s = sums();
+      summary.replaceChildren(...lines().map(({ item, qty }) =>
+        h("div", { class: "sum-row" }, h("span", {}, `${qty} × ${item.name}`), h("span", {}, fmt(item.price * qty)))),
+        h("hr"),
+        h("div", { class: "sum-row" }, h("span", {}, "Subtotal"), h("span", {}, fmt(s.subtotal))),
+        h("div", { class: "sum-row" }, h("span", {}, fulfilment === "pickup" ? "Pickup" : "Delivery"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
+        h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(s.total))));
+      placeBtn.textContent = `Place order · ${fmt(s.total)}`;
+    }
+    function mark(input, message) {
+      $(`${input.id}-error`).textContent = message || "";
+      if (message) input.setAttribute("aria-invalid", "true"); else input.removeAttribute("aria-invalid");
+      return !message;
+    }
+    function validate() {
+      const digits = cardNo.value.replace(/\D/g, "");
+      const [mm, yy] = expiry.value.split("/").map(Number);
+      const now = new Date(), expEnd = new Date(2000 + yy, mm, 1);
+      const checks = [
+        mark(name, name.value.trim() ? "" : "Please enter your name."),
+        mark(phone, (phone.value.match(/\d/g) || []).length >= 7 && /^\+?[0-9 ()-]+$/.test(phone.value.trim()) ? "" : "Please enter a valid phone number."),
+        mark(address, fulfilment === "pickup" || address.value.trim() ? "" : "Please enter your delivery address."),
+      ];
+      if (payMethod === "card") {
+        checks.push(
+          mark(cardNo, luhn(digits) ? "" : "This card number is not valid."),
+          mark(cardName, cardName.value.trim() ? "" : "Please enter the name on the card."),
+          mark(expiry, mm >= 1 && mm <= 12 && expEnd > now ? "" : "Please enter a valid expiry date."),
+          mark(cvc, new RegExp(brand(digits) === "Amex" ? "^\\d{4}$" : "^\\d{3}$").test(cvc.value) ? "" : "Please enter the security code."));
+      }
+      const ok = checks.every(Boolean);
+      if (!ok) view.querySelector("[aria-invalid=true]")?.focus();
+      return ok;
+    }
+
+    async function submit(e) {
+      e.preventDefault();
+      formError.textContent = payError.textContent = "";
+      if (!validate()) return;
+      const digits = cardNo.value.replace(/\D/g, "");
+      const payment = payMethod === "card" ? { method: "card", card_brand: brand(digits), card_last4: digits.slice(-4) }
+                                           : { method: "cod" };
+      placeBtn.disabled = true;
+      placeBtn.textContent = "Placing your order…";
+      try {
+        const order = await api("/api/orders", { method: "POST", body: JSON.stringify({
+          items: lines().map(({ item, qty }) => ({ id: item.id, qty })), fulfilment,
+          contact: { name: name.value.trim(), phone: phone.value.trim(), notes: notes.value.trim() || null,
+                     address: fulfilment === "delivery" ? address.value.trim() : null },
+          payment }) });
+        cart = {};
+        write(localStorage, CART_KEY, cart);
+        write(sessionStorage, LAST_ORDER_KEY, { id: order.id, name: order.contact.name.split(" ")[0] });
+        renderCart();
+        location.hash = `#/order/${order.id}`;
+      } catch (err) {
+        const target = err.status === 402 ? payError : formError;
+        target.textContent = err.message;
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        placeBtn.disabled = false;
+        renderSummary();
+      }
+    }
+
+    view.replaceChildren(h("section", { class: "wrap page" },
+      h("a", { class: "back", href: "#/" }, "← Back to menu"),
+      h("h1", {}, "Checkout"),
+      h("form", { class: "checkout", novalidate: true, onsubmit: submit },
+        h("div", { class: "checkout-main" },
+          h("fieldset", {}, h("legend", {}, "1. How would you like it?"),
+            h("div", { class: "radio-row" },
+              radioCard("mode", "delivery", "Delivery", `About 30 min · ${fmt(menu.delivery_fee)}, free over ${fmt(menu.free_delivery_from)}`, fulfilment === "delivery", () => setMode("delivery")),
+              radioCard("mode", "pickup", "Pickup", "Ready in about 15 min · free", fulfilment === "pickup", () => setMode("pickup")))),
+          h("fieldset", {}, h("legend", {}, "2. Your details"),
+            h("div", { class: "two" }, field("Full name", name), field("Phone", phone)),
+            addressField,
+            field("Notes for the kitchen or rider (optional)", notes)),
+          h("fieldset", {}, h("legend", {}, "3. Payment"),
+            h("div", { class: "radio-row" },
+              radioCard("pay", "card", "Card", "Visa, Mastercard, Amex", true, () => setPay("card")), codCard),
+            cardPanel, payError)),
+        h("aside", { class: "checkout-summary" }, h("h2", {}, "Your order"), summary, formError, placeBtn,
+          h("p", { class: "muted small" }, "By placing your order you agree to be contacted about this delivery.")))));
+    setMode(fulfilment);
+    refreshCheckout = renderSummary;
+  }
+
+  async function renderOrder(id) {
+    view.replaceChildren(h("section", { class: "wrap page narrow" }, h("p", { class: "muted" }, "Loading your order…")));
+    let order;
+    try {
+      order = await api(`/api/orders/${encodeURIComponent(id)}`);
+    } catch (err) {
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "Order not found"),
+        h("p", {}, `We couldn't find an order with the number ${id}. Check the number on your confirmation.`),
+        h("a", { class: "btn btn-primary", href: "#/track" }, "Try another number")));
+      return;
+    }
+    const last = read(sessionStorage, LAST_ORDER_KEY);
+    const fresh = last && last.id === order.id;
+    const done = order.step === order.steps.length - 1;
+    const etaText = done ? (order.fulfilment === "pickup" ? "Ready for pickup" : "Delivered. Enjoy your meal!")
+      : `${order.fulfilment === "pickup" ? "Ready" : "Arriving"} in about ${Math.max(1, order.eta_minutes)} min`;
+    const pay = order.payment.method === "card" ? "Paid by card" : order.fulfilment === "pickup" ? "Pay at pickup" : "Cash on delivery";
+    view.replaceChildren(h("section", { class: "wrap page narrow" },
+      h("div", { class: "order-head" },
+        h("div", { class: "check", "aria-hidden": "true" }, "✓"),
+        h("div", {}, h("h1", {}, fresh ? `Thanks, ${last.name}! Your order is in.` : `Order ${order.id}`),
+          h("p", { class: "muted" }, fresh ? `Order number ${order.id}. Keep it to track your order or ask our assistant.` : `${order.fulfilment === "pickup" ? "Pickup" : "Delivery"} · placed ${new Date(order.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`))),
+      h("div", { class: "eta" }, etaText),
+      h("ol", { class: "timeline" }, order.steps.map((s, i) =>
+        h("li", { class: i < order.step ? "done" : i === order.step ? "current" : "" }, STEP_LABELS[s]))),
+      h("div", { class: "order-box" },
+        h("h2", {}, "Order details"),
+        order.items.map((it) => h("div", { class: "sum-row" }, h("span", {}, `${it.qty} × ${it.name}`),
+          h("span", {}, it.price == null ? "Priced at the kitchen" : fmt(it.price * it.qty)))),
+        h("hr"),
+        order.totals.subtotal ? [
+          h("div", { class: "sum-row" }, h("span", {}, order.fulfilment === "pickup" ? "Pickup" : "Delivery"),
+            h("span", {}, order.totals.delivery_fee ? fmt(order.totals.delivery_fee) : "Free")),
+          h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(order.totals.total)))] : null,
+        h("p", { class: "muted" }, pay)),
+      h("div", { class: "hero-actions" },
+        h("a", { class: "btn btn-ghost", href: "#/" }, "Order something else"),
+        h("button", { class: "btn btn-ghost", type: "button", "data-open-chat": `Where is my order ${order.id}?` }, "Get help with this order"))));
+    if (!done) pollTimer = setInterval(() => { if (location.hash === `#/order/${id}`) renderOrder(id); }, 30000);
+  }
+
+  function renderTrack() {
+    const input = h("input", { id: "t-id", placeholder: "FF-2001", autocomplete: "off", maxlength: "12", required: true });
+    view.replaceChildren(h("section", { class: "wrap page narrow" },
+      h("h1", {}, "Track your order"),
+      h("p", { class: "muted" }, "Enter the order number from your confirmation."),
+      h("form", { class: "track-form", onsubmit: (e) => {
+        e.preventDefault();
+        if (input.value.trim()) location.hash = `#/order/${encodeURIComponent(input.value.trim().toUpperCase())}`;
+      } }, h("label", { class: "sr-only", for: "t-id" }, "Order number"), input,
+        h("button", { class: "btn btn-primary", type: "submit" }, "Track")),
+      h("p", { class: "muted small" }, "You can also ask our assistant: it answers in ten languages.")));
+    input.focus();
+  }
+
+  // ---------- router ----------
+  function route(scrollTop = true) {
+    clearInterval(pollTimer);
+    const [, page, arg] = (location.hash || "#/").split("/");
+    if (!menu) return;
+    refreshCheckout = null;
+    if (page === "checkout") renderCheckout();
+    else if (page === "order" && arg) renderOrder(decodeURIComponent(arg));
+    else if (page === "track") renderTrack();
+    else renderHome();
+    if (scrollTop) window.scrollTo(0, 0);
+  }
+
+  async function init() {
+    $("cart-btn").addEventListener("click", openCart);
+    $("cart-close").addEventListener("click", closeCart);
+    $("scrim").addEventListener("click", closeCart);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("cart").hidden) closeCart(); });
+    window.addEventListener("hashchange", () => route());
+    renderCart();
+    try {
+      menu = await api("/api/menu");
+      menu.byId = Object.fromEntries(menu.items.map((m) => [m.id, m]));
+      for (const id of Object.keys(cart)) if (!menu.byId[id]) delete cart[id];  // dishes removed from the menu
+    } catch {
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "We'll be right back"),
+        h("p", {}, "The menu could not be loaded. Please try again in a moment."),
+        h("button", { class: "btn btn-primary", type: "button", onclick: () => location.reload() }, "Try again")));
+      return;
+    }
+    renderCart();
+    route();
+  }
+  init();
+})();

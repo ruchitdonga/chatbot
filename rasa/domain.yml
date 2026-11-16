@@ -1,5 +1,5 @@
 version: "3.1"
-# FeastFleet is a FICTIONAL food-delivery business (student demo). Order data is mock (rasa/actions/actions.py).
+# FeastFleet is a FICTIONAL food-delivery brand. Orders go to the FeastFleet orders API (src/shop/app.py, in memory).
 # Replies: English default plus one conditional variation per locale, keyed on the `language` slot (FR-4).
 # Translations were machine-written by an AI assistant and are NOT reviewed by native speakers.
 # utter_disclosure must match configs/disclosure.yaml (tests/test_rasa_domain.py checks this).
@@ -105,16 +105,16 @@ responses:
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "நீங்கள் என்ன ஆர்டர் செய்ய விரும்புகிறீர்கள்?"}
 
   utter_order_placed:
-  - text: "Your order of {food_type} is placed. Order number: {order_id}. (Demo: this is a mock order, nothing will be delivered.)"
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Tu pedido de {food_type} está hecho. Número de pedido: {order_id}. (Demo: es un pedido simulado, no se entregará nada.)"}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ihre Bestellung ({food_type}) ist aufgegeben. Bestellnummer: {order_id}. (Demo: Testbestellung, es wird nichts geliefert.)"}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Votre commande ({food_type}) est passée. Numéro de commande : {order_id}. (Démo : commande fictive, rien ne sera livré.)"}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{food_type}のご注文を受け付けました。注文番号：{order_id}（デモ：架空の注文のため、配達はされません）。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आपका {food_type} का ऑर्डर हो गया है। ऑर्डर नंबर: {order_id}। (डेमो: यह नकली ऑर्डर है, कुछ भी डिलीवर नहीं होगा।)"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "تم تسجيل طلبك ({food_type}). رقم الطلب: {order_id}. (عرض تجريبي: هذا طلب وهمي ولن يتم توصيل أي شيء.)"}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda yako ya {food_type} imepokelewa. Nambari ya oda: {order_id}. (Onyesho: hii ni oda ya majaribio, hakuna kitakacholetwa.)"}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "የ{food_type} ትዕዛዝዎ ተመዝግቧል። የትዕዛዝ ቁጥር፦ {order_id}። (ማሳያ፦ ይህ የሙከራ ትዕዛዝ ነው፣ ምንም አይደርስም።)"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் {food_type} ஆர்டர் பதிவு செய்யப்பட்டது. ஆர்டர் எண்: {order_id}. (டெமோ: இது போலி ஆர்டர், எதுவும் டெலிவரி செய்யப்படாது.)"}
+  - text: "Your order of {food_type} is placed, to be paid on delivery. Order number: {order_id}."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Tu pedido de {food_type} está hecho; pagarás en la entrega. Número de pedido: {order_id}."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ihre Bestellung ({food_type}) ist aufgegeben, Zahlung bei Lieferung. Bestellnummer: {order_id}."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Votre commande ({food_type}) est passée, paiement à la livraison. Numéro de commande : {order_id}."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{food_type}のご注文を受け付けました。お支払いは配達時です。注文番号：{order_id}"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आपका {food_type} का ऑर्डर हो गया है, भुगतान डिलीवरी पर होगा। ऑर्डर नंबर: {order_id}।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "تم تسجيل طلبك ({food_type})، والدفع عند الاستلام. رقم الطلب: {order_id}."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda yako ya {food_type} imepokelewa, utalipa wakati wa kupokea. Nambari ya oda: {order_id}."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የ{food_type} ትዕዛዝዎ ተመዝግቧል፣ ክፍያው ሲደርስ ነው። የትዕዛዝ ቁጥር፦ {order_id}።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் {food_type} ஆர்டர் பதிவு செய்யப்பட்டது, டெலிவரியின் போது பணம் செலுத்தலாம். ஆர்டர் எண்: {order_id}."}
 
   utter_ask_order_id:
   - text: "What is your order number? It looks like FF-1001."
@@ -129,16 +129,28 @@ responses:
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் ஆர்டர் எண் என்ன? அது FF-1001 போல இருக்கும்."}
 
   utter_order_status:
-  - text: "Order {order_id} is on its way and should arrive in about {eta} minutes. (Demo data.)"
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "El pedido {order_id} está en camino y debería llegar en unos {eta} minutos. (Datos de demostración.)"}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Bestellung {order_id} ist unterwegs und kommt in etwa {eta} Minuten an. (Demodaten.)"}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La commande {order_id} est en route et devrait arriver dans environ {eta} minutes. (Données de démonstration.)"}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "注文 {order_id} は配達中で、約{eta}分で到着予定です（デモデータ）。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "ऑर्डर {order_id} रास्ते में है और लगभग {eta} मिनट में पहुँच जाना चाहिए। (डेमो डेटा।)"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "الطلب {order_id} في الطريق ومن المتوقع وصوله خلال {eta} دقيقة تقريبًا. (بيانات تجريبية.)"}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda {order_id} iko njiani na inatarajiwa kufika baada ya takriban dakika {eta}. (Data ya majaribio.)"}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "ትዕዛዝ {order_id} በመንገድ ላይ ነው፣ በግምት በ{eta} ደቂቃ ውስጥ ይደርሳል። (የሙከራ መረጃ።)"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "ஆர்டர் {order_id} வழியில் உள்ளது, சுமார் {eta} நிமிடங்களில் வந்து சேரும். (டெமோ தரவு.)"}
+  - text: "Order {order_id} should be with you in about {eta} minutes."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "El pedido {order_id} debería llegar en unos {eta} minutos."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Bestellung {order_id} sollte in etwa {eta} Minuten bei Ihnen sein."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La commande {order_id} devrait arriver dans environ {eta} minutes."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "注文 {order_id} は約{eta}分でお届けの予定です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "ऑर्डर {order_id} लगभग {eta} मिनट में आप तक पहुँच जाना चाहिए।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "من المتوقع أن يصلك الطلب {order_id} خلال {eta} دقيقة تقريبًا."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda {order_id} inatarajiwa kukufikia baada ya takriban dakika {eta}."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ትዕዛዝ {order_id} በግምት በ{eta} ደቂቃ ውስጥ ይደርስዎታል።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "ஆர்டர் {order_id} சுமார் {eta} நிமிடங்களில் உங்களை வந்தடையும்."}
+
+  utter_order_delivered:
+  - text: "Order {order_id} is complete. Enjoy your meal!"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "El pedido {order_id} está completado. ¡Que aproveche!"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Bestellung {order_id} ist abgeschlossen. Guten Appetit!"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La commande {order_id} est terminée. Bon appétit !"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "注文 {order_id} は完了しました。どうぞお召し上がりください！"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "ऑर्डर {order_id} पूरा हो गया है। खाने का आनंद लें!"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "اكتمل الطلب {order_id}. بالهناء والشفاء!"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda {order_id} imekamilika. Furahia mlo wako!"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ትዕዛዝ {order_id} ተጠናቋል። መልካም ምግብ!"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "ஆர்டர் {order_id} முடிந்தது. உணவை ரசியுங்கள்!"}
 
   utter_order_not_found:
   - text: "I couldn't find that order. I'll connect you to a human agent."
@@ -214,16 +226,16 @@ responses:
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது நேரம் {time} UTC."}
 
   utter_weather:
-  - text: "Demo data: it is sunny and 24 °C."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Datos de demostración: hace sol y 24 °C."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Demodaten: Es ist sonnig bei 24 °C."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Données de démonstration : il fait beau et 24 °C."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "デモデータ：晴れ、気温24℃です。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "डेमो डेटा: धूप है और तापमान 24 °C है।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "بيانات تجريبية: الجو مشمس ودرجة الحرارة 24 درجة مئوية."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Data ya majaribio: kuna jua na nyuzi joto 24 °C."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "የሙከራ መረጃ፦ ፀሐያማ ሲሆን 24 °C ነው።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "டெமோ தரவு: வெயிலாக உள்ளது, வெப்பநிலை 24 °C."}
+  - text: "Sorry, I can't check the weather here. I can help you order food or check on an order."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, aquí no puedo consultar el tiempo. Puedo ayudarte a pedir comida o a consultar un pedido."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, das Wetter kann ich hier nicht abfragen. Ich kann Ihnen beim Bestellen oder bei einer Bestellung helfen."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, je ne peux pas consulter la météo ici. Je peux vous aider à commander ou à suivre une commande."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありませんが、ここでは天気を確認できません。料理の注文や注文状況の確認をお手伝いします。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, मैं यहाँ मौसम की जानकारी नहीं दे सकता। मैं खाना ऑर्डर करने या ऑर्डर की स्थिति जानने में मदद कर सकता हूँ।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، لا يمكنني معرفة حالة الطقس هنا. يمكنني مساعدتك في طلب الطعام أو متابعة طلب."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, siwezi kuangalia hali ya hewa hapa. Ninaweza kukusaidia kuagiza chakula au kufuatilia oda."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ እዚህ የአየር ሁኔታን ማየት አልችልም። ምግብ እንዲያዝዙ ወይም ትዕዛዝ እንዲከታተሉ ልረዳዎት እችላለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், இங்கே வானிலையைப் பார்க்க முடியாது. உணவு ஆர்டர் செய்யவோ ஆர்டரின் நிலையை அறியவோ உதவ முடியும்."}
 
   utter_default:
   - text: "Sorry, I didn't understand. Could you say that another way?"

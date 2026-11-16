@@ -3,73 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FeastFleet (fictional demo)</title>
-  <meta name="description" content="Fictional food-delivery site demonstrating a multilingual AI support assistant.">
+  <title>FeastFleet · Food delivery</title>
+  <meta name="description" content="Order food from your neighbourhood and get help in ten languages.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="demo-ribbon" role="note">
-    <strong>Demo:</strong> FeastFleet is a fictional business made for a student project. Orders are mock: nothing is charged or delivered.
-  </div>
-
+  <a class="skip" href="#view">Skip to content</a>
   <header class="site-header">
-    <a class="brand" href="#" aria-label="FeastFleet home">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-        <circle cx="16" cy="16" r="15" fill="var(--accent)"/>
-        <path d="M9 19h14a7 7 0 0 0-14 0Z" fill="#fff"/>
-        <rect x="8" y="20.5" width="16" height="2" rx="1" fill="#fff"/>
-        <circle cx="16" cy="11" r="1.4" fill="#fff"/>
-      </svg>
-      <span>FeastFleet</span>
-    </a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="#menu">Menu</a>
-      <button class="link-btn" data-open-chat="track">Track order</button>
-      <button class="link-btn" data-open-chat="help">Help</button>
-    </nav>
+    <div class="wrap header-row">
+      <a class="brand" href="#/" aria-label="FeastFleet home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="15" fill="var(--accent)"/>
+          <path d="M9 19h14a7 7 0 0 0-14 0Z" fill="#fff"/>
+          <rect x="8" y="20.5" width="16" height="2" rx="1" fill="#fff"/>
+          <circle cx="16" cy="11" r="1.4" fill="#fff"/>
+        </svg>
+        <span>FeastFleet</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="#/">Menu</a>
+        <a href="#/track">Track order</a>
+        <button class="link-btn" type="button" data-open-chat>Help</button>
+      </nav>
+      <button class="cart-btn" id="cart-btn" type="button" aria-controls="cart" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg>
+        <span>Cart</span>
+        <span class="badge" id="cart-count" aria-live="polite">0</span>
+      </button>
+    </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-text">
-        <h1>Dinner from your neighbourhood, ordered in your language.</h1>
-        <p class="lede">Order food, check where your delivery is, or reach a person. Our AI assistant answers in English, Español, Deutsch, Français, 日本語, हिन्दी, العربية, Kiswahili, አማርኛ and தமிழ்.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" data-open-chat="order">Order with the assistant</button>
-          <button class="btn btn-ghost" data-open-chat="track">Track an order</button>
-        </div>
-        <p class="hint">Demo orders to track: <code>FF-1001</code>, <code>FF-1002</code></p>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="plate plate-a">🍕</div>
-        <div class="plate plate-b">🍜</div>
-        <div class="plate plate-c">🍛</div>
-      </div>
-    </section>
+  <main id="view" tabindex="-1"></main>
 
-    <section id="menu" class="menu" aria-labelledby="menu-title">
-      <div class="section-head">
-        <h2 id="menu-title">Popular near you</h2>
-        <p>Prices are for the demo only.</p>
-      </div>
-      <ul class="cards">
-        <li class="card"><div class="card-art art-red" aria-hidden="true">🍕</div><div class="card-body"><h3>Margherita pizza</h3><p>Tomato, mozzarella, basil</p><div class="card-foot"><span class="price">€11.50</span><button class="btn btn-small" data-dish="pizza">Order</button></div></div></li>
-        <li class="card"><div class="card-art art-amber" aria-hidden="true">🍛</div><div class="card-body"><h3>Chicken biryani</h3><p>Basmati rice, saffron, raita</p><div class="card-foot"><span class="price">€13.00</span><button class="btn btn-small" data-dish="chicken biryani">Order</button></div></div></li>
-        <li class="card"><div class="card-art art-teal" aria-hidden="true">🍣</div><div class="card-body"><h3>Salmon sushi</h3><p>12 pieces, pickled ginger</p><div class="card-foot"><span class="price">€16.90</span><button class="btn btn-small" data-dish="sushi">Order</button></div></div></li>
-        <li class="card"><div class="card-art art-olive" aria-hidden="true">🌯</div><div class="card-body"><h3>Chicken shawarma</h3><p>Garlic sauce, pickles, fries</p><div class="card-foot"><span class="price">€9.80</span><button class="btn btn-small" data-dish="shawarma">Order</button></div></div></li>
-        <li class="card"><div class="card-art art-plum" aria-hidden="true">🍜</div><div class="card-body"><h3>Tonkotsu ramen</h3><p>Pork broth, egg, spring onion</p><div class="card-foot"><span class="price">€14.20</span><button class="btn btn-small" data-dish="ramen">Order</button></div></div></li>
-        <li class="card"><div class="card-art art-sand" aria-hidden="true">🥙</div><div class="card-body"><h3>Döner kebab</h3><p>Flatbread, salad, yoghurt sauce</p><div class="card-foot"><span class="price">€8.50</span><button class="btn btn-small" data-dish="döner kebab">Order</button></div></div></li>
-      </ul>
-    </section>
-  </main>
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="cart" aria-label="Your cart" hidden>
+    <div class="drawer-head">
+      <h2>Your order</h2>
+      <button class="icon-btn dark" id="cart-close" type="button" aria-label="Close cart">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="cart-body"></div>
+    <div class="drawer-foot" id="cart-foot"></div>
+  </aside>
 
   <footer class="site-footer">
-    <p>FeastFleet is fictional. This page demonstrates a multilingual support chatbot (XLM-R NLU + Rasa). The assistant is an AI and tells you so; if it can't help, it hands you to a person. Message text is not stored.</p>
+    <div class="wrap footer-row">
+      <div>
+        <p class="footer-brand">FeastFleet</p>
+        <p>Neighbourhood food, delivered. Help in English, Español, Deutsch, Français, 日本語, हिन्दी, العربية, Kiswahili, አማርኛ and தமிழ்.</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="#/">Menu</a>
+        <a href="#/track">Track order</a>
+        <button class="link-btn" type="button" data-open-chat>Help &amp; support</button>
+      </nav>
+    </div>
+    <p class="wrap legal">FeastFleet is a fictional brand. © 2026</p>
   </footer>
 
-  <button class="chat-launcher" id="chat-launcher" aria-controls="chat" aria-expanded="false">
+  <button class="chat-launcher" id="chat-launcher" type="button" aria-controls="chat" aria-expanded="false">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-    <span>Chat with us</span>
+    <span>Help</span>
   </button>
 
   <section class="chat" id="chat" aria-label="FeastFleet assistant" hidden>
@@ -81,16 +76,16 @@
       <div class="chat-tools">
         <label class="sr-only" for="lang">Language</label>
         <select id="lang" title="Language"></select>
-        <button class="icon-btn" id="restart" title="New conversation" aria-label="New conversation">
+        <button class="icon-btn" id="restart" type="button" title="New conversation" aria-label="New conversation">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <button class="icon-btn" id="close" title="Close" aria-label="Close chat">
+        <button class="icon-btn" id="close" type="button" title="Close" aria-label="Close chat">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
     </header>
     <div class="messages" id="messages" aria-live="polite">
-      <p class="empty" id="empty">Ask about ordering food or where your order is, in any of ten languages. Pick a language above, or leave it on auto-detect.</p>
+      <p class="empty" id="empty">Order food, track an order or get help, in any of ten languages.</p>
     </div>
     <div class="chips" id="chips" aria-label="Suggestions"></div>
     <form class="composer" id="composer">
@@ -102,6 +97,9 @@
     </form>
   </section>
 
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
   <script src="app.js"></script>
+  <script src="chat.js"></script>
 </body>
 </html>

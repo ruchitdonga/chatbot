@@ -1,5 +1,5 @@
 # FICTIONAL FeastFleet demo: the whole stack (NLU service, Rasa, action server with mock backend).
-#   docker compose up --build        then open http://localhost:8080 (FeastFleet demo site with the chat widget)
+#   docker compose up --build        then open http://localhost:8080 (FeastFleet website: menu, checkout, assistant)
 #   or POST http://localhost:5005/webhooks/rest/webhook
 #   {"sender": "me", "message": "quiero pedir una pizza"}   (optional "metadata": {"language": "sw-KE"})
 # Needs the model files on the host (git-ignored, never baked into images):
@@ -25,11 +25,23 @@ services:
       retries: 3
       start_period: 180s  # loading the 1.1 GB fp32 model from a bind mount
 
+  # Orders API shared by the website and the assistant (in memory: restarting it clears orders).
+  # Same image as nlu (FastAPI + src/), different entry point.
+  shop:
+    image: feastfleet-nlu:phase10
+    command: ["uvicorn", "src.shop.app:app", "--host", "0.0.0.0", "--port", "8001", "--no-access-log"]
+    depends_on:
+      - nlu  # builds the shared image first
+
   actions:
     build:
       context: .
       dockerfile: docker/Dockerfile.actions
     image: feastfleet-actions:phase10
+    environment:
+      SHOP_URL: http://shop:8001
+    depends_on:
+      - shop
 
   rasa:
     image: rasa/rasa:3.6.21-full
@@ -59,3 +71,4 @@ services:
       - "127.0.0.1:8080:80"
     depends_on:
       - rasa
+      - shop

@@ -1,24 +1,43 @@
-"""Phase 9 custom actions for the FICTIONAL FeastFleet demo.
+"""Custom actions for the FeastFleet assistant (FeastFleet is a fictional brand).
 
-MOCK BACKEND: orders live in the dict below (two hard-coded demo orders plus whatever is ordered while the action
-server runs). Nothing is stored on disk and no food is ever ordered or delivered.
+Orders go to the FeastFleet orders API (src/shop/app.py; SHOP_URL), the same system the website checkout uses, so an
+order placed on the site can be tracked in chat and the other way round. If the API is unreachable the assistant
+hands off to a person instead of claiming an order was placed.
 """
-import itertools
+import json
+import logging
+import os
 import re
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 from rasa_sdk.forms import ValidationAction
 
-MOCK_ORDERS = {"FF-1001": {"food": "pizza", "eta": 20}, "FF-1002": {"food": "sushi", "eta": 35}}
-_next_id = itertools.count(2001)
+SHOP_URL = os.environ.get("SHOP_URL", "http://shop:8001")
 ORDER_ID = re.compile(r"FF\s*-?\s*(\d{4})", re.IGNORECASE)  # \d also matches Arabic-Indic and Devanagari digits
+logger = logging.getLogger(__name__)
 
 
 def normalise_order_id(text):
     m = ORDER_ID.search(text or "")
     return f"FF-{int(m.group(1)):04d}" if m else None
+
+
+def shop(path, body=None):
+    """Call the orders API -> (status code, JSON body or None). Never logs order contents."""
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(SHOP_URL + path, data, {"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=5) as r:
+            return r.status, json.load(r)
+    except urllib.error.HTTPError as e:
+        return e.code, None
+    except (urllib.error.URLError, TimeoutError, ValueError) as e:
+        logger.warning("orders API unreachable (%s)", type(e).__name__)
+        return None, None
 
 
 class ValidateSlotMappings(ValidationAction):
@@ -39,9 +58,12 @@ class ActionPlaceOrder(Action):
         return "action_place_order"
 
     def run(self, dispatcher, tracker, domain):
-        order_id, food = f"FF-{next(_next_id)}", tracker.get_slot("food_type")
-        MOCK_ORDERS[order_id] = {"food": food, "eta": 30}
-        dispatcher.utter_message(response="utter_order_placed", order_id=order_id, food_type=food)
+        food = tracker.get_slot("food_type")
+        code, order = shop("/api/chat-orders", {"food": food})
+        if code == 201:
+            dispatcher.utter_message(response="utter_order_placed", order_id=order["id"], food_type=food)
+        else:
+            dispatcher.utter_message(response="utter_handoff")
         return [SlotSet("food_type", None)]  # a second order in the same conversation asks again
 
 
@@ -51,11 +73,16 @@ class ActionCheckOrder(Action):
 
     def run(self, dispatcher, tracker, domain):
         order_id = normalise_order_id(tracker.get_slot("order_id"))
-        if order_id in MOCK_ORDERS:
+        code, order = shop(f"/api/orders/{order_id}") if order_id else (404, None)
+        if code == 200 and order["status"] in ("delivered", "ready"):
+            dispatcher.utter_message(response="utter_order_delivered", order_id=order_id)
+        elif code == 200:
             dispatcher.utter_message(response="utter_order_status", order_id=order_id,
-                                     eta=MOCK_ORDERS[order_id]["eta"])
-        else:
+                                     eta=max(1, order["eta_minutes"]))
+        elif code == 404:
             dispatcher.utter_message(response="utter_order_not_found")
+        else:
+            dispatcher.utter_message(response="utter_handoff")
         return [SlotSet("order_id", None)]
 
 
