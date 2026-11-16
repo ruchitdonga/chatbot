@@ -1,0 +1,238 @@
+version: "3.1"
+# FeastFleet is a FICTIONAL food-delivery business (student demo). Order data is mock (rasa/actions/actions.py).
+# Replies: English default plus one conditional variation per locale, keyed on the `language` slot (FR-4).
+# Translations were machine-written by an AI assistant and are NOT reviewed by native speakers.
+# utter_disclosure must match configs/disclosure.yaml (tests/test_rasa_domain.py checks this).
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false
+
+intents:
+  - takeaway_order
+  - takeaway_query
+  - general_greet
+  - datetime_query
+  - weather_query
+  - general_quirky
+  - out_of_scope
+  - unsupported_request
+  - nlu_fallback
+  - affirm
+  - deny
+
+entities:
+  - food_type
+
+slots:
+  language:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom  # action_validate_slot_mappings: first detected locale, then sticky
+  food_type:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: food_type
+        intent: takeaway_order
+      # While the form asks, accept a tagged food from any intent (short answers like "pizza" are low-confidence).
+      # Not from_text: "let me talk to a real person" was once taken as the food and ordered (Phase 9 eval).
+      - type: from_entity
+        entity: food_type
+        not_intent: [out_of_scope]
+        conditions:
+          - active_loop: takeaway_order_form
+            requested_slot: food_type
+  order_id:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        not_intent: [out_of_scope]
+        conditions:
+          - active_loop: takeaway_query_form
+            requested_slot: order_id
+
+forms:
+  takeaway_order_form:
+    required_slots: [food_type]
+  takeaway_query_form:
+    required_slots: [order_id]
+
+actions:
+  - action_place_order
+  - action_check_order
+  - action_tell_time
+  - action_validate_slot_mappings
+
+responses:
+  utter_disclosure:
+  - text: "Hello! I am an AI assistant, not a human. If I can't help you, I will connect you to a person."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "¡Hola! Soy un asistente de inteligencia artificial, no una persona. Si no puedo ayudarte, te pondré en contacto con una persona."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Hallo! Ich bin ein KI-Assistent, kein Mensch. Wenn ich Ihnen nicht helfen kann, verbinde ich Sie mit einer Person."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Bonjour ! Je suis un assistant d'intelligence artificielle, pas un humain. Si je ne peux pas vous aider, je vous mettrai en relation avec une personne."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "こんにちは！私はAIアシスタントで、人間ではありません。お手伝いできない場合は、担当者におつなぎします。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "नमस्ते! मैं एक एआई सहायक हूँ, इंसान नहीं। अगर मैं आपकी मदद नहीं कर पाया, तो मैं आपको किसी व्यक्ति से जोड़ दूँगा।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "مرحبًا! أنا مساعد ذكاء اصطناعي ولست إنسانًا. إذا لم أتمكن من مساعدتك، فسأحوّلك إلى موظف بشري."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Habari! Mimi ni msaidizi wa akili bandia (AI), si binadamu. Nisipoweza kukusaidia, nitakuunganisha na mtu."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ሰላም! እኔ የሰው ሰራሽ አስተውሎት (AI) ረዳት ነኝ፣ ሰው አይደለሁም። ልረዳዎት ካልቻልኩ ከሰው ጋር አገናኝዎታለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "வணக்கம்! நான் ஒரு செயற்கை நுண்ணறிவு (AI) உதவியாளர், மனிதர் அல்ல. என்னால் உதவ முடியாவிட்டால், உங்களை ஒரு நபருடன் இணைப்பேன்."}
+
+  utter_greet:
+  - text: "Hi! I can help you order food or check on an order."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "¡Hola! Puedo ayudarte a pedir comida o a consultar un pedido."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Hallo! Ich kann Ihnen helfen, Essen zu bestellen oder eine Bestellung zu prüfen."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Bonjour ! Je peux vous aider à commander à manger ou à suivre une commande."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "こんにちは！料理の注文や注文状況の確認をお手伝いします。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "नमस्ते! मैं खाना ऑर्डर करने या किसी ऑर्डर की स्थिति जानने में आपकी मदद कर सकता हूँ।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "مرحبًا! يمكنني مساعدتك في طلب الطعام أو متابعة طلب."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Habari! Ninaweza kukusaidia kuagiza chakula au kufuatilia oda."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ሰላም! ምግብ እንዲያዝዙ ወይም ትዕዛዝዎን እንዲከታተሉ ልረዳዎት እችላለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "வணக்கம்! உணவு ஆர்டர் செய்யவோ ஒரு ஆர்டரின் நிலையை அறியவோ நான் உதவ முடியும்."}
+
+  utter_ask_food_type:
+  - text: "What would you like to order?"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "¿Qué te gustaría pedir?"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Was möchten Sie bestellen?"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Que souhaitez-vous commander ?"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "何を注文しますか？"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आप क्या ऑर्डर करना चाहेंगे?"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "ماذا تريد أن تطلب؟"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Ungependa kuagiza nini?"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ምን ማዘዝ ይፈልጋሉ?"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "நீங்கள் என்ன ஆர்டர் செய்ய விரும்புகிறீர்கள்?"}
+
+  utter_order_placed:
+  - text: "Your order of {food_type} is placed. Order number: {order_id}. (Demo: this is a mock order, nothing will be delivered.)"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Tu pedido de {food_type} está hecho. Número de pedido: {order_id}. (Demo: es un pedido simulado, no se entregará nada.)"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ihre Bestellung ({food_type}) ist aufgegeben. Bestellnummer: {order_id}. (Demo: Testbestellung, es wird nichts geliefert.)"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Votre commande ({food_type}) est passée. Numéro de commande : {order_id}. (Démo : commande fictive, rien ne sera livré.)"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{food_type}のご注文を受け付けました。注文番号：{order_id}（デモ：架空の注文のため、配達はされません）。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आपका {food_type} का ऑर्डर हो गया है। ऑर्डर नंबर: {order_id}। (डेमो: यह नकली ऑर्डर है, कुछ भी डिलीवर नहीं होगा।)"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "تم تسجيل طلبك ({food_type}). رقم الطلب: {order_id}. (عرض تجريبي: هذا طلب وهمي ولن يتم توصيل أي شيء.)"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda yako ya {food_type} imepokelewa. Nambari ya oda: {order_id}. (Onyesho: hii ni oda ya majaribio, hakuna kitakacholetwa.)"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የ{food_type} ትዕዛዝዎ ተመዝግቧል። የትዕዛዝ ቁጥር፦ {order_id}። (ማሳያ፦ ይህ የሙከራ ትዕዛዝ ነው፣ ምንም አይደርስም።)"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் {food_type} ஆர்டர் பதிவு செய்யப்பட்டது. ஆர்டர் எண்: {order_id}. (டெமோ: இது போலி ஆர்டர், எதுவும் டெலிவரி செய்யப்படாது.)"}
+
+  utter_ask_order_id:
+  - text: "What is your order number? It looks like FF-1001."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "¿Cuál es tu número de pedido? Tiene este formato: FF-1001."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Wie lautet Ihre Bestellnummer? Sie sieht so aus: FF-1001."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Quel est votre numéro de commande ? Il ressemble à FF-1001."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "注文番号を教えてください。FF-1001 のような形式です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आपका ऑर्डर नंबर क्या है? यह FF-1001 जैसा दिखता है।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "ما رقم طلبك؟ يكون بهذا الشكل: FF-1001."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Nambari yako ya oda ni ipi? Inafanana na FF-1001."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የትዕዛዝ ቁጥርዎ ስንት ነው? እንደ FF-1001 ያለ ነው።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் ஆர்டர் எண் என்ன? அது FF-1001 போல இருக்கும்."}
+
+  utter_order_status:
+  - text: "Order {order_id} is on its way and should arrive in about {eta} minutes. (Demo data.)"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "El pedido {order_id} está en camino y debería llegar en unos {eta} minutos. (Datos de demostración.)"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Bestellung {order_id} ist unterwegs und kommt in etwa {eta} Minuten an. (Demodaten.)"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La commande {order_id} est en route et devrait arriver dans environ {eta} minutes. (Données de démonstration.)"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "注文 {order_id} は配達中で、約{eta}分で到着予定です（デモデータ）。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "ऑर्डर {order_id} रास्ते में है और लगभग {eta} मिनट में पहुँच जाना चाहिए। (डेमो डेटा।)"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "الطلب {order_id} في الطريق ومن المتوقع وصوله خلال {eta} دقيقة تقريبًا. (بيانات تجريبية.)"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda {order_id} iko njiani na inatarajiwa kufika baada ya takriban dakika {eta}. (Data ya majaribio.)"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ትዕዛዝ {order_id} በመንገድ ላይ ነው፣ በግምት በ{eta} ደቂቃ ውስጥ ይደርሳል። (የሙከራ መረጃ።)"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "ஆர்டர் {order_id} வழியில் உள்ளது, சுமார் {eta} நிமிடங்களில் வந்து சேரும். (டெமோ தரவு.)"}
+
+  utter_order_not_found:
+  - text: "I couldn't find that order. I'll connect you to a human agent."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "No he encontrado ese pedido. Te pondré en contacto con un agente humano."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich konnte diese Bestellung nicht finden. Ich verbinde Sie mit einem Mitarbeiter."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je n'ai pas trouvé cette commande. Je vous mets en relation avec un conseiller."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "その注文が見つかりませんでした。担当者におつなぎします。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मुझे वह ऑर्डर नहीं मिला। मैं आपको एक मानव एजेंट से जोड़ रहा हूँ।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "لم أتمكن من العثور على هذا الطلب. سأحوّلك إلى موظف بشري."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sikuweza kupata oda hiyo. Nitakuunganisha na wakala wa kibinadamu."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ያንን ትዕዛዝ ማግኘት አልቻልኩም። ከሰው ወኪል ጋር አገናኝዎታለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "அந்த ஆர்டரை என்னால் கண்டுபிடிக்க முடியவில்லை. உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்."}
+
+  utter_cant_help:
+  - text: "Sorry, I can't help with that here. I can take food orders and check on orders."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, no puedo ayudarte con eso aquí. Puedo tomar pedidos de comida y consultar pedidos."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, dabei kann ich hier nicht helfen. Ich kann Essensbestellungen aufnehmen und Bestellungen prüfen."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, je ne peux pas vous aider pour cela ici. Je peux prendre des commandes de repas et suivre des commandes."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありませんが、ここではそのご要望にお応えできません。料理の注文と注文状況の確認ができます。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, मैं यहाँ इसमें मदद नहीं कर सकता। मैं खाने के ऑर्डर ले सकता हूँ और ऑर्डर की स्थिति बता सकता हूँ।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، لا يمكنني المساعدة في ذلك هنا. يمكنني استلام طلبات الطعام ومتابعة الطلبات."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, siwezi kukusaidia na hilo hapa. Ninaweza kupokea oda za chakula na kufuatilia oda."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ እዚህ በዚህ ልረዳዎት አልችልም። የምግብ ትዕዛዝ መቀበል እና ትዕዛዞችን መከታተል እችላለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், இங்கே அதற்கு என்னால் உதவ முடியாது. நான் உணவு ஆர்டர்களை எடுக்கவும் ஆர்டர்களின் நிலையைப் பார்க்கவும் முடியும்."}
+
+  utter_offer_handoff:
+  - text: "Sorry, I can't help with that here. Shall I connect you to a human agent?"
+    buttons: [{title: "Yes", payload: /affirm}, {title: "No", payload: /deny}]
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, no puedo ayudarte con eso aquí. ¿Quieres que te ponga en contacto con un agente humano?", buttons: [{title: "Sí", payload: /affirm}, {title: "No", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, dabei kann ich hier nicht helfen. Soll ich Sie mit einem Mitarbeiter verbinden?", buttons: [{title: "Ja", payload: /affirm}, {title: "Nein", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, je ne peux pas vous aider pour cela ici. Voulez-vous que je vous mette en relation avec un conseiller ?", buttons: [{title: "Oui", payload: /affirm}, {title: "Non", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありませんが、ここではそのご要望にお応えできません。担当者におつなぎしましょうか？", buttons: [{title: "はい", payload: /affirm}, {title: "いいえ", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, मैं यहाँ इसमें मदद नहीं कर सकता। क्या मैं आपको किसी मानव एजेंट से जोड़ दूँ?", buttons: [{title: "हाँ", payload: /affirm}, {title: "नहीं", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، لا يمكنني المساعدة في ذلك هنا. هل تريد أن أحوّلك إلى موظف بشري؟", buttons: [{title: "نعم", payload: /affirm}, {title: "لا", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, siwezi kukusaidia na hilo hapa. Je, nikuunganishe na wakala wa kibinadamu?", buttons: [{title: "Ndiyo", payload: /affirm}, {title: "Hapana", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ እዚህ በዚህ ልረዳዎት አልችልም። ከሰው ወኪል ጋር ላገናኝዎት?", buttons: [{title: "አዎ", payload: /affirm}, {title: "አይ", payload: /deny}]}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், இங்கே அதற்கு என்னால் உதவ முடியாது. உங்களை ஒரு மனித முகவருடன் இணைக்கட்டுமா?", buttons: [{title: "ஆம்", payload: /affirm}, {title: "இல்லை", payload: /deny}]}
+
+  utter_handoff:
+  - text: "I'm connecting you to a human agent now."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Te estoy poniendo en contacto con un agente humano."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich verbinde Sie jetzt mit einem Mitarbeiter."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je vous mets en relation avec un conseiller."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "ただいま担当者におつなぎします。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मैं अभी आपको एक मानव एजेंट से जोड़ रहा हूँ।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "سأحوّلك الآن إلى موظف بشري."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Ninakuunganisha na wakala wa kibinadamu sasa."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "አሁን ከሰው ወኪል ጋር አገናኝዎታለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்."}
+
+  utter_anything_else:
+  - text: "OK. Is there anything else I can help with?"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "De acuerdo. ¿Puedo ayudarte con algo más?"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "In Ordnung. Kann ich sonst noch helfen?"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "D'accord. Puis-je vous aider pour autre chose ?"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "承知しました。ほかにお手伝いできることはありますか？"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "ठीक है। क्या मैं और किसी चीज़ में मदद कर सकता हूँ?"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "حسنًا. هل هناك شيء آخر يمكنني مساعدتك فيه؟"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sawa. Kuna kitu kingine ninachoweza kukusaidia?"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "እሺ። ሌላ ልረዳዎት የምችለው ነገር አለ?"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "சரி. வேறு ஏதாவது உதவி வேண்டுமா?"}
+
+  utter_time:
+  - text: "It is {time} UTC."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Son las {time} UTC."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Es ist {time} Uhr UTC."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Il est {time} UTC."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "現在 {time}（UTC）です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "अभी {time} UTC बजे हैं।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "الساعة الآن {time} بالتوقيت العالمي (UTC)."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sasa ni saa {time} UTC."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "አሁን ሰዓቱ {time} UTC ነው።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது நேரம் {time} UTC."}
+
+  utter_weather:
+  - text: "Demo data: it is sunny and 24 °C."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Datos de demostración: hace sol y 24 °C."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Demodaten: Es ist sonnig bei 24 °C."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Données de démonstration : il fait beau et 24 °C."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "デモデータ：晴れ、気温24℃です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "डेमो डेटा: धूप है और तापमान 24 °C है।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "بيانات تجريبية: الجو مشمس ودرجة الحرارة 24 درجة مئوية."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Data ya majaribio: kuna jua na nyuzi joto 24 °C."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የሙከራ መረጃ፦ ፀሐያማ ሲሆን 24 °C ነው።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "டெமோ தரவு: வெயிலாக உள்ளது, வெப்பநிலை 24 °C."}
+
+  utter_default:
+  - text: "Sorry, I didn't understand. Could you say that another way?"
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, no lo he entendido. ¿Puedes decirlo de otra forma?"}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, das habe ich nicht verstanden. Können Sie es anders formulieren?"}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありません、よく分かりませんでした。別の言い方でお願いできますか？"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, मैं समझ नहीं पाया। क्या आप इसे दूसरे तरीके से कह सकते हैं?"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، لم أفهم. هل يمكنك قولها بطريقة أخرى؟"}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, sikuelewa. Unaweza kusema kwa njia nyingine?"}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ አልገባኝም። በሌላ መንገድ ሊገልጹት ይችላሉ?"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், எனக்குப் புரியவில்லை. வேறு விதமாகச் சொல்ல முடியுமா?"}

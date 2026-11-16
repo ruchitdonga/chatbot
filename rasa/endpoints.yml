@@ -1,0 +1,5 @@
+action_endpoint:
+  url: http://actions:5055/webhook
+
+# No tracker_store entry: Rasa's default in-memory tracker store, as the data-minimisation policy requires
+# (conversations are never written to disk or a database).

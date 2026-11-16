@@ -1,0 +1,1426 @@
+[
+ {
+  "conversation": "en-order-full",
+  "locale": "en-US",
+  "goal": "order",
+  "turn": 1,
+  "user": "can i get a large pepperoni pizza delivered",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "en-US",
+  "failure": "misroute"
+ },
+ {
+  "conversation": "en-order-ask",
+  "locale": "en-US",
+  "goal": "order",
+  "turn": 1,
+  "user": "i'd like to place an order",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "en-US",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "en-order-ask",
+  "locale": "en-US",
+  "goal": "order",
+  "turn": 2,
+  "user": "chicken biryani",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "en-US",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "en-status",
+  "locale": "en-US",
+  "goal": "status",
+  "turn": 1,
+  "user": "has my food left the restaurant yet",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-status",
+  "locale": "en-US",
+  "goal": "status",
+  "turn": 2,
+  "user": "it's FF-1002",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-status-unknown",
+  "locale": "en-US",
+  "goal": "status",
+  "turn": 1,
+  "user": "track my order please",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-status-unknown",
+  "locale": "en-US",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-9999",
+  "expected": [
+   "order_not_found"
+  ],
+  "got": [
+   "order_not_found"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-complaint",
+  "locale": "en-US",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "the rider was rude to me and i want to complain",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-midform-person",
+  "locale": "en-US",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "i want to order food",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-midform-person",
+  "locale": "en-US",
+  "goal": "handoff",
+  "turn": 2,
+  "user": "actually let me talk to a real person",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-unsupported",
+  "locale": "en-US",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "play some jazz music",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-greet-order",
+  "locale": "en-US",
+  "goal": "order",
+  "turn": 1,
+  "user": "hey there",
+  "expected": [
+   "greet"
+  ],
+  "got": [
+   "greet"
+  ],
+  "intent": "general_greet",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-greet-order",
+  "locale": "en-US",
+  "goal": "order",
+  "turn": 2,
+  "user": "order me two cheeseburgers",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-weather",
+  "locale": "en-US",
+  "goal": "info",
+  "turn": 1,
+  "user": "what's the weather going to be like tomorrow",
+  "expected": [
+   "weather"
+  ],
+  "got": [
+   "weather"
+  ],
+  "intent": "weather_query",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "en-time",
+  "locale": "en-US",
+  "goal": "info",
+  "turn": 1,
+  "user": "what time is it in london",
+  "expected": [
+   "time"
+  ],
+  "got": [
+   "time"
+  ],
+  "intent": "datetime_query",
+  "detected_language": "en-US",
+  "failure": null
+ },
+ {
+  "conversation": "es-order-full",
+  "locale": "es-ES",
+  "goal": "order",
+  "turn": 1,
+  "user": "pídeme una hamburguesa con patatas",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-order-ask",
+  "locale": "es-ES",
+  "goal": "order",
+  "turn": 1,
+  "user": "quiero hacer un pedido",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-order-ask",
+  "locale": "es-ES",
+  "goal": "order",
+  "turn": 2,
+  "user": "sushi",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-status",
+  "locale": "es-ES",
+  "goal": "status",
+  "turn": 1,
+  "user": "cuánto tarda mi pedido",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-status",
+  "locale": "es-ES",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1001",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-complaint",
+  "locale": "es-ES",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "me cobraron dos veces y quiero hablar con una persona",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-unsupported",
+  "locale": "es-ES",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "pon música de los beatles",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-greet-order",
+  "locale": "es-ES",
+  "goal": "order",
+  "turn": 1,
+  "user": "hola, buenas tardes",
+  "expected": [
+   "greet"
+  ],
+  "got": [
+   "greet"
+  ],
+  "intent": "general_greet",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "es-greet-order",
+  "locale": "es-ES",
+  "goal": "order",
+  "turn": 2,
+  "user": "quiero una paella para llevar",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "es-ES",
+  "failure": null
+ },
+ {
+  "conversation": "de-order-full",
+  "locale": "de-DE",
+  "goal": "order",
+  "turn": 1,
+  "user": "bestell mir bitte eine große salamipizza",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-order-ask",
+  "locale": "de-DE",
+  "goal": "order",
+  "turn": 1,
+  "user": "ich will was zu essen bestellen",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-order-ask",
+  "locale": "de-DE",
+  "goal": "order",
+  "turn": 2,
+  "user": "döner",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "de-DE",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "de-status",
+  "locale": "de-DE",
+  "goal": "status",
+  "turn": 1,
+  "user": "wann kommt meine lieferung",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-status",
+  "locale": "de-DE",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF 1002",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-complaint",
+  "locale": "de-DE",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "in meiner bestellung fehlt etwas, ich will eine erstattung",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-weather",
+  "locale": "de-DE",
+  "goal": "info",
+  "turn": 1,
+  "user": "wie wird das wetter morgen in berlin",
+  "expected": [
+   "weather"
+  ],
+  "got": [
+   "weather"
+  ],
+  "intent": "weather_query",
+  "detected_language": "de-DE",
+  "failure": null
+ },
+ {
+  "conversation": "de-unsupported",
+  "locale": "de-DE",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "spiel mein lieblingslied",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "de-DE",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "fr-order-full",
+  "locale": "fr-FR",
+  "goal": "order",
+  "turn": 1,
+  "user": "je voudrais commander des sushis",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "fr-order-ask",
+  "locale": "fr-FR",
+  "goal": "order",
+  "turn": 1,
+  "user": "je veux passer une commande",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "fr-FR",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "fr-order-ask",
+  "locale": "fr-FR",
+  "goal": "order",
+  "turn": 2,
+  "user": "un burger",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "fr-FR",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "fr-status",
+  "locale": "fr-FR",
+  "goal": "status",
+  "turn": 1,
+  "user": "où en est ma livraison",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "fr-status",
+  "locale": "fr-FR",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1001",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "fr-complaint",
+  "locale": "fr-FR",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "le livreur a été impoli, je veux parler à quelqu'un",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "fr-unsupported",
+  "locale": "fr-FR",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "allume la lumière du salon",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "fr-FR",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "fr-greet-order",
+  "locale": "fr-FR",
+  "goal": "order",
+  "turn": 1,
+  "user": "salut",
+  "expected": [
+   "greet"
+  ],
+  "got": [
+   "greet"
+  ],
+  "intent": "general_greet",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "fr-greet-order",
+  "locale": "fr-FR",
+  "goal": "order",
+  "turn": 2,
+  "user": "commande-moi une pizza quatre fromages",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "fr-FR",
+  "failure": null
+ },
+ {
+  "conversation": "ja-order-full",
+  "locale": "ja-JP",
+  "goal": "order",
+  "turn": 1,
+  "user": "寿司を注文したいです",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ja-JP",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "ja-order-ask",
+  "locale": "ja-JP",
+  "goal": "order",
+  "turn": 1,
+  "user": "出前を頼みたい",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ja-JP",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "ja-order-ask",
+  "locale": "ja-JP",
+  "goal": "order",
+  "turn": 2,
+  "user": "ラーメン",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ja-JP",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "ja-status",
+  "locale": "ja-JP",
+  "goal": "status",
+  "turn": 1,
+  "user": "私の注文はいつ届きますか",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "ja-JP",
+  "failure": null
+ },
+ {
+  "conversation": "ja-status",
+  "locale": "ja-JP",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1002",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ja-JP",
+  "failure": null
+ },
+ {
+  "conversation": "ja-complaint",
+  "locale": "ja-JP",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "料理が冷めていたので返金してほしい",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "ja-JP",
+  "failure": null
+ },
+ {
+  "conversation": "ja-weather",
+  "locale": "ja-JP",
+  "goal": "info",
+  "turn": 1,
+  "user": "明日の天気は？",
+  "expected": [
+   "weather"
+  ],
+  "got": [
+   "weather"
+  ],
+  "intent": "weather_query",
+  "detected_language": "ja-JP",
+  "failure": null
+ },
+ {
+  "conversation": "ja-unsupported",
+  "locale": "ja-JP",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "音楽をかけて",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ja-JP",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "hi-order-full",
+  "locale": "hi-IN",
+  "goal": "order",
+  "turn": 1,
+  "user": "मुझे एक बर्गर मंगवाना है",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "hi-IN",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "hi-order-ask",
+  "locale": "hi-IN",
+  "goal": "order",
+  "turn": 1,
+  "user": "मैं खाना ऑर्डर करना चाहता हूँ",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "hi-order-ask",
+  "locale": "hi-IN",
+  "goal": "order",
+  "turn": 2,
+  "user": "बिरयानी",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "hi-IN",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "hi-status",
+  "locale": "hi-IN",
+  "goal": "status",
+  "turn": 1,
+  "user": "मेरा खाना कब तक आएगा",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "hi-status",
+  "locale": "hi-IN",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1001",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "hi-complaint",
+  "locale": "hi-IN",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "मुझसे दो बार पैसे काट लिए गए, किसी इंसान से बात कराओ",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "hi-unsupported",
+  "locale": "hi-IN",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "कोई गाना बजाओ",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "hi-greet",
+  "locale": "hi-IN",
+  "goal": "info",
+  "turn": 1,
+  "user": "नमस्ते",
+  "expected": [
+   "greet"
+  ],
+  "got": [
+   "greet"
+  ],
+  "intent": "general_greet",
+  "detected_language": "hi-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ar-order-full",
+  "locale": "ar-SA",
+  "goal": "order",
+  "turn": 1,
+  "user": "أريد أن أطلب بيتزا",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-order-ask",
+  "locale": "ar-SA",
+  "goal": "order",
+  "turn": 1,
+  "user": "أريد طلب طعام",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-order-ask",
+  "locale": "ar-SA",
+  "goal": "order",
+  "turn": 2,
+  "user": "شاورما",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ar-SA",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "ar-status",
+  "locale": "ar-SA",
+  "goal": "status",
+  "turn": 1,
+  "user": "أين طلبي",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-status",
+  "locale": "ar-SA",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1002",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-complaint",
+  "locale": "ar-SA",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "وصل الطعام باردًا وأريد استرداد أموالي",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-unsupported",
+  "locale": "ar-SA",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "شغل موسيقى",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "ar-greet",
+  "locale": "ar-SA",
+  "goal": "info",
+  "turn": 1,
+  "user": "مرحبا",
+  "expected": [
+   "greet"
+  ],
+  "got": [
+   "greet"
+  ],
+  "intent": "general_greet",
+  "detected_language": "ar-SA",
+  "failure": null
+ },
+ {
+  "conversation": "sw-order-full",
+  "locale": "sw-KE",
+  "goal": "order",
+  "turn": 1,
+  "user": "nataka kuagiza pizza",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "sw-KE",
+  "failure": null
+ },
+ {
+  "conversation": "sw-order-ask",
+  "locale": "sw-KE",
+  "goal": "order",
+  "turn": 1,
+  "user": "naomba kuagiza chakula",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "sw-KE",
+  "failure": null
+ },
+ {
+  "conversation": "sw-order-ask",
+  "locale": "sw-KE",
+  "goal": "order",
+  "turn": 2,
+  "user": "chipsi mayai",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "sw-KE",
+  "failure": null
+ },
+ {
+  "conversation": "sw-status",
+  "locale": "sw-KE",
+  "goal": "status",
+  "turn": 1,
+  "user": "oda yangu iko wapi",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "sw-KE",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "sw-status",
+  "locale": "sw-KE",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1001",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "sw-KE",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "sw-complaint",
+  "locale": "sw-KE",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "chakula kilifika kikiwa baridi, nataka kurudishiwa pesa",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "sw-KE",
+  "failure": null
+ },
+ {
+  "conversation": "sw-unsupported",
+  "locale": "sw-KE",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "cheza muziki",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "sw-KE",
+  "failure": null
+ },
+ {
+  "conversation": "sw-order-nohint",
+  "locale": "sw-KE",
+  "goal": "order",
+  "turn": 1,
+  "user": "nataka kuagiza wali na nyama",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "en-US",
+  "failure": "wrong language detected"
+ },
+ {
+  "conversation": "am-order-full",
+  "locale": "am-ET",
+  "goal": "order",
+  "turn": 1,
+  "user": "ፒዛ ማዘዝ እፈልጋለሁ",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-order-ask",
+  "locale": "am-ET",
+  "goal": "order",
+  "turn": 1,
+  "user": "ምግብ ማዘዝ እፈልጋለሁ",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-order-ask",
+  "locale": "am-ET",
+  "goal": "order",
+  "turn": 2,
+  "user": "ዶሮ ወጥ",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-status",
+  "locale": "am-ET",
+  "goal": "status",
+  "turn": 1,
+  "user": "ትዕዛዜ የት ደረሰ",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-status",
+  "locale": "am-ET",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1002",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-complaint",
+  "locale": "am-ET",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "am-unsupported",
+  "locale": "am-ET",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "ሙዚቃ አጫውት",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "cant_help"
+  ],
+  "intent": "unsupported_request",
+  "detected_language": "am-ET",
+  "failure": null
+ },
+ {
+  "conversation": "ta-order-full",
+  "locale": "ta-IN",
+  "goal": "order",
+  "turn": 1,
+  "user": "எனக்கு ஒரு பிரியாணி ஆர்டர் செய்ய வேண்டும்",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-order-ask",
+  "locale": "ta-IN",
+  "goal": "order",
+  "turn": 1,
+  "user": "நான் உணவு ஆர்டர் செய்ய விரும்புகிறேன்",
+  "expected": [
+   "ask_food_type"
+  ],
+  "got": [
+   "ask_food_type"
+  ],
+  "intent": "takeaway_order",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-order-ask",
+  "locale": "ta-IN",
+  "goal": "order",
+  "turn": 2,
+  "user": "தோசை",
+  "expected": [
+   "order_placed"
+  ],
+  "got": [
+   "order_placed"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-status",
+  "locale": "ta-IN",
+  "goal": "status",
+  "turn": 1,
+  "user": "என் ஆர்டர் எங்கே இருக்கிறது",
+  "expected": [
+   "ask_order_id"
+  ],
+  "got": [
+   "ask_order_id"
+  ],
+  "intent": "takeaway_query",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-status",
+  "locale": "ta-IN",
+  "goal": "status",
+  "turn": 2,
+  "user": "FF-1001",
+  "expected": [
+   "order_status"
+  ],
+  "got": [
+   "order_status"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-complaint",
+  "locale": "ta-IN",
+  "goal": "handoff",
+  "turn": 1,
+  "user": "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "out_of_scope",
+  "detected_language": "ta-IN",
+  "failure": null
+ },
+ {
+  "conversation": "ta-unsupported",
+  "locale": "ta-IN",
+  "goal": "cant_help",
+  "turn": 1,
+  "user": "பாட்டு போடு",
+  "expected": [
+   "cant_help"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": "ta-IN",
+  "failure": "handoff instead of answer"
+ },
+ {
+  "conversation": "ru-status",
+  "locale": null,
+  "goal": "handoff",
+  "turn": 1,
+  "user": "где мой заказ",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": null,
+  "failure": null
+ },
+ {
+  "conversation": "pt-order",
+  "locale": null,
+  "goal": "handoff",
+  "turn": 1,
+  "user": "quero pedir uma pizza de calabresa",
+  "expected": [
+   "handoff"
+  ],
+  "got": [
+   "handoff"
+  ],
+  "intent": "nlu_fallback",
+  "detected_language": null,
+  "failure": null
+ }
+]

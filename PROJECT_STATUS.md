@@ -8,6 +8,7 @@ Phase 2 (ethics audit and privacy design): **done**, AI-disclosure translations 
 Phase 3 (NLU data pipeline): **done.**
 Phase 4 (baselines and MLflow): **done.**
 Phase 5 (joint model): **in progress.** XLM-R is the deployed model (Amharic decision below).
+Phases 6–8: **done** (details below). Phase 9 (Rasa dialogue): **in progress**; dialogue built and tested, scripted-conversation evaluation remaining.
 
 ## Phase 5 evidence (so far)
 
@@ -73,7 +74,63 @@ Phase 7 status: **done**. Threshold (energy < 7.036, temperature 1.3928) signed 
 
 Docker: the engine first failed because WSL was registered but broken (`wsl --version` timed out). The user reinstalled WSL (`winget install --id Microsoft.WSL`, version 3.0.5) and restarted. Docker engine 29.9.3 now runs (linux/amd64, 8 GB for containers). Pulling `rasa/rasa:3.6.21-full` and `rasa/rasa-sdk:3.6.2` for Phase 9.
 
-Next: **Phase 9 (Rasa dialogue for FeastFleet)**: custom NLU component calling `POST /predict`, forms for `takeaway_order` / `takeaway_query` against a mock backend, AI disclosure (`configs/disclosure.yaml`) as the first message, handoff for `out_of_scope` / low confidence, "offer a human" for `general_quirky` (`configs/business.yaml`), templated replies per language, `rasa test` stories in ≥ 3 languages.
+## Phase 9 (Rasa dialogue for FeastFleet): in progress
+
+Rasa 3.6.21 and the action server (rasa-sdk 3.6.2) run in Docker (`docker-compose.yml`, REST on `127.0.0.1:5005` only); the NLU service still runs on the host until Phase 10 adds it as a container.
+
+| Step | Outcome |
+|---|---|
+| Custom NLU component (`rasa/components/feastfleet_nlu.py`, `GraphComponent` registered with `DefaultV1Recipe.register`) | Calls `POST /predict` (optional `metadata.language` hint passed through). Maps service handoff `out_of_scope` → `out_of_scope`; any other handoff (energy rule, empty, unsupported language) → `nlu_fallback`; `configs/business.yaml` intents unchanged; every other MASSIVE intent → `unsupported_request`. Service down or bad response → `nlu_fallback` (hand off, never guess). Only `food_type` enters the tracker, so `person`/`place_name` values are never stored. In-container self-check passes |
+| **Deviation: no `FallbackClassifier`** | The signed-off Phase 7 rule is energy-based and already applied in the service; a probability threshold in Rasa would be a second, unvalidated rule. Recorded in `rasa/config.yml` |
+| Language slot | Detected locale passed as parse field `feastfleet_locale`; custom slot mapping (`action_validate_slot_mappings`) keeps the **first** detected language, because short follow-ups ("pizza", "FF-1001") are often misdetected |
+| Forms (FR-2) | `takeaway_order_form` (asks `food_type`), `takeaway_query_form` (asks `order_id`). Short answers fill the slot even when low-confidence; an explicit `out_of_scope` message leaves the form and hands off |
+| Mock backend (`rasa/actions/actions.py`) | In-memory dict, two demo orders (FF-1001, FF-1002) plus orders placed while running; labelled mock in code and in every reply. Order-number parsing accepts `ff 1001` and Arabic-Indic digits (self-check passes) |
+| AI disclosure (ETH-4) | First bot message, in the detected language: one `conversation_start` rule per entry intent (RulePolicy picks the longest matching rule; `rasa train` found no contradictions) |
+| Replies (FR-4) | 14 responses × 10 languages as conditional variations on `language` (English = default, also used for unsupported languages). Non-English replies machine-written by an AI assistant, **unreviewed**. `tests/test_rasa_domain.py` (3 tests): all ten locales per response, disclosure identical to `configs/disclosure.yaml`, same placeholders in every language |
+| `rasa test core --e2e --stories tests` | **20/20 stories, 85/85 actions** in en, es, de, hi (successful task, missing slot, unknown intent, fallback/out of scope, complaint inside a form, disclosure only once). Run end to end: 35 calls reached the live NLU service. Test sentences were checked against the model before writing, so this tests dialogue wiring, not model accuracy. (Without `--e2e`, `rasa test core` never calls NLU and uses the annotated intents.) |
+| Live REST conversations | es, sw (with hint), hi, ja, de, en, ru: disclosure first in the right language, slot asked and filled, mock order placed and looked up, mid-form complaint handed off (de), Russian handed off as unsupported. No user text in Rasa or action-server logs (INFO level) |
+| `pytest -q` | 48 passed |
+
+Findings:
+- **Greetings were handed off.** "hello", "hi there", "good morning", "bonjour", "buenos días", "guten morgen" are all predicted `general_greet` (0.66–0.85) but fall below the signed-off energy threshold, so the bot said "connecting you to a human" to a plain greeting.
+  **Decision (user, 2026-11-16): exempt `general_greet`.** `low_confidence_exempt_intents: [general_greet]` in `configs/business.yaml`; the component answers a predicted `general_greet` even when the service's reason is `low_confidence` (never for `out_of_scope`, empty or unsupported language). Dialogue-level rule like the `general_quirky` offer: the threshold and the model-level NFR-3 figure (90.9%) are unchanged. Risk: a non-greeting misread as a low-confidence greeting now gets a greeting ("I can help you order food…") instead of a human. Retested: `rasa test core --e2e` **23/23 stories, 94/94 actions** (adds greeting stories in en, es, de).
+- Swahili without a client hint is detected as English ("nataka kuagiza pizza" → en-US): replies come in English. The REST `metadata.language` hint fixes it.
+- `affirm`/`deny` exist only as buttons on the "shall I connect you?" offer: MASSIVE has no yes/no intent, so a typed "yes" is not understood.
+- Mock backend has no ownership check: any conversation can look up any order number (a Japanese test conversation looked up the Spanish one's order). A real backend must scope orders to the user.
+- The service returns HTTP 500 on text with lone UTF-16 surrogates (fastText rejects it); the component turns this into a handoff.
+
+### Scripted conversation evaluation (`python -m src.dialogue.evaluate`, 2026-11-16)
+
+64 conversations / 89 turns in all ten languages plus two unsupported ones (`data/dialogue_eval/scripted_conversations.yaml`), **authored before running and not tuned afterwards**; non-English unreviewed. Replies are scored by response name from the Rasa tracker (`rasa run --enable-api`, localhost only, evaluation only). A conversation counts as completed only if every turn matches, in the right language, with the disclosure first. `tests/test_dialogue_eval.py` (2 tests). Full tables: `reports/dialogue_eval.md`.
+
+| Measure | Result |
+|---|---|
+| **Task completion** (order / order-status) | **27/35 (77%)** |
+| All conversations completed | 51/64 (80%) |
+| Turns correct | 72/89 (81%) |
+| Disclosure first | 64/64 (100%) |
+| By language (completed) | es, ar, am, unsupported 100%; de, hi 83%; ta 80%; en 70%; fr, sw 67%; **ja 50%** |
+
+Failed-turn analysis: **17 failed turns, fewer than the guide's 20.** All 17 are analysed below. No conversations were added to reach 20, because adding them after seeing results would no longer be blind. Model predictions were looked up afterwards for each failed text:
+- **Correct intent, handed off by the energy rule: 12 turns** (`takeaway_order` ×7 in en, fr, ja, hi; `play_music` ×3 in de, ja, ta; `iot_hue_lighton` fr). Energies 5.9–7.0 against the 7.036 threshold. This is the signed-off threshold's coverage cost (dev answered 77.9%) seen in dialogue: safe, but it hands off orders it understood. Japanese is hit hardest (3 of 3 order turns).
+- **Cascade: 4 turns** (en, fr, ja order turn 2; sw status turn 2). The first turn was already handed off, so no form was active and the bare answer ("chicken biryani", "FF-1001") was itself low-confidence. Not independent errors.
+- **Wrong intent: 2 turns.** "can i get a large pepperoni pizza delivered" → `takeaway_query` (asked for an order number instead of placing the order). Swahili "oda yangu iko wapi" (with hint) → `email_querycontact`.
+- **Dialogue bug: 1 turn, the most serious.** In the middle of an order, "actually let me talk to a real person" was low-confidence `general_quirky` → `nlu_fallback`. The form's `from_text` mapping took it as the food and **placed an order for "actually let me talk to a real person"** instead of handing off. Cause: short slot answers are also `nlu_fallback`, so the form accepts any `nlu_fallback` text. Not fixed yet (needs a decision).
+- **Wrong language: 1 turn.** Swahili without a hint was detected as English; the order itself completed (known; client hint fixes it).
+- No slot-fill loops occurred; every unsupported-language message was handed off.
+
+**Fix (user, 2026-11-16): the order form no longer accepts free text.** `food_type` is filled only from a tagged `food_type` entity (any intent except `out_of_scope` while the form asks); a low-confidence answer without a tagged food leaves the form and hands off (new rule in `rasa/data/rules.yml`). Regression story added: `rasa test core --e2e` **24/24 stories, 100/100 actions**.
+
+Rerun of the scripted evaluation after the fix (the set is no longer blind for this change, so the first run above stays the headline):
+
+| Measure | Before fix | After fix |
+|---|---|---|
+| Task completion | 27/35 (77%) | **24/35 (69%)** |
+| Turns correct | 72/89 (81%) | 70/89 (79%) |
+
+The bug is gone ("let me talk to a real person" now hands off). The cost: three bare food answers the slot tagger did not tag as food, "döner" (de), "बिरयानी" (hi), "شاورما" (ar), are now handed off instead of ordered. Every failure after the fix is a handoff to a human; no conversation now produces a wrong action. Trade-off accepted for now: a missed order reaches a person, while a wrongly placed order does not.
+
+Phase 9: **done.**
 
 Built during training (Phase 7, ready to run on the deployed model):
 - `data/challenge_set/challenge_set.jsonl`: 110 authored out-of-scope inputs (50 support requests outside MASSIVE's domains, 20 adversarial, 20 mixed-language across all ten languages; plus gibberish, empty, symbols, very long, and 6 unsupported languages), split 55 tune / 55 held-out within each category. Chit-chat excluded because MASSIVE has chit-chat intents. Non-English items unreviewed. `tests/test_challenge_set.py` (3 tests).
@@ -151,7 +208,7 @@ Findings (details in `reports/data_quality_issues.md`):
 | Free disk (C:) | 570 GB |
 | Project Python | 3.10.22 (installed with uv, venv in `.venv/`) |
 | Git | 2.56.0 |
-| Docker | **Not installed** |
+| Docker | 29.9.3 (Docker Desktop, WSL 3.0.5), installed later the same day |
 | Internet | Available; MASSIVE 1.1 archive URL returns HTTP 200 |
 
 Notes:

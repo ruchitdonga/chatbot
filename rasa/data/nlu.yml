@@ -1,0 +1,12 @@
+version: "3.1"
+# Intents come from the NLU service, not from these examples. Rasa only trains its NLU pipeline when some NLU data
+# exists; affirm and deny are sent by the Yes/No buttons of utter_offer_handoff (payloads /affirm and /deny).
+nlu:
+- intent: affirm
+  examples: |
+    - yes
+    - yes please
+- intent: deny
+  examples: |
+    - no
+    - no thanks

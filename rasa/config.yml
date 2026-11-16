@@ -1,0 +1,20 @@
+# Phase 9 Rasa project for the FICTIONAL FeastFleet food-delivery demo. Rasa Open Source 3.6.21 in Docker.
+recipe: default.v1
+language: en  # required by Rasa; the ten languages are handled by the NLU service
+assistant_id: feastfleet-demo
+
+pipeline:
+  # Calls POST /predict on the FastAPI NLU service (XLM-R Run B + out_of_scope, fp32 ONNX).
+  # No FallbackClassifier: the signed-off Phase 7 rule (energy < 7.036 at temperature 1.3928, or a predicted
+  # out_of_scope) is applied by the service and arrives here as nlu_fallback / out_of_scope. A probability
+  # threshold here would be a second rule that was never validated.
+  - name: components.feastfleet_nlu.FeastFleetNLU
+    url: http://host.docker.internal:8000/predict
+    business_config: /configs/business.yaml
+    entities: [food_type]
+
+policies:
+  - name: RulePolicy
+    core_fallback_threshold: 0.3
+    core_fallback_action_name: action_default_fallback
+    enable_fallback_prediction: true

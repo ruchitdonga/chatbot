@@ -21,5 +21,13 @@ mlartifacts/
 logs/
 *.log
 
+# Rasa (trained models, cache, test output)
+rasa/models/
+rasa/.rasa/
+rasa/results/
+
 # Secrets
 .env
+rasa/.cache/
+rasa/.config/
+rasa/.keras/

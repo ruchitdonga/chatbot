@@ -21,6 +21,13 @@ answered_intents:
 # NFR-3 figure (90.9%) is reported unchanged and this system-level rule is reported separately.
 offer_handoff_intents:
   - general_quirky
+
+# Answered even when the energy rule says low_confidence (decision 2026-11-16, Phase 9): every greeting tested
+# ("hello", "bonjour", "guten morgen", ...) is predicted general_greet but falls below the threshold, so the bot
+# handed plain greetings to a human. Only the low_confidence reason is overridden (never out_of_scope, empty or
+# unsupported language). Dialogue-level rule; the model-level NFR-3 result is unchanged.
+low_confidence_exempt_intents:
+  - general_greet
 handoff_topics:
   - missing items
   - wrong order

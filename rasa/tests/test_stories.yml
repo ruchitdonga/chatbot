@@ -1,0 +1,270 @@
+version: "3.1"
+# Phase 9 end-to-end test stories (rasa test), run against the live NLU service. Four languages; per language:
+# successful task, missing slot, unknown intent, fallback/handoff. The sentences were checked against the deployed
+# model before writing, so these test the dialogue wiring; model accuracy is measured in reports/evaluation_report.md.
+
+stories:
+
+# ---------------- English ----------------
+- story: en order, food given up front
+  steps:
+  - user: |
+      i want to order a [pizza](food_type)
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: en order, missing food asked for
+  steps:
+  - user: |
+      i would like to order food
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - user: |
+      [pizza](food_type)
+    intent: nlu_fallback
+  - action: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: en order status, order number asked for
+  steps:
+  - user: |
+      where is my order
+    intent: takeaway_query
+  - action: utter_disclosure
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form
+  - user: |
+      FF-1001
+    intent: nlu_fallback
+  - action: takeaway_query_form
+  - active_loop: null
+  - action: action_check_order
+
+- story: en unknown intent
+  steps:
+  - user: |
+      set an alarm for seven am
+    intent: unsupported_request
+  - action: utter_disclosure
+  - action: utter_cant_help
+
+- story: en out of scope goes to a human
+  steps:
+  - user: |
+      my food arrived cold and i want my money back
+    intent: out_of_scope
+  - action: utter_disclosure
+  - action: utter_handoff
+
+- story: en gibberish falls back to a human
+  steps:
+  - user: |
+      asdkjh qwe
+    intent: nlu_fallback
+  - action: utter_disclosure
+  - action: utter_handoff
+
+- story: en complaint in the middle of an order leaves the form
+  steps:
+  - user: |
+      i would like to order food
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - user: |
+      my food arrived cold and i want my money back
+    intent: out_of_scope
+  - action: utter_handoff
+  - action: action_deactivate_loop
+  - active_loop: null
+
+- story: en request for a person in the middle of an order is handed off, not ordered (regression)
+  steps:
+  - user: |
+      i want to order food
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - user: |
+      actually let me talk to a real person
+    intent: nlu_fallback
+  - action: utter_handoff
+  - action: action_deactivate_loop
+  - active_loop: null
+
+- story: en time, then an order in the same conversation (disclosure only once)
+  steps:
+  - user: |
+      what time is it
+    intent: datetime_query
+  - action: utter_disclosure
+  - action: action_tell_time
+  - user: |
+      i want to order a [pizza](food_type)
+    intent: takeaway_order
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: en greeting is answered, not handed off (low_confidence_exempt_intents)
+  steps:
+  - user: |
+      hello
+    intent: general_greet
+  - action: utter_disclosure
+  - action: utter_greet
+
+# ---------------- Spanish ----------------
+- story: es greeting is answered
+  steps:
+  - user: |
+      buenos días
+    intent: general_greet
+  - action: utter_disclosure
+  - action: utter_greet
+
+- story: es order, food given up front
+  steps:
+  - user: |
+      quiero pedir una [pizza](food_type)
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: es order, missing food asked for
+  steps:
+  - user: |
+      quiero pedir comida
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - user: |
+      una [pizza](food_type)
+    intent: nlu_fallback
+  - action: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: es unknown intent
+  steps:
+  - user: |
+      pon una alarma a las siete
+    intent: unsupported_request
+  - action: utter_disclosure
+  - action: utter_cant_help
+
+- story: es out of scope goes to a human
+  steps:
+  - user: |
+      la comida llegó fría y quiero que me devuelvan el dinero
+    intent: out_of_scope
+  - action: utter_disclosure
+  - action: utter_handoff
+
+# ---------------- German ----------------
+- story: de greeting is answered
+  steps:
+  - user: |
+      guten morgen
+    intent: general_greet
+  - action: utter_disclosure
+  - action: utter_greet
+
+- story: de order, food given up front
+  steps:
+  - user: |
+      ich möchte eine [pizza](food_type) bestellen
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: de order, missing food asked for
+  steps:
+  - user: |
+      ich möchte essen bestellen
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - user: |
+      eine [pizza](food_type)
+    intent: nlu_fallback
+  - action: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: de unknown intent
+  steps:
+  - user: |
+      stell einen wecker für sieben uhr
+    intent: unsupported_request
+  - action: utter_disclosure
+  - action: utter_cant_help
+
+- story: de out of scope goes to a human
+  steps:
+  - user: |
+      das essen kam kalt an und ich will mein geld zurück
+    intent: out_of_scope
+  - action: utter_disclosure
+  - action: utter_handoff
+
+# ---------------- Hindi ----------------
+- story: hi order, food given up front
+  steps:
+  - user: |
+      मुझे [पिज़्ज़ा](food_type) ऑर्डर करना है
+    intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+  - active_loop: null
+  - action: action_place_order
+
+- story: hi order status, order number asked for
+  steps:
+  - user: |
+      मेरा ऑर्डर कहाँ है
+    intent: takeaway_query
+  - action: utter_disclosure
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form
+  - user: |
+      FF-1001
+    intent: nlu_fallback
+  - action: takeaway_query_form
+  - active_loop: null
+  - action: action_check_order
+
+- story: hi unknown intent
+  steps:
+  - user: |
+      सात बजे का अलार्म लगाओ
+    intent: unsupported_request
+  - action: utter_disclosure
+  - action: utter_cant_help
+
+- story: hi out of scope goes to a human
+  steps:
+  - user: |
+      खाना ठंडा आया और मुझे पैसे वापस चाहिए
+    intent: out_of_scope
+  - action: utter_disclosure
+  - action: utter_handoff

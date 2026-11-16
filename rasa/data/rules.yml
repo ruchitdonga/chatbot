@@ -1,0 +1,185 @@
+version: "3.1"
+# Deterministic dialogue for the FICTIONAL FeastFleet demo (RulePolicy only).
+# The AI disclosure (ETH-4) must be the first bot message, in the detected language, so it comes after the first
+# user message. Each entry intent therefore has a conversation_start rule; RulePolicy picks the longest matching
+# rule, so these win over the general rules on the first turn.
+
+rules:
+
+# ---- general rules ----
+- rule: greet
+  steps:
+  - intent: general_greet
+  - action: utter_greet
+
+- rule: time
+  steps:
+  - intent: datetime_query
+  - action: action_tell_time
+
+- rule: weather (mock)
+  steps:
+  - intent: weather_query
+  - action: utter_weather
+
+- rule: other MASSIVE intents are not supported here
+  steps:
+  - intent: unsupported_request
+  - action: utter_cant_help
+
+- rule: general_quirky offers a human
+  steps:
+  - intent: general_quirky
+  - action: utter_offer_handoff
+
+- rule: offer accepted
+  steps:
+  - action: utter_offer_handoff
+  - intent: affirm
+  - action: utter_handoff
+
+- rule: offer declined
+  steps:
+  - action: utter_offer_handoff
+  - intent: deny
+  - action: utter_anything_else
+
+- rule: out of scope goes to a human (FR-3, ETH-2)
+  steps:
+  - intent: out_of_scope
+  - action: utter_handoff
+
+- rule: low confidence, empty or unsupported language goes to a human (FR-3)
+  steps:
+  - intent: nlu_fallback
+  - action: utter_handoff
+
+# ---- forms (FR-2) ----
+- rule: start order form
+  steps:
+  - intent: takeaway_order
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+
+- rule: submit order form
+  condition:
+  - active_loop: takeaway_order_form
+  steps:
+  - action: takeaway_order_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_place_order
+
+- rule: start order-status form
+  steps:
+  - intent: takeaway_query
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form
+
+- rule: submit order-status form
+  condition:
+  - active_loop: takeaway_query_form
+  steps:
+  - action: takeaway_query_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_check_order
+
+# Inside a form, short answers are low-confidence (nlu_fallback) but still fill the slot: a tagged food_type in the
+# order form, any text in the order-status form (the action checks the number). An out_of_scope message, or in the
+# order form a low-confidence message without a food, leaves the form for a human.
+- rule: handoff from order form
+  condition:
+  - active_loop: takeaway_order_form
+  steps:
+  - intent: out_of_scope
+  - action: utter_handoff
+  - action: action_deactivate_loop
+  - active_loop: null
+
+# A low-confidence answer with no tagged food (e.g. "let me talk to a real person") is rejected by the form.
+- rule: low-confidence answer without a food leaves the order form
+  condition:
+  - active_loop: takeaway_order_form
+  steps:
+  - intent: nlu_fallback
+  - action: utter_handoff
+  - action: action_deactivate_loop
+  - active_loop: null
+
+- rule: handoff from order-status form
+  condition:
+  - active_loop: takeaway_query_form
+  steps:
+  - intent: out_of_scope
+  - action: utter_handoff
+  - action: action_deactivate_loop
+  - active_loop: null
+
+# ---- AI disclosure first (ETH-4) ----
+- rule: disclose then greet
+  conversation_start: true
+  steps:
+  - intent: general_greet
+  - action: utter_disclosure
+  - action: utter_greet
+
+- rule: disclose then time
+  conversation_start: true
+  steps:
+  - intent: datetime_query
+  - action: utter_disclosure
+  - action: action_tell_time
+
+- rule: disclose then weather
+  conversation_start: true
+  steps:
+  - intent: weather_query
+  - action: utter_disclosure
+  - action: utter_weather
+
+- rule: disclose then can't help
+  conversation_start: true
+  steps:
+  - intent: unsupported_request
+  - action: utter_disclosure
+  - action: utter_cant_help
+
+- rule: disclose then offer a human
+  conversation_start: true
+  steps:
+  - intent: general_quirky
+  - action: utter_disclosure
+  - action: utter_offer_handoff
+
+- rule: disclose then handoff (out of scope)
+  conversation_start: true
+  steps:
+  - intent: out_of_scope
+  - action: utter_disclosure
+  - action: utter_handoff
+
+- rule: disclose then handoff (fallback)
+  conversation_start: true
+  steps:
+  - intent: nlu_fallback
+  - action: utter_disclosure
+  - action: utter_handoff
+
+- rule: disclose then order form
+  conversation_start: true
+  steps:
+  - intent: takeaway_order
+  - action: utter_disclosure
+  - action: takeaway_order_form
+  - active_loop: takeaway_order_form
+
+- rule: disclose then order-status form
+  conversation_start: true
+  steps:
+  - intent: takeaway_query
+  - action: utter_disclosure
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form

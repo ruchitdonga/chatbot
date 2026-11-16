@@ -1,0 +1,27 @@
+# FICTIONAL FeastFleet demo. Phase 9: Rasa + action server in Docker; the NLU service still runs on the host
+#   (uvicorn src.serving.app:create_app --factory --port 8000). Phase 10 adds it as the `nlu` service.
+# Train:  docker compose run --rm rasa train
+# Test:   docker compose run --rm rasa test --stories tests --out results
+# Run:    docker compose up       (REST: POST http://localhost:5005/webhooks/rest/webhook)
+services:
+  rasa:
+    image: rasa/rasa:3.6.21-full
+    working_dir: /app
+    volumes:
+      - ./rasa:/app
+      - ./configs:/configs:ro
+    environment:
+      RASA_TELEMETRY_ENABLED: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:5005:5005"  # localhost only: no auth on the REST channel
+    command: run
+    depends_on:
+      - actions
+
+  actions:
+    image: rasa/rasa-sdk:3.6.2
+    volumes:
+      - ./rasa/actions:/app/actions:ro
+    command: start --actions actions
