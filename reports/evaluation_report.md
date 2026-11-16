@@ -13,7 +13,7 @@ Targets: mean intent accuracy ≥ 0.85, mean slot F1 ≥ 0.75, no locale more th
 | xlm-roberta-base-runA | 0.759 | 0.695 | 0.609 | 0.599 | 28.9 pp | ar-SA (10.5 pp), sw-KE (24.5 pp), am-ET (20.2 pp) |
 | xlm-roberta-base-runB | 0.863 | 0.829 | 0.727 | 0.717 | 3.3 pp | none |
 | xlm-roberta-base-runB-oos | 0.860 | 0.812 | 0.729 | 0.719 | 3.9 pp | none |
-| xlm-roberta-base-runB-oos-int8 | 0.854 | 0.804 | 0.707 | 0.698 | 4.6 pp | none |
+| xlm-roberta-base-runB-oos-int8 | 0.855 | 0.807 | 0.713 | 0.703 | 4.5 pp | none |
 
 ## bert-base-multilingual-cased-runA
 
@@ -114,17 +114,17 @@ Most frequent intent confusions: `general_quirky` → `qa_factoid` (172), `calen
 
 | Locale | Intent acc | Intent macro-F1 | Slot F1 | Slot F1 char-exact | Intent acc unseen | Intent acc judge-clean |
 |---|---|---|---|---|---|---|
-| en-US | 0.888 | 0.856 | 0.777 | 0.777 | 0.887 | 0.888 |
-| es-ES | 0.871 | 0.822 | 0.704 | 0.704 | 0.866 | 0.872 |
-| de-DE | 0.874 | 0.840 | 0.748 | 0.749 | 0.871 | 0.882 |
-| fr-FR | 0.876 | 0.824 | 0.716 | 0.717 | 0.871 | 0.878 |
-| ja-JP | 0.866 | 0.817 | 0.713 | 0.611 | 0.860 | 0.868 |
-| hi-IN | 0.864 | 0.804 | 0.707 | 0.708 | 0.861 | 0.872 |
-| ar-SA | 0.809 | 0.768 | 0.693 | 0.694 | 0.805 | 0.843 |
-| sw-KE | 0.833 | 0.777 | 0.686 | 0.686 | 0.825 | 0.834 |
-| am-ET | 0.818 | 0.755 | 0.658 | 0.659 | 0.812 | 0.819 |
-| ta-IN | 0.837 | 0.781 | 0.673 | 0.674 | 0.832 | 0.841 |
+| en-US | 0.889 | 0.858 | 0.776 | 0.776 | 0.888 | 0.889 |
+| es-ES | 0.872 | 0.828 | 0.716 | 0.716 | 0.867 | 0.873 |
+| de-DE | 0.869 | 0.838 | 0.754 | 0.754 | 0.866 | 0.878 |
+| fr-FR | 0.875 | 0.824 | 0.721 | 0.721 | 0.870 | 0.878 |
+| ja-JP | 0.871 | 0.820 | 0.714 | 0.610 | 0.866 | 0.874 |
+| hi-IN | 0.870 | 0.812 | 0.706 | 0.707 | 0.867 | 0.876 |
+| ar-SA | 0.811 | 0.738 | 0.697 | 0.697 | 0.807 | 0.842 |
+| sw-KE | 0.835 | 0.794 | 0.695 | 0.695 | 0.827 | 0.836 |
+| am-ET | 0.815 | 0.757 | 0.670 | 0.672 | 0.809 | 0.817 |
+| ta-IN | 0.840 | 0.801 | 0.677 | 0.678 | 0.836 | 0.844 |
 
-McNemar test on intent correctness vs baselines: majority: model-only correct 23519, baseline-only correct 223, p < 1e-300; bag_of_embeddings: model-only correct 7444, baseline-only correct 790, p < 1e-300.
+McNemar test on intent correctness vs baselines: majority: model-only correct 23548, baseline-only correct 219, p < 1e-300; bag_of_embeddings: model-only correct 7444, baseline-only correct 757, p < 1e-300.
 
-Most frequent intent confusions: `general_quirky` → `qa_factoid` (174), `qa_factoid` → `general_quirky` (107), `calendar_set` → `calendar_query` (106), `general_quirky` → `calendar_query` (81), `general_quirky` → `news_query` (74), `play_radio` → `play_music` (67), `cooking_recipe` → `general_quirky` (66), `news_query` → `general_quirky` (51), `play_audiobook` → `play_music` (51), `weather_query` → `general_quirky` (49).
+Most frequent intent confusions: `general_quirky` → `qa_factoid` (169), `calendar_set` → `calendar_query` (111), `qa_factoid` → `general_quirky` (95), `general_quirky` → `calendar_query` (91), `general_quirky` → `news_query` (72), `play_radio` → `play_music` (65), `weather_query` → `general_quirky` (51), `transport_query` → `transport_traffic` (50), `cooking_recipe` → `general_quirky` (46), `calendar_query` → `calendar_set` (44).

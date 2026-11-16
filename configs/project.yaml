@@ -87,6 +87,9 @@ privacy:
 serving:
   onnx_dir: artifacts/onnx  # export_onnx writes <run name>/model.onnx, model.quant.onnx, meta.json
   intra_op_threads: 4  # NFR-4 is measured on a 4-core CPU
+  # fp32 ONNX: 14.4 ms median on 4 threads, no accuracy loss. INT8 was 6.0 ms but cost 0.5 pp intent accuracy
+  # and 1.6 pp slot F1 on test (reports/latency_report.md, reports/evaluation_report.md).
+  quantized: false
   # fastText lid.176.bin (CC BY-SA 3.0), https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
   # SHA-256 7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e. Swahili detection is only ~67%
   # on MASSIVE dev, so a language hint from the client overrides detection.

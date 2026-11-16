@@ -181,33 +181,33 @@ Random intent or slot errors (test split), up to 3 per locale and run, seed from
 
 | Locale | Utterance | Gold intent | Predicted | Confidence | Gold slots | Predicted slots |
 |---|---|---|---|---|---|---|
-| en-US | cisco system | recommendation_movies | qa_stock | 0.5827 | - | - |
-| en-US | will the temperature stay about the same or is it going to get colder | weather_query | weather_query | 0.9963 | weather_descriptor: temperature | weather_descriptor: temperature, weather_descriptor: colder |
-| en-US | please ring the wake up alarm at eight am next saturday | alarm_set | alarm_set | 0.9966 | alarm_type: wake up, time: eight am, date: saturday | alarm_type: up, time: eight am, date: saturday |
-| es-ES | ok google borra cumpleaños de javier del calendario | calendar_remove | calendar_remove | 0.998 | event_name: cumpleaños de javier | event_name: cumpleaños, person: de javier |
-| es-ES | yo tengo una cita el viernes | calendar_query | calendar_query | 0.983 | date: viernes | event_name: cita, date: viernes |
-| es-ES | lo que está en la agenda de las cuatro de la tarde reunión con benito | calendar_query | calendar_query | 0.9977 | time: cuatro de la tarde, person: benito | time: cuatro de la tarde, event_name: reunión, person: benito |
-| de-DE | errechne den zeitunterschied zwischen acht uhr dreißig g. t. m. und fünf uhr dreißig g. m. t. | datetime_convert | datetime_convert | 0.9346 | time: acht uhr dreißig, time_zone: g. t. m. | time: acht uhr dreißig g, time_zone: ., time: fünf uhr dreißig g. m. |
-| de-DE | ausmachen von meinem wlan | iot_wemo_off | iot_wemo_off | 0.9862 | - | device_type: wlan |
-| de-DE | spiel den beliebtesten song von annenmaykantereit | play_music | play_music | 0.9958 | - | artist_name: annenmaykantereit |
-| fr-FR | que fait céline dion pour être belle | general_quirky | qa_factoid | 0.6343 | person: céline dion | person: céline dion |
-| fr-FR | retrouvez les articles wapo du aujourd'hui sur trump | news_query | news_query | 0.9979 | media_type: wapo, date: aujourd'hui, news_topic: trump | date: aujourd'hui, news_topic: trump |
-| fr-FR | la prochaine chanson jacques brel ne me quitte pas | play_music | play_music | 0.9929 | - | artist_name: jacques brel |
-| ja-JP | 外は何度ですか | weather_query | weather_query | 0.9347 | weather_descriptor: 度 | - |
-| ja-JP | 三月十五日の吉村との会議をリマインドする | calendar_set | calendar_set | 0.9995 | time: 三月十五日, person: 吉村, event_name: 会議 | date: 三月十五日の, person: 吉村, event_name: 会議 |
-| ja-JP | カレンダーで今月のゴルフの予定をすべて削除する | calendar_remove | calendar_remove | 0.9993 | date: 月, event_name: ゴルフの予定 | date: 今月の, event_name: ゴルフの |
-| hi-IN | कृपया खराब ग्राहक सेवा के लिए कॉमकास्ट करने के लिए एक शिकायत ट्वीट करें | social_post | social_post | 0.9998 | business_name: कॉमकास्ट, media_type: ट्वीट | media_type: ट्वीट |
-| hi-IN | वॉल्यूम सेटिंग कहां है | audio_volume_other | music_query | 0.303 | - | - |
-| hi-IN | आप अगले वर्ष नई दिल्ली में फेन फेस्ट के बारे में क्या जानते है | general_quirky | calendar_query | 0.8186 | date: अगले वर्ष, place_name: नई दिल्ली, event_name: फेन फेस्ट | date: अगले वर्ष, place_name: नई दिल्ली, event_name: फेन फेस्ट |
-| ar-SA | يرجى وصف هذا الشيء بالنسبة لي | qa_definition | qa_definition | 0.9952 | - | definition_word: هذا |
-| ar-SA | reason | play_podcasts | general_quirky | 0.8017 | podcast_name: reason | - |
-| ar-SA | هل انت تشتغل في كارفور | general_quirky | qa_stock | 0.6865 | - | business_name: كارفور |
-| sw-KE | olly ninunulie tiketi kwa jambojet ya kwenda nairobi wikendi hii | transport_ticket | transport_ticket | 0.9749 | transport_name: jambojet, place_name: nairobi | place_name: nairobi, date: wikendi hii |
-| sw-KE | mfanyakazi wa kampuni yangu ana nambari ya simu ya nyumbani | email_querycontact | email_querycontact | 0.8624 | relation: mfanyakazi wa kampuni, personal_info: nambari ya simu ya nyumbani | relation: mfanyakazi wa kampuni, personal_info: nambari ya simu |
-| sw-KE | ongeza ununuzi kwenye kalenda yangu ya kesho | calendar_set | calendar_set | 0.9991 | date: kesho | event_name: ununuzi, date: kesho |
-| am-ET | ይህን ድገም | play_music | music_likeness | 0.1912 | - | - |
-| am-ET | ነጠ ጫማ ወይም ጫማ በካልሲ ልልበስ | weather_query | takeaway_order | 0.3619 | weather_descriptor: ነጠ ጫማ ወይም ጫማ በካልሲ | weather_descriptor: ጫማ, weather_descriptor: ጫማ, business_name: በካልሲ |
-| am-ET | የ ቀረጥ ዝርዝር ከ አስራ ዘጠኝ ዘጠና ጅምሮ አስወግድ | lists_remove | lists_remove | 0.9983 | list_name: ቀረጥ, date: አስራ ዘጠኝ ዘጠና | list_name: ቀረጥ |
-| ta-IN | முட்டையை எவ்வளவு நேரம் வேக வைக்க வேண்டும் | cooking_recipe | cooking_recipe | 0.9936 | food_type: முட்டையை, cooking_type: வேக வைக்க | food_type: முட்டையை, cooking_type: வேக |
-| ta-IN | இந்த வார இறுதியில் அணிவகுப்பு பற்றி மேலும் தெரிந்து கொள்ள வேண்டும் | general_quirky | calendar_query | 0.9775 | date: இந்த வார இறுதியில், event_name: அணிவகுப்பு | date: இந்த வார இறுதியில் |
-| ta-IN | யாருக்கும் தெரியாது | play_music | play_music | 0.7684 | song_name: யாருக்கும் தெரியாது | - |
+| en-US | what shops are within ten miles | recommendation_locations | recommendation_locations | 0.9973 | business_type: shops, place_name: within ten miles | business_type: shops |
+| en-US | did i remember to set a reminder alarm for my next doctor's appointment | alarm_query | alarm_query | 0.9889 | event_name: doctor's appointment | event_name: doctor's appointment |
+| en-US | please play the radio gaga song | play_music | play_music | 0.855 | artist_name: gaga | - |
+| es-ES | es el evento de agradecimiento el catorce de este mes cierto | calendar_query | calendar_query | 0.9986 | event_name: de agradecimiento, date: catorce de este mes | event_name: evento, event_name: agradecimiento, date: catorce de este mes |
+| es-ES | me gustaría fijar una fecha para esta semana | calendar_set | datetime_query | 0.8786 | date: esta semana | date: esta semana |
+| es-ES | cuánto elena dispuesto a invertir en mi empresa en la reunión que se celebró hoy a las cinco y media p. m. | calendar_query | general_quirky | 0.7019 | person: elena, event_name: reunión, date: hoy, time: cinco y media p. m. | person: elena, event_name: reunión, date: hoy, time: cinco y media p. m. |
+| de-DE | was sind die nachrichten auf der n. t. v. webseite | news_query | news_query | 0.9993 | media_type: n. t. v. | media_type: n. t. v., media_type: seite |
+| de-DE | rufe taxi berlin | transport_taxi | transport_taxi | 0.9977 | transport_type: taxi berlin | transport_type: taxi, place_name: berlin |
+| de-DE | was ist das datum der wintersonnenwende in zwei jahren ab jetzt | datetime_query | datetime_query | 0.8136 | event_name: wintersonnenwende, time: zwei jahren | - |
+| fr-FR | régler une nouvelle alarme pour cette heure | alarm_set | alarm_set | 0.9974 | - | time: cette heure |
+| fr-FR | quelle est la meilleure recette de cookies aux pépites de chocolat | general_quirky | general_quirky | 0.8088 | - | food_type: cookies |
+| fr-FR | combien de froid fera-t-il chaque nuit cette semaine | weather_query | weather_query | 0.9954 | weather_descriptor: froid, general_frequency: chaque nuit, date: cette semaine | weather_descriptor: froid, date: chaque nuit, date: cette semaine |
+| ja-JP | kenny roger の lady を再生する | play_music | play_music | 0.9899 | - | artist_name: kenny roger, song_name: lady |
+| ja-JP | ベストラップミュージック | play_music | play_music | 0.9423 | music_genre: ラップ | music_genre: ベストラップ |
+| ja-JP | 保留中のタスクは何 | calendar_query | lists_query | 0.8535 | - | - |
+| hi-IN | आज क्या योजना है | calendar_query | calendar_query | 0.9627 | - | date: आज |
+| hi-IN | किसी कंपनी के बारे में नकारात्मक समीक्षा प्रस्तुत करें | social_post | general_quirky | 0.8201 | - | - |
+| hi-IN | मुझे अच्छे से रोने की ज़रूरत है क्या आप मेरे लिए उदास शास्त्रीय गाने बजा सकते हैं | play_music | play_music | 0.9929 | music_descriptor: उदास, music_genre: शास्त्रीय | music_genre: उदास शास्त्रीय |
+| ar-SA | المساعدة في تقديم شكوى خدمات المشترك | social_post | social_post | 0.9997 | business_name: خدمات المشترك | business_name: خدمات |
+| ar-SA | مطعم الشرق | takeaway_query | takeaway_order | 0.8336 | business_name: مطعم الشرق | business_name: مطعم الشرق |
+| ar-SA | شاركي في منشورالأصدقاء | social_post | social_query | 0.9792 | - | - |
+| sw-KE | olly tunaweza kusikiliza podikasti legally clueless | play_podcasts | play_podcasts | 0.9965 | - | podcast_name: legally clueless |
+| sw-KE | umepanga kutoa vipengele vipi katika siku zijazo | general_quirky | lists_query | 0.7093 | - | time: siku zij |
+| sw-KE | piga teksi ya njano | transport_taxi | transport_taxi | 0.9979 | transport_type: teksi ya njano | transport_type: teksi |
+| am-ET | ወደ ስሞቹ የሚካተት የኢሜይል አድራሻ እዚህ አለ | email_sendemail | email_query | 0.5601 | - | relation: ስሞቹ |
+| am-ET | ቆሻሻውን እንዳወጣ በየእለቱ አስታውሰኝ። | calendar_set | calendar_set | 0.999 | general_frequency: በየእለቱ | event_name: ቆሻሻውን, event_name: እንዳወጣ, general_frequency: በየእለቱ |
+| am-ET | ይህን ድገም | play_music | lists_createoradd | 0.3284 | - | - |
+| ta-IN | நான் பிரெக்சிட் பற்றி அறிய விரும்புகிறேன் | news_query | general_quirky | 0.4215 | news_topic: பிரெக்சிட் | - |
+| ta-IN | வார இறுதியில் நாடகத்தில் என்ன உள்ளது | recommendation_movies | recommendation_events | 0.5797 | time: வார இறுதியில், movie_type: நாடகத்தில் | date: வார இறுதியில் |
+| ta-IN | முட்டையை எவ்வளவு நேரம் வேகவைக்க வைக்க வேண்டும் | cooking_recipe | cooking_recipe | 0.9931 | food_type: முட்டையை, cooking_type: வேகவைக்க | food_type: முட்டையை, cooking_type: வைக்க |

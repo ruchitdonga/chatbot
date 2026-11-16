@@ -63,9 +63,13 @@ Phase 7 status: **done**. Threshold (energy < 7.036, temperature 1.3928) signed 
 | Language ID (`src/serving/language_id.py`) | Unicode script for am/ta/hi/ar/ja, fastText `lid.176.bin` (126 MB, CC BY-SA 3.0) for the rest. MASSIVE dev accuracy: en 99.6%, es 97.3%, de 97.7%, fr 98.5%, ja 99.9%, hi 100%, ar 96.8%, am 100%, ta 99.9%, **sw 66.8%** (short Swahili utterances look English). All 6 unsupported-language challenge items flagged. Mitigation: the client's language hint overrides detection. Two fastText quirks handled: NumPy 2 breaks `predict()`, and the native call needs a trailing newline |
 | ONNX export (`src/models/export_onnx.py`) | fp32 1,111 MB, matches PyTorch exactly (max intent-logit difference 3e-5, 100% argmax agreement). Default INT8 (278 MB) agreed only 90.5% (intent) / 92.3% (slot); on test it scored intent 0.854, slot F1 0.707 (−0.6 / −2.2 pp vs PyTorch). Re-exporting with per-channel INT8 on MatMul only, heads excluded |
 | FastAPI (`src/serving/app.py`, `create_app` factory) | `/predict` with language hint, empty/unsupported handoff, energy rule, allow-list event log (`handoff`, `handoff_reason` added to allowed fields). `tests/test_serving.py` (3 tests) proves no raw text or slot values reach the log |
-| Latency (`src/serving/benchmark.py`) | Written; runs after the re-export |
+| Gentler INT8 (per-channel, MatMul only, heads fp32) | 856 MB; test intent 0.855, slot F1 0.713 (−0.5 / −1.6 pp). Still a real loss |
+| Latency (`python -m src.serving.benchmark`, 4 threads, 300 test utterances) | INT8: 6.0 ms median. **fp32: 14.6 ms median (model), 17.2 ms (full /predict); NFR-4 (≤ 300 ms) met** |
+| Decision | Serve **fp32 ONNX** (`serving.quantized: false`): no accuracy loss and still ~20× under the latency target. Quantisation results kept in the reports |
+| Live smoke test (real model + language ID) | en/sw (hint)/ja food orders → `takeaway_order` with correct food slots; English and Hindi delivery complaints → `out_of_scope` handoff; Russian → unsupported-language handoff; empty → handoff. Log lines contain only allowed fields |
+| `pytest -q` | 45 passed |
 
-Docker Desktop installed by the user (2026-11-16); laptop restart pending.
+**Phase 8: done.** Docker Desktop installed by the user and launched after the restart; the engine was still starting at 22:27.
 
 Built during training (Phase 7, ready to run on the deployed model):
 - `data/challenge_set/challenge_set.jsonl`: 110 authored out-of-scope inputs (50 support requests outside MASSIVE's domains, 20 adversarial, 20 mixed-language across all ten languages; plus gibberish, empty, symbols, very long, and 6 unsupported languages), split 55 tune / 55 held-out within each category. Chit-chat excluded because MASSIVE has chit-chat intents. Non-English items unreviewed. `tests/test_challenge_set.py` (3 tests).

@@ -29,7 +29,8 @@ def create_app(nlu=None, lid=None, cfg=None):
     run = Path(cfg["models"]["deployed_checkpoint"]).parent.name
     if nlu is None:
         from src.serving.nlu import OnnxNLU
-        nlu = OnnxNLU(ROOT / cfg["serving"]["onnx_dir"] / run, threads=cfg["serving"]["intra_op_threads"])
+        nlu = OnnxNLU(ROOT / cfg["serving"]["onnx_dir"] / run, threads=cfg["serving"]["intra_op_threads"],
+                      quantized=cfg["serving"]["quantized"])
     if lid is None:
         from src.serving.language_id import LanguageId
         lid = LanguageId(ROOT / cfg["serving"]["language_id_model"], locales,
