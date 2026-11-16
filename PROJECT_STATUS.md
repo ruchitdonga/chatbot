@@ -69,7 +69,11 @@ Phase 7 status: **done**. Threshold (energy < 7.036, temperature 1.3928) signed 
 | Live smoke test (real model + language ID) | en/sw (hint)/ja food orders → `takeaway_order` with correct food slots; English and Hindi delivery complaints → `out_of_scope` handoff; Russian → unsupported-language handoff; empty → handoff. Log lines contain only allowed fields |
 | `pytest -q` | 45 passed |
 
-**Phase 8: done.** Docker Desktop installed by the user and launched after the restart; the engine was still starting at 22:27.
+**Phase 8: done.**
+
+Docker: the engine first failed because WSL was registered but broken (`wsl --version` timed out). The user reinstalled WSL (`winget install --id Microsoft.WSL`, version 3.0.5) and restarted. Docker engine 29.9.3 now runs (linux/amd64, 8 GB for containers). Pulling `rasa/rasa:3.6.21-full` and `rasa/rasa-sdk:3.6.2` for Phase 9.
+
+Next: **Phase 9 (Rasa dialogue for FeastFleet)**: custom NLU component calling `POST /predict`, forms for `takeaway_order` / `takeaway_query` against a mock backend, AI disclosure (`configs/disclosure.yaml`) as the first message, handoff for `out_of_scope` / low confidence, "offer a human" for `general_quirky` (`configs/business.yaml`), templated replies per language, `rasa test` stories in ≥ 3 languages.
 
 Built during training (Phase 7, ready to run on the deployed model):
 - `data/challenge_set/challenge_set.jsonl`: 110 authored out-of-scope inputs (50 support requests outside MASSIVE's domains, 20 adversarial, 20 mixed-language across all ten languages; plus gibberish, empty, symbols, very long, and 6 unsupported languages), split 55 tune / 55 held-out within each category. Chit-chat excluded because MASSIVE has chit-chat intents. Non-English items unreviewed. `tests/test_challenge_set.py` (3 tests).
@@ -192,7 +196,7 @@ Nothing is committed yet.
 | Blocker | Needed by | Action |
 |---|---|---|
 | Disclosure translations unreviewed | Phase 9 demo | A fluent speaker per language checks `configs/disclosure.yaml` and sets `review_status` to `native-reviewed` |
-| Docker Desktop not installed | Rasa spike (week 8), Phase 10 | Team member installs Docker Desktop (with WSL 2) before week 8. Until then Phases 1–8 are unaffected. |
+| ~~Docker Desktop not installed~~ | — | Resolved 2026-11-16: Docker 29.9.3 running after WSL reinstall |
 
 ## Changelog
 
