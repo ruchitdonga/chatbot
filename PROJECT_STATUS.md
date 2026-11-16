@@ -132,6 +132,26 @@ The bug is gone ("let me talk to a real person" now hands off). The cost: three 
 
 Phase 9: **done.**
 
+## Phase 10 (Docker deployment): done except the Docker Hub push
+
+`docker compose up --build` starts the whole stack: `nlu` (FastAPI + ONNX Runtime + fastText), `actions` (mock backend), `rasa`. All ports bound to `127.0.0.1` (no service has authentication).
+
+| Step | Outcome |
+|---|---|
+| `docker/Dockerfile.nlu` | `python:3.10-slim`, pinned `docker/requirements-nlu.txt`, no PyTorch, non-root user. **678 MB.** Model files mounted read-only at runtime (`artifacts/onnx`, `artifacts/models`), `logs/` mounted for the allow-listed event log. `.dockerignore` is an allow-list (code and configs only): build context 121 kB |
+| Offline tokenizer | `export_onnx` now saves the tokenizer next to the ONNX model and `OnnxNLU` loads it from there (falls back to the hub name for older exports), so the container needs no Hugging Face download. Saved for the deployed model; output identical to the hub tokenizer on en/ja/am samples |
+| `docker/Dockerfile.actions` | `rasa/rasa-sdk:3.6.2` + `rasa/actions` (mock backend). 344 MB |
+| Rasa | Official `rasa/rasa:3.6.21-full`, project mounted; trains on start (trained models are git-ignored; no-op when unchanged), waits for the `nlu` health check. Pipeline URL now `http://nlu:8000/predict` |
+| `requirements.txt` | Serving packages were never pinned: added onnx, onnxruntime, fastapi, uvicorn, fasttext-wheel, httpx at the verified versions |
+| Smoke test in containers | `/predict` returns correct JSON (es pizza order → `takeaway_order`, `food_type` = pizza); es and sw scripted conversations complete; `rasa test core --e2e`: **24/24 stories, 100/100 actions**; event log has only allowed fields; no user text in any container log |
+| **End-to-end turn time** (REST round trip through Rasa → NLU → actions, all 89 scripted turns, 4 NLU threads, this laptop) | **median 66 ms, p95 106 ms, max 119 ms; target ≤ 1 s met** |
+| Clean-start simulation | Trained Rasa models moved away, images rebuilt with `--no-cache`, `docker compose up`: working German conversation **80 s** after the build started (includes Rasa training) |
+| `pytest -q` | 50 passed |
+
+On a truly clean machine the model files must exist first (git-ignored, 1.2 GB): run the training/export steps, or copy `artifacts/onnx/xlm-roberta-base-runB-oos/` and `artifacts/models/lid.176.bin`. Not tested on a second machine.
+
+Not done: **pushing images to Docker Hub** publishes them, which needs team confirmation (guide step). The images contain code and configs only, no model or data.
+
 Built during training (Phase 7, ready to run on the deployed model):
 - `data/challenge_set/challenge_set.jsonl`: 110 authored out-of-scope inputs (50 support requests outside MASSIVE's domains, 20 adversarial, 20 mixed-language across all ten languages; plus gibberish, empty, symbols, very long, and 6 unsupported languages), split 55 tune / 55 held-out within each category. Chit-chat excluded because MASSIVE has chit-chat intents. Non-English items unreviewed. `tests/test_challenge_set.py` (3 tests).
 - `src/models/fallback.py`: temperature scaling on dev, ECE and reliability diagram, threshold chosen on dev + tune half (highest dev coverage among thresholds routing ≥ 95%), held-out routing per category, dev fallback rate per locale. The threshold is written as a recommendation for human sign-off. `tests/test_fallback.py` (4 tests). Not yet run end to end (needs the deployed model).

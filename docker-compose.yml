@@ -1,9 +1,35 @@
-# FICTIONAL FeastFleet demo. Phase 9: Rasa + action server in Docker; the NLU service still runs on the host
-#   (uvicorn src.serving.app:create_app --factory --port 8000). Phase 10 adds it as the `nlu` service.
-# Train:  docker compose run --rm rasa train
-# Test:   docker compose run --rm rasa test --stories tests --out results
-# Run:    docker compose up       (REST: POST http://localhost:5005/webhooks/rest/webhook)
+# FICTIONAL FeastFleet demo: the whole stack (NLU service, Rasa, action server with mock backend).
+#   docker compose up --build        then POST http://localhost:5005/webhooks/rest/webhook
+#   {"sender": "me", "message": "quiero pedir una pizza"}   (optional "metadata": {"language": "sw-KE"})
+# Needs the model files on the host (git-ignored, never baked into images):
+#   artifacts/onnx/xlm-roberta-base-runB-oos/  (python -m src.models.export_onnx)   artifacts/models/lid.176.bin
+# Rasa test:  docker compose run --rm rasa test core --e2e --stories tests --out results
+# Ports are bound to localhost only: none of the services has authentication.
 services:
+  nlu:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.nlu
+    image: feastfleet-nlu:phase10
+    volumes:
+      - ./artifacts/onnx:/app/artifacts/onnx:ro
+      - ./artifacts/models:/app/artifacts/models:ro
+      - ./logs:/app/logs  # allow-listed event log only (no text, no slot values)
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 180s  # loading the 1.1 GB fp32 model from a bind mount
+
+  actions:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.actions
+    image: feastfleet-actions:phase10
+
   rasa:
     image: rasa/rasa:3.6.21-full
     working_dir: /app
@@ -12,16 +38,13 @@ services:
       - ./configs:/configs:ro
     environment:
       RASA_TELEMETRY_ENABLED: "false"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    # Train first (no-op when nothing changed): trained models are git-ignored, so a clean checkout has none.
+    entrypoint: ["sh", "-c", "rasa train --quiet && exec rasa \"$$@\"", "--"]
+    command: ["run"]
     ports:
-      - "127.0.0.1:5005:5005"  # localhost only: no auth on the REST channel
-    command: run
+      - "127.0.0.1:5005:5005"
     depends_on:
-      - actions
-
-  actions:
-    image: rasa/rasa-sdk:3.6.2
-    volumes:
-      - ./rasa/actions:/app/actions:ro
-    command: start --actions actions
+      nlu:
+        condition: service_healthy
+      actions:
+        condition: service_started

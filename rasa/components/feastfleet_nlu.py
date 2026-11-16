@@ -47,7 +47,7 @@ def to_rasa(pred, keep, entities, exempt=frozenset()):
 class FeastFleetNLU(GraphComponent):
     @staticmethod
     def get_default_config():
-        return {"url": "http://host.docker.internal:8000/predict", "business_config": "/configs/business.yaml",
+        return {"url": "http://nlu:8000/predict", "business_config": "/configs/business.yaml",
                 "entities": ["food_type"], "timeout": 5}
 
     def __init__(self, config):

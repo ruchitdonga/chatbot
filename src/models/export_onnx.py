@@ -14,6 +14,7 @@ import numpy as np
 import onnx
 import torch
 from onnxruntime.quantization import QuantType, quantize_dynamic
+from transformers import AutoTokenizer
 
 from src.data.load import ROOT, configured_locales, load_config
 from src.data.prepare import load_processed
@@ -49,6 +50,9 @@ def export(checkpoint, out_dir):
     quantize_dynamic(str(out_dir / "model.onnx"), str(out_dir / "model.quant.onnx"), weight_type=QuantType.QInt8,
                      per_channel=True, op_types_to_quantize=["MatMul"], nodes_to_exclude=heads)
     shutil.copy(Path(checkpoint) / "meta.json", out_dir / "meta.json")
+    # Tokenizer next to the model so the serving container needs no Hugging Face download or cache (Phase 10).
+    encoder = json.loads((out_dir / "meta.json").read_text(encoding="utf-8"))["encoder"]
+    AutoTokenizer.from_pretrained(encoder).save_pretrained(out_dir)
     return model
 
 

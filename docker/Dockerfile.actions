@@ -1,0 +1,5 @@
+# Phase 10: Rasa action server with the MOCK FeastFleet backend (rasa/actions/actions.py; fictional demo, in-memory
+# orders, nothing is delivered). Rasa 3.6.21 requires rasa-sdk >=3.6.2,<3.7.0.
+FROM rasa/rasa-sdk:3.6.2
+COPY rasa/actions /app/actions
+CMD ["start", "--actions", "actions"]

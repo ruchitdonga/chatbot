@@ -9,7 +9,7 @@ pipeline:
   # out_of_scope) is applied by the service and arrives here as nlu_fallback / out_of_scope. A probability
   # threshold here would be a second rule that was never validated.
   - name: components.feastfleet_nlu.FeastFleetNLU
-    url: http://host.docker.internal:8000/predict
+    url: http://nlu:8000/predict  # the nlu service in docker-compose.yml
     business_config: /configs/business.yaml
     entities: [food_type]
 

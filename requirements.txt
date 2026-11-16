@@ -16,3 +16,10 @@ huggingface-hub==2.4.0
 safetensors==0.8.0
 scikit-learn==1.7.2
 mlflow==3.18.0
+# Serving (Phase 8); docker/requirements-nlu.txt pins the same versions for the container
+onnx==1.23.2
+onnxruntime==1.23.2
+fastapi==0.162.5
+uvicorn==0.54.0
+fasttext-wheel==0.9.2
+httpx==0.28.1

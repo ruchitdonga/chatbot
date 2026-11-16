@@ -18,7 +18,9 @@ class OnnxNLU:
     def __init__(self, model_dir, threads=None, quantized=True):
         model_dir = Path(model_dir)
         self.meta = json.loads((model_dir / "meta.json").read_text(encoding="utf-8"))
-        self.tokenizer = AutoTokenizer.from_pretrained(self.meta["encoder"])
+        # Saved next to the model by export_onnx (offline container); older exports fall back to the hub name.
+        local = (model_dir / "tokenizer.json").exists()
+        self.tokenizer = AutoTokenizer.from_pretrained(model_dir if local else self.meta["encoder"])
         opts = ort.SessionOptions()
         if threads:
             opts.intra_op_num_threads = threads

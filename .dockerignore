@@ -1,0 +1,7 @@
+# Allow-list: images get code and configs only. Data, models, .venv, logs and MLflow runs never enter a build.
+*
+!configs/
+!src/
+!docker/requirements-nlu.txt
+!rasa/actions/
+**/__pycache__

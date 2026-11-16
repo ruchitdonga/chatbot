@@ -1,0 +1,19 @@
+# Phase 10: FeastFleet NLU service (FICTIONAL student demo): FastAPI + ONNX Runtime + fastText, no PyTorch.
+# Model files are mounted at runtime, never baked in (docker-compose.yml):
+#   artifacts/onnx/<run>/  model.onnx, meta.json, tokenizer files   (python -m src.models.export_onnx)
+#   artifacts/models/lid.176.bin                                       (fastText language ID, CC BY-SA 3.0)
+FROM python:3.10-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+WORKDIR /app
+
+COPY docker/requirements-nlu.txt .
+RUN pip install --no-cache-dir -r requirements-nlu.txt
+
+COPY configs/ configs/
+COPY src/ src/
+RUN useradd --create-home --uid 1000 nlu && mkdir logs && chown nlu logs
+USER nlu
+
+EXPOSE 8000
+CMD ["uvicorn", "src.serving.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
