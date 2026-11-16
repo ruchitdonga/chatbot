@@ -152,6 +152,13 @@ On a truly clean machine the model files must exist first (git-ignored, 1.2 GB):
 
 Not done: **pushing images to Docker Hub** publishes them, which needs team confirmation (guide step). The images contain code and configs only, no model or data.
 
+### Business demo site (added 2026-11-16, user request; not in the guide)
+
+`http://localhost:8080` after `docker compose up`: a FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`). Every page says FeastFleet is fictional and orders are mock.
+- Chat widget: language picker (auto-detect + ten languages; sent as the `metadata.language` hint, so Swahili works), three suggested phrases per language, Yes/No buttons for the human-agent offer, per-message right-to-left text (Arabic), "Order" on each menu card sends an order sentence in the chosen language. Changing language starts a new conversation (the bot keeps the first language). Bot replies rendered as text only (no HTML injection).
+- nginx proxies only `/webhooks/rest/webhook` to Rasa (same origin, no CORS); Rasa's tracker/model API returns 404 through the site. Strict Content-Security-Policy (self only), system fonts, nothing loaded from outside localhost, no access log, nothing stored in the browser.
+- Tested in the browser pane: Spanish two-turn order, Arabic order tracking (FF-1002) right-to-left, menu-card order on a phone-size screen (chat goes full-screen); no console errors. Suggested phrases are AI-written and unreviewed, like the bot replies.
+
 Built during training (Phase 7, ready to run on the deployed model):
 - `data/challenge_set/challenge_set.jsonl`: 110 authored out-of-scope inputs (50 support requests outside MASSIVE's domains, 20 adversarial, 20 mixed-language across all ten languages; plus gibberish, empty, symbols, very long, and 6 unsupported languages), split 55 tune / 55 held-out within each category. Chit-chat excluded because MASSIVE has chit-chat intents. Non-English items unreviewed. `tests/test_challenge_set.py` (3 tests).
 - `src/models/fallback.py`: temperature scaling on dev, ECE and reliability diagram, threshold chosen on dev + tune half (highest dev coverage among thresholds routing ≥ 95%), held-out routing per category, dev fallback rate per locale. The threshold is written as a recommendation for human sign-off. `tests/test_fallback.py` (4 tests). Not yet run end to end (needs the deployed model).

@@ -1,5 +1,6 @@
 # FICTIONAL FeastFleet demo: the whole stack (NLU service, Rasa, action server with mock backend).
-#   docker compose up --build        then POST http://localhost:5005/webhooks/rest/webhook
+#   docker compose up --build        then open http://localhost:8080 (FeastFleet demo site with the chat widget)
+#   or POST http://localhost:5005/webhooks/rest/webhook
 #   {"sender": "me", "message": "quiero pedir una pizza"}   (optional "metadata": {"language": "sw-KE"})
 # Needs the model files on the host (git-ignored, never baked into images):
 #   artifacts/onnx/xlm-roberta-base-runB-oos/  (python -m src.models.export_onnx)   artifacts/models/lid.176.bin
@@ -48,3 +49,13 @@ services:
         condition: service_healthy
       actions:
         condition: service_started
+
+  web:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./demo:/usr/share/nginx/html:ro
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - rasa
