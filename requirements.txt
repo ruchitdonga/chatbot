@@ -23,3 +23,5 @@ fastapi==0.162.5
 uvicorn==0.54.0
 fasttext-wheel==0.9.2
 httpx==0.28.1
+# Monitoring (Phase 11); Evidently's API changed between releases, so keep this pin
+evidently==0.7.23

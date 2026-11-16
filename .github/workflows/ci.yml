@@ -1,0 +1,46 @@
+# Phase 11 CI for the multilingual support chatbot (FeastFleet demo is fictional).
+# Gates on the COMMITTED results of the full GPU run (reports/metrics.json, reports/fallback.json): a CPU runner
+# cannot retrain to target, so the smoke fine-tune only proves the training pipeline runs (guide decision).
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install dependencies (CPU PyTorch; requirements.txt pins the CUDA build used for training)
+        run: |
+          grep -vE '^(torch==|--extra-index-url)' requirements.txt > requirements-ci.txt
+          pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-ci.txt
+
+      - name: Metric gates (intent accuracy, slot F1, 10 pp fairness, safe fallback; recorded misses only)
+        run: python -m pytest -q tests/test_metrics_gates.py
+
+      - name: Download MASSIVE 1.1 (SHA-256 checked) and rebuild the frozen splits
+        run: |
+          python -m src.data.download
+          python -m src.data.prepare
+
+      - name: PII scrub, fallback routing and logging tests
+        run: python -m pytest -q tests/test_pii_scrubber.py tests/test_fallback.py tests/test_serving.py
+
+      - name: Full test suite
+        run: python -m pytest -q
+
+      - name: Smoke fine-tune (tiny random-weight XLM-R, 1 epoch on 400 examples; pipeline check, not accuracy)
+        run: python -m src.models.train --model optimum-intel-internal-testing/tiny-random-xlm-roberta --run A --smoke --run-name ci-smoke

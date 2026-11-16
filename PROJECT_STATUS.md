@@ -8,7 +8,7 @@ Phase 2 (ethics audit and privacy design): **done**, AI-disclosure translations 
 Phase 3 (NLU data pipeline): **done.**
 Phase 4 (baselines and MLflow): **done.**
 Phase 5 (joint model): **in progress.** XLM-R is the deployed model (Amharic decision below).
-Phases 6–8: **done** (details below). Phase 9 (Rasa dialogue): **in progress**; dialogue built and tested, scripted-conversation evaluation remaining.
+Phases 6–10: **done** (Docker Hub push pending). Phase 11: **done locally**, CI pending. Phase 12: not started.
 
 ## Phase 5 evidence (so far)
 
@@ -132,6 +132,20 @@ The bug is gone ("let me talk to a real person" now hands off). The cost: three 
 
 Phase 9: **done.**
 
+## Phase 11 (monitoring, retraining policy, CI): done locally; CI result pending first push
+
+| Step | Outcome |
+|---|---|
+| Reference profile (`src/monitoring/drift_report.py` → `reports/monitoring/reference_profile.json`) | Train split (115,140 utterances) with the deployed model's predictions: locale, predicted intent, predicted slot labels, length. Fallback-rate baseline from **dev (22.1%)**, not train (14.5%): the model is over-confident on its own training data, so a train baseline would fire the "fallback doubled" trigger on normal traffic. `OnnxNLU.predict_batch` added (identical output to `predict`; `predict` now calls it) |
+| Batches | Normal: 5,000 random test utterances. Drift: **SYNTHETIC** Swahili surge (50% sw-KE), labelled synthetic everywhere |
+| Results (`reports/drift_report.md`) | **Normal: PSI locale 0.0007, intent 0.028, fallback 22.0%, Evidently 0/4 columns drifted, no trigger. Swahili surge: PSI locale 0.88 → trigger fired, Evidently 1/4 (locale).** Fallback rate in the surge 22.9%: Swahili is not handed off more often, so only the PSI trigger fires. Live event log: 562 events → "not enough data" (< 1,000), as designed |
+| Evidently | 0.7.23 installed and pinned (user approved). `DataDriftPreset` HTML reports `reports/monitoring/evidently_{normal,drift}.html` (3.8 MB each) |
+| `reports/retraining_policy.md` | Triggers (PSI > 0.25 on locale/intent over ≥ 1,000 utterances, fallback ≥ 2× dev baseline), what a retrain may use (no live text, by design), 7 promotion gates ending in human approval, versioning via `models.deployed_checkpoint`/`model_version`, rollback without retraining |
+| CI gates (`tests/test_metrics_gates.py`, 6 tests) | Decision (user, 2026-11-17): **pass on recorded misses**. Known misses recorded with real values in `configs/project.yaml` `targets.known_misses` (slot F1 0.7292, safe fallback 0.9090), not in `metrics.json` because `evaluate.py` rewrites it. A miss passes only if recorded and not below the recorded value; a recorded miss that is now met fails. Fairness gate recomputed from per-locale numbers. Verified: removing the recorded misses makes both gates fail |
+| `.github/workflows/ci.yml` | CPU PyTorch 2.14.1, gates first, MASSIVE download (SHA-256 checked) + prepare, PII/fallback/logging tests, full pytest, smoke fine-tune with a tiny random-weight XLM-R (`optimum-intel-internal-testing/tiny-random-xlm-roberta`, 9 MB; 84 s locally, proves the pipeline only) |
+| `pytest -q` | 63 passed (adds monitoring, gates, shop tests) |
+| Remote | `origin` = private GitHub repo `ruchitdonga/chatbot` (user supplied, 2026-11-17) |
+
 ## Phase 10 (Docker deployment): done except the Docker Hub push
 
 `docker compose up --build` starts the whole stack: `nlu` (FastAPI + ONNX Runtime + fastText), `actions` (mock backend), `rasa`. All ports bound to `127.0.0.1` (no service has authentication).
@@ -152,9 +166,17 @@ On a truly clean machine the model files must exist first (git-ignored, 1.2 GB):
 
 Not done: **pushing images to Docker Hub** publishes them, which needs team confirmation (guide step). The images contain code and configs only, no model or data.
 
-### Business demo site (added 2026-11-16, user request; not in the guide)
+### FeastFleet website with ordering (2026-11-17, user request; not in the guide)
 
-`http://localhost:8080` after `docker compose up`: a FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`). Every page says FeastFleet is fictional and orders are mock.
+Upgraded from the first demo page to a working storefront at `http://localhost:8080`:
+- **Orders API** (`src/shop/app.py`, compose service `shop`, same image as `nlu`): menu (14 dishes, EUR cents), checkout, tracking. Orders in memory only, never logged; restarting `shop` clears them. Seeded FF-1001/FF-1002 keep the order-status flow working. `tests/test_shop.py` (5 tests): totals and free delivery over €30, cash on delivery, card, declined test card, validation, tracking never returns contact details, unpriced chat orders have no fee-only total.
+- **Website** (`demo/app.js`, `chat.js`): menu with category filters, cart drawer (kept in localStorage), checkout with delivery or pickup, contact details, and payment by **card** or **cash on delivery / pay at pickup**, order confirmation with a status timeline (confirmed → preparing → on the way → delivered, simulated from order age), track-order page. Customer-facing "demo/mock" wording removed. Two markers stay on purpose: a footer line "FeastFleet is a fictional brand" and a **Test mode** badge on the card form (test card 4242…, decline card …0002). **Card data never leaves the page**: the number, expiry and CVC are validated in the browser (Luhn, expiry, CVC length) and only brand + last four digits are sent; card inputs have autocomplete off so browsers neither fill nor save real cards.
+- **Assistant uses the same orders**: `action_place_order` creates a chat order (cash on delivery) and `action_check_order` reads the real status, so an order placed at checkout can be tracked in chat (verified: German chat tracked a pickup order placed on the site, "about 14 minutes"). If the API is unreachable the assistant hands off. Replies no longer say "demo" in any language; new reply `utter_order_delivered` (10 languages); the fake weather reply became "I can't check the weather here" (honest). All AI-written translations still unreviewed.
+- Tested in the browser: add to cart, free-delivery threshold, declined card (message shown and scrolled into view), card payment → confirmation, pickup + pay at pickup, chat tracking. `rasa test core --e2e` 24/24, `pytest` 63 passed.
+
+### First demo page (2026-11-16, superseded by the website above)
+
+A FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`).
 - Chat widget: language picker (auto-detect + ten languages; sent as the `metadata.language` hint, so Swahili works), three suggested phrases per language, Yes/No buttons for the human-agent offer, per-message right-to-left text (Arabic), "Order" on each menu card sends an order sentence in the chosen language. Changing language starts a new conversation (the bot keeps the first language). Bot replies rendered as text only (no HTML injection).
 - nginx proxies only `/webhooks/rest/webhook` to Rasa (same origin, no CORS); Rasa's tracker/model API returns 404 through the site. Strict Content-Security-Policy (self only), system fonts, nothing loaded from outside localhost, no access log, nothing stored in the browser.
 - Tested in the browser pane: Spanish two-turn order, Arabic order tracking (FF-1002) right-to-left, menu-card order on a phone-size screen (chat goes full-screen); no console errors. Suggested phrases are AI-written and unreviewed, like the bot replies.

@@ -38,16 +38,23 @@ class OnnxNLU:
 
     def predict(self, text, temperature, threshold):
         """One utterance -> intent, calibrated confidence, energy, slots, and whether to hand off and why."""
-        intent_logits, slot_logits, offsets = self.logits([text])
-        z = intent_logits[0] / temperature
-        zmax = z.max()
-        energy = float(zmax + np.log(np.exp(z - zmax).sum()))
-        probs = np.exp(z - zmax) / np.exp(z - zmax).sum()
-        k = int(probs.argmax())
-        intent = self.meta["labels"]["intents"][k]
-        tags = [self.meta["labels"]["slot_tags"][t] for t in slot_logits[0].argmax(-1)]
-        spans = decode_spans(tags, offsets[0])
-        reason = "out_of_scope" if intent == OOS_LABEL else ("low_confidence" if energy < threshold else None)
-        return {"intent": intent, "confidence": round(float(probs[k]), 4), "energy": round(energy, 3),
-                "slots": [{"label": lab, "value": text[s:e], "start": s, "end": e} for s, e, lab in spans],
-                "handoff": reason is not None, "handoff_reason": reason}
+        return self.predict_batch([text], temperature, threshold)[0]
+
+    def predict_batch(self, texts, temperature, threshold):
+        """predict() for several texts in one ONNX call (monitoring runs it over whole splits)."""
+        intent_logits, slot_logits, offsets = self.logits(texts)
+        out = []
+        for i, text in enumerate(texts):
+            z = intent_logits[i] / temperature
+            zmax = z.max()
+            energy = float(zmax + np.log(np.exp(z - zmax).sum()))
+            probs = np.exp(z - zmax) / np.exp(z - zmax).sum()
+            k = int(probs.argmax())
+            intent = self.meta["labels"]["intents"][k]
+            tags = [self.meta["labels"]["slot_tags"][t] for t in slot_logits[i].argmax(-1)]
+            spans = decode_spans(tags, offsets[i])
+            reason = "out_of_scope" if intent == OOS_LABEL else ("low_confidence" if energy < threshold else None)
+            out.append({"intent": intent, "confidence": round(float(probs[k]), 4), "energy": round(energy, 3),
+                        "slots": [{"label": lab, "value": text[s:e], "start": s, "end": e} for s, e, lab in spans],
+                        "handoff": reason is not None, "handoff_reason": reason})
+        return out

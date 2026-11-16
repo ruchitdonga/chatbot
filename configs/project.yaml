@@ -59,6 +59,17 @@ targets:
   safe_fallback_routing: 0.95
   median_nlu_latency_ms: 300
   end_to_end_turn_s: 1.0
+  # Missed targets, recorded with the real result of the deployed model (decision 2026-11-16). The CI gates
+  # (tests/test_metrics_gates.py) pass a missed target only if it is listed here, fail if the committed result
+  # drops below the recorded value, and fail if a listed target is now met (so the entry gets removed).
+  # Kept here, not in reports/metrics.json, because src.models.evaluate rewrites that file.
+  known_misses:
+    mean_slot_micro_f1:
+      recorded: 0.7292
+      source: reports/metrics.json (test, xlm-roberta-base-runB-oos, seqeval entity F1)
+    safe_fallback_routing:
+      recorded: 0.9090
+      source: reports/fallback.json (held-out challenge half, energy rule)
 
 # Signed off by the user on 2026-11-16 (reports/fallback_report.md): hand off when energy (logsumexp of
 # temperature-scaled intent logits) is below the threshold, or when the model predicts out_of_scope.

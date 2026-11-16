@@ -1,0 +1,43 @@
+{
+ "batches": {
+  "normal (test sample)": {
+   "n": 5000,
+   "psi_locale": 0.0007,
+   "psi_intent": 0.0278,
+   "psi_slot_labels": 0.0211,
+   "fallback_rate": 0.22,
+   "enough_data": true,
+   "fired": []
+  },
+  "drift (SYNTHETIC Swahili surge)": {
+   "n": 5000,
+   "psi_locale": 0.8831,
+   "psi_intent": 0.0268,
+   "psi_slot_labels": 0.0157,
+   "fallback_rate": 0.2286,
+   "enough_data": true,
+   "fired": [
+    "PSI locale > 0.25"
+   ]
+  }
+ },
+ "evidently": {
+  "normal (test sample)": [
+   0,
+   4
+  ],
+  "drift (SYNTHETIC Swahili surge)": [
+   1,
+   4
+  ]
+ },
+ "live_log": {
+  "n": 567,
+  "psi_locale": 0.7163,
+  "psi_intent": 6.2383,
+  "psi_slot_labels": 5.2514,
+  "fallback_rate": 0.5009,
+  "enough_data": false,
+  "fired": []
+ }
+}
