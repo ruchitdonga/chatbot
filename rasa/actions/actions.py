@@ -55,7 +55,13 @@ class ValidateSlotMappings(ValidationAction):
 
 def menu_matches(text):
     """Every dish named in an order or price question, close spellings included -> (status, {"items": [...]})."""
-    return shop("/api/menu/match?all=true&typos=true&q=" + urllib.parse.quote(text[:300]))
+    query = urllib.parse.urlencode({"all": "true", "typos": "true", "q": text[:300]})
+    return shop("/api/menu/match?" + query)
+
+
+def with_qty(item):
+    """ "2 × Dosa" for the confirmation; a single dish is just its name."""
+    return f"{item['qty']} × {item['name']}" if item.get("qty", 1) > 1 else item["name"]
 
 
 class ActionAddToCart(Action):
@@ -73,9 +79,9 @@ class ActionAddToCart(Action):
             code, found = menu_matches(food)
         if code == 200:
             items = found["items"]
-            dispatcher.utter_message(response="utter_added_to_cart", dish=", ".join(i["name"] for i in items))
+            dispatcher.utter_message(response="utter_added_to_cart", dish=", ".join(map(with_qty, items)))
             for item in items:  # the website's chat widget adds each to the visitor's cart (demo/chat.js)
-                dispatcher.utter_message(json_message={"cart_add": {"id": item["id"], "qty": 1}})
+                dispatcher.utter_message(json_message={"cart_add": {"id": item["id"], "qty": item.get("qty", 1)}})
         elif code == 404:
             dispatcher.utter_message(response="utter_not_on_menu", food_type=food)
         else:
@@ -130,6 +136,7 @@ class ActionMenuInfo(Action):
 
 if __name__ == "__main__":  # self-check: python -m actions.actions (inside the rasa-sdk image)
     assert normalise_order_id("it's ff 1001 please") == "FF-1001"
+    assert with_qty({"name": "Dosa", "qty": 2}) == "2 × Dosa" and with_qty({"name": "Dosa", "qty": 1}) == "Dosa"
     assert normalise_order_id("FF-١٠٠٢") == "FF-1002"
     assert normalise_order_id("my pizza") is None and normalise_order_id(None) is None
     print("actions self-check passed")

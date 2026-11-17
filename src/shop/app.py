@@ -17,8 +17,10 @@ import difflib
 import itertools
 import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Literal
 
+import yaml
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -96,14 +98,35 @@ TYPO_ALIASES = {w: d for d, aliases in ALIASES.items() for a in aliases if a.isa
 BY_LENGTH = sorted(((a.casefold(), d) for d, aliases in ALIASES.items() for a in aliases), key=lambda x: -len(x[0]))
 
 
+# Swahili "wali" (rice) is also Hinglish "the one" ("spicy wali biryani"): not a dish in a message that has Hinglish
+# marker words (configs/faq.yaml, the list the assistant uses to spot Hinglish).
+HINGLISH = set(yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "faq.yaml").read_text(encoding="utf-8"))
+               ["hinglish_words"])
+NOT_IN_HINGLISH = {"wali"}
+NUMBER_WORDS = {w: n for n, w in enumerate("one two three four five six seven eight nine ten".split(), 1)}
+# A quantity just before the dish, with at most one word between: "2 dosa", "two butter naan", "3x lassi".
+QTY = re.compile(r"(?:^|[\s,(])(\d{1,2}|" + "|".join(NUMBER_WORDS) + r")\s*(?:x\s*)?(?:[^\W\d]+\s+)?$")
+
+
+def _qty(before):
+    m = QTY.search(before)
+    if not m:
+        return 1
+    n = NUMBER_WORDS.get(m.group(1)) or int(m.group(1))  # int() reads Devanagari and Arabic-Indic digits too
+    return min(max(n, 1), 20)  # the cart allows 1-20 of a dish
+
+
 def match_dishes(text, typos=False):
-    """Every menu item named in the text, in the order written: [(item, matched words)]. Longest alias first, so
-    "chicken pizza" is one dish, not two. typos=True also accepts a close spelling of a long one-word alias
+    """Every menu item named in the text, in the order written: [(item, matched words, quantity)]. Longest alias
+    first, so "chicken pizza" is one dish, not two. typos=True also accepts a close spelling of a long one-word alias
     ("veg ulao"); only for text already known to be an order or a price question, because on everyday text it
     names dishes that were never meant (French "nouvelles" -> noodles; measured on MASSIVE, 2026-11-17)."""
-    t = (text or "").casefold()
+    original = t = (text or "").casefold()
+    hinglish = bool(HINGLISH & set(re.findall(r"[a-z]+", t)))
     found = []  # (position, dish id, matched words)
     for alias, dish_id in BY_LENGTH:
+        if hinglish and alias in NOT_IN_HINGLISH:
+            continue
         for start, end in _alias_spans(alias, t):
             found.append((start, dish_id, alias))
             t = t[:start] + " " * (end - start) + t[end:]  # blank it so "pizza" inside "chicken pizza" is not reused
@@ -113,15 +136,15 @@ def match_dishes(text, typos=False):
             if close and not close[0].startswith(m.group()):  # a cut-off name is usually another word (German "lass")
                 found.append((m.start(), TYPO_ALIASES[close[0]], m.group()))
     seen, out = set(), []
-    for _, dish_id, words in sorted(found):
+    for start, dish_id, words in sorted(found):
         if dish_id not in seen:
             seen.add(dish_id)
-            out.append((MENU_BY_ID[dish_id], words))
+            out.append((MENU_BY_ID[dish_id], words, _qty(original[:start])))
     return out
 
 
 def match_dish(text, typos=False):
-    """(menu item, matched words) for the longest dish name in the text, or None."""
+    """(menu item, matched words, quantity) for the longest dish name in the text, or None."""
     hits = match_dishes(text, typos)
     return max(hits, key=lambda h: len(h[1])) if hits else None
 STEPS = ["confirmed", "preparing", "on_the_way", "delivered"]
@@ -239,11 +262,12 @@ def create_app():
     @app.get("/api/menu/match")
     def match(q: str = Query(min_length=1, max_length=300), typos: bool = False, all: bool = False):
         """The assistant asks which menu item a customer means; 404 when nothing on the menu matches.
-        all=true returns {"items": [...]} for every dish named; typos=true accepts close spellings (see match_dishes)."""
+        all=true returns {"items": [...]} for every dish named; typos=true accepts close spellings (see match_dishes). Each item carries "matched" (the words, to locate the dish in
+        the text) and "qty" (a number written just before it, else 1)."""
         hits = match_dishes(q, typos) if all else [h for h in [match_dish(q, typos)] if h]
         if not hits:
             raise HTTPException(404, "Not on the menu.")
-        found = [{**item, "matched": words} for item, words in hits]  # the matched words locate the dish in the text
+        found = [{**item, "matched": words, "qty": qty} for item, words, qty in hits]
         return {"items": found} if all else found[0]
 
     @app.get("/api/orders/{order_id}")

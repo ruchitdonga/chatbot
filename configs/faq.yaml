@@ -214,7 +214,7 @@ topics:
     - order kab tak
     - khana kab aayega
     - order status
-  order:   # -> takeaway_order, only when the message also names a dish on the menu (Hinglish, Hindi, Tamil)
+  order:   # -> takeaway_order, only when the message also names a dish on the menu (Hinglish, Hindi, Tamil, English)
     - chahiye
     - order karna
     - order kar do
@@ -232,6 +232,12 @@ topics:
     - भेज दो
     - வேண்டும்
     - ஆர்டர் செய்
+    - i want
+    - i'd like
+    - i would like
+    - can i get
+    - can i have
+    - give me
 
 complaint_words:
   - refund

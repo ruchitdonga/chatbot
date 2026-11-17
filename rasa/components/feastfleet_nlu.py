@@ -126,7 +126,8 @@ class FeastFleetNLU(GraphComponent):
     def match_dish(self, text):
         """The menu dish named in the text ({..., "matched": words}) from the orders API, or None."""
         try:
-            r = requests.get(f"{self.shop_url}/api/menu/match", params={"q": text[:100]}, timeout=self.timeout)
+            r = requests.get(f"{self.shop_url}/api/menu/match", params={"q": text[:300]},
+                             timeout=self.timeout)
             return r.json() if r.status_code == 200 else None
         except (requests.RequestException, ValueError):
             return None  # no dish help when the orders API is down; the model's own tagging still works
@@ -149,10 +150,10 @@ class FeastFleetNLU(GraphComponent):
                 response.raise_for_status()
                 pred = response.json()
                 intent, ents = to_rasa(pred, self.keep, self.entities, self.exempt)
+                locale = hinglish_locale(text, self.faq, pred["locale"], pred.get("language_source"))
                 dish = self.match_dish(text)
                 intent, ents = with_order_number(text, with_faq(text, intent, self.faq, dish), ents)
                 ents = with_dish_entity(text, intent, ents, dish)
-                locale = hinglish_locale(text, self.faq, pred["locale"], pred.get("language_source"))
             except (requests.RequestException, KeyError, ValueError) as e:
                 # Service down or malformed: hand off rather than guess. Never log the text.
                 logger.warning("NLU service call failed (%s); routing to nlu_fallback", type(e).__name__)

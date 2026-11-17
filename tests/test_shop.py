@@ -104,6 +104,13 @@ def test_menu_match_words_typos_and_several_dishes():
     assert [i["id"] for i in got] == ["naan", "pav-bhaji"]
     got = match("pizza and chicken pizza", all=True).json()["items"]
     assert [i["id"] for i in got] == ["margherita", "tikka-pizza"]  # the longer name is one dish, not two
+    got = match("2 dosa, two butter naan, 3x lassi and a pizza", all=True).json()["items"]
+    assert [(i["id"], i["qty"]) for i in got] == [("dosa", 2), ("naan", 2), ("lassi", 3), ("margherita", 1)]
+    assert match("मुझे २ बिरयानी चाहिए").json()["qty"] == 2  # Devanagari digit
+    assert match("99 dosa").json()["qty"] == 20 and match("biryani for 4 people").json()["qty"] == 1
+    # Swahili "wali" (rice) is Hinglish "the one": a dish only in a Swahili conversation
+    assert match("mujhe spicy wali chahiye").status_code == 404
+    assert match("nataka wali").json()["id"] == "veg-pulao"
 
 
 def test_status_timeline():
