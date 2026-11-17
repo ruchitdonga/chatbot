@@ -12,11 +12,15 @@ intents:
   - takeaway_order
   - takeaway_query
   - general_greet
-  - datetime_query
-  - weather_query
   - general_quirky
   - out_of_scope
   - unsupported_request
+  - faq_fees      # store questions detected by keyword (configs/faq.yaml)
+  - faq_time
+  - faq_payment
+  - faq_menu
+  - faq_veg
+  - faq_price
   - nlu_fallback
   - affirm
   - deny
@@ -67,7 +71,7 @@ forms:
 actions:
   - action_add_to_cart
   - action_check_order
-  - action_tell_time
+  - action_menu_info
   - action_validate_slot_mappings
 
 responses:
@@ -228,29 +232,7 @@ responses:
   - {condition: [{type: slot, name: language, value: am-ET}], text: "እሺ። ሌላ ልረዳዎት የምችለው ነገር አለ?"}
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "சரி. வேறு ஏதாவது உதவி வேண்டுமா?"}
 
-  utter_time:
-  - text: "It is {time} UTC."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Son las {time} UTC."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Es ist {time} Uhr UTC."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Il est {time} UTC."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "現在 {time}（UTC）です。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "अभी {time} UTC बजे हैं।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "الساعة الآن {time} بالتوقيت العالمي (UTC)."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sasa ni saa {time} UTC."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "አሁን ሰዓቱ {time} UTC ነው።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது நேரம் {time} UTC."}
 
-  utter_weather:
-  - text: "Sorry, I can't check the weather here. I can help you order food or check on an order."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, aquí no puedo consultar el tiempo. Puedo ayudarte a pedir comida o a consultar un pedido."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, das Wetter kann ich hier nicht abfragen. Ich kann Ihnen beim Bestellen oder bei einer Bestellung helfen."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, je ne peux pas consulter la météo ici. Je peux vous aider à commander ou à suivre une commande."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありませんが、ここでは天気を確認できません。料理の注文や注文状況の確認をお手伝いします。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, मैं यहाँ मौसम की जानकारी नहीं दे सकता। मैं खाना ऑर्डर करने या ऑर्डर की स्थिति जानने में मदद कर सकता हूँ।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، لا يمكنني معرفة حالة الطقس هنا. يمكنني مساعدتك في طلب الطعام أو متابعة طلب."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, siwezi kuangalia hali ya hewa hapa. Ninaweza kukusaidia kuagiza chakula au kufuatilia oda."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ እዚህ የአየር ሁኔታን ማየት አልችልም። ምግብ እንዲያዝዙ ወይም ትዕዛዝ እንዲከታተሉ ልረዳዎት እችላለሁ።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், இங்கே வானிலையைப் பார்க்க முடியாது. உணவு ஆர்டர் செய்யவோ ஆர்டரின் நிலையை அறியவோ உதவ முடியும்."}
 
   utter_default:
   - text: "Sorry, I didn't understand. Could you say that another way?"
@@ -263,3 +245,75 @@ responses:
   - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, sikuelewa. Unaweza kusema kwa njia nyingine?"}
   - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ አልገባኝም። በሌላ መንገድ ሊገልጹት ይችላሉ?"}
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், எனக்குப் புரியவில்லை. வேறு விதமாகச் சொல்ல முடியுமா?"}
+
+  utter_faq_fees:
+  - text: "Delivery costs ₹40 and is free on orders above ₹499. Pickup is always free."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "La entrega cuesta ₹40 y es gratis en pedidos de más de ₹499. Recoger en el local siempre es gratis."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Die Lieferung kostet ₹40 und ist ab ₹499 Bestellwert kostenlos. Abholung ist immer kostenlos."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La livraison coûte ₹40 et elle est offerte dès ₹499 de commande. Le retrait sur place est toujours gratuit."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "配達料は₹40で、₹499以上のご注文は無料です。店頭受け取りはいつでも無料です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "डिलीवरी ₹40 की है और ₹499 से ऊपर के ऑर्डर पर मुफ़्त है। पिकअप हमेशा मुफ़्त है।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "رسوم التوصيل ₹40، والتوصيل مجاني للطلبات التي تزيد على ₹499. الاستلام من المطعم مجاني دائمًا."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Uletaji unagharimu ₹40 na ni bure kwa oda zaidi ya ₹499. Kuchukua mwenyewe ni bure kila wakati."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የማድረሻ ክፍያ ₹40 ነው፤ ከ₹499 በላይ ለሆኑ ትዕዛዞች ነፃ ነው። ራስዎ መውሰድ ሁልጊዜ ነፃ ነው።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "டெலிவரி கட்டணம் ₹40; ₹499க்கு மேல் உள்ள ஆர்டர்களுக்கு இலவசம். பிக்அப் எப்போதும் இலவசம்."}
+
+  utter_faq_payment:
+  - text: "You can pay by card or cash on delivery (pay at pickup for pickup orders). You choose at checkout."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Puedes pagar con tarjeta o en efectivo al recibir el pedido (o al recogerlo). Lo eliges al finalizar el pedido."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Sie können per Karte oder bar bei Lieferung zahlen (bei Abholung im Laden). Das wählen Sie an der Kasse."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Vous pouvez payer par carte ou en espèces à la livraison (ou au retrait). Vous choisissez au moment de commander."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "カードまたは代金引換（店頭受け取りの場合は受け取り時）でお支払いいただけます。お会計時に選べます。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आप कार्ड से या कैश ऑन डिलीवरी (पिकअप पर, पिकअप के समय) भुगतान कर सकते हैं। यह चेकआउट पर चुनें।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "يمكنك الدفع بالبطاقة أو نقدًا عند الاستلام (أو عند الاستلام من المطعم). تختار ذلك عند إتمام الطلب."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Unaweza kulipa kwa kadi au pesa taslimu wakati wa kupokea (au unapochukua mwenyewe). Unachagua wakati wa kukamilisha oda."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "በካርድ ወይም ሲደርስ በጥሬ ገንዘብ (ራስዎ ሲወስዱ በሚወስዱበት ጊዜ) መክፈል ይችላሉ። ትዕዛዙን ሲያጠናቅቁ ይመርጣሉ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "கார்டு மூலமோ டெலிவரியின் போது பணமாகவோ (பிக்அப் என்றால் எடுக்கும்போது) செலுத்தலாம். செக்அவுட்டில் தேர்வு செய்யுங்கள்."}
+
+  utter_faq_time:
+  - text: "Delivery takes about 30–35 minutes. Pickup orders are ready in about 15 minutes."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "La entrega tarda unos 30–35 minutos. Los pedidos para recoger están listos en unos 15 minutos."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Die Lieferung dauert etwa 30–35 Minuten. Abholbestellungen sind in etwa 15 Minuten fertig."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "La livraison prend environ 30 à 35 minutes. Les commandes à emporter sont prêtes en 15 minutes environ."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "配達は約30〜35分です。店頭受け取りは約15分でご用意できます。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "डिलीवरी में लगभग 30–35 मिनट लगते हैं। पिकअप ऑर्डर लगभग 15 मिनट में तैयार हो जाते हैं।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "يستغرق التوصيل نحو 30–35 دقيقة، وتكون طلبات الاستلام جاهزة خلال 15 دقيقة تقريبًا."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Uletaji huchukua takriban dakika 30–35. Oda za kuchukua mwenyewe huwa tayari baada ya takriban dakika 15."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ማድረስ ከ30–35 ደቂቃ ገደማ ይወስዳል። ራስዎ የሚወስዱት ትዕዛዝ በ15 ደቂቃ ገደማ ይዘጋጃል።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "டெலிவரிக்கு சுமார் 30–35 நிமிடங்கள் ஆகும். பிக்அப் ஆர்டர்கள் சுமார் 15 நிமிடங்களில் தயாராகும்."}
+
+  utter_menu:
+  - text: "On our menu: {categories}. Tell me a dish and I'll add it to your cart."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "En nuestro menú: {categories}. Dime un plato y lo añado a tu carrito."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Auf unserer Karte: {categories}. Nennen Sie ein Gericht, und ich lege es in Ihren Warenkorb."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Sur notre carte : {categories}. Dites-moi un plat et je l'ajoute à votre panier."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "メニュー：{categories}。料理名を教えていただければカートに追加します。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "हमारे मेन्यू में: {categories}। कोई डिश बताइए, मैं उसे आपकी कार्ट में जोड़ दूँगा।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "في قائمتنا: {categories}. اذكر طبقًا وسأضيفه إلى سلتك."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Kwenye menyu yetu: {categories}. Niambie chakula na nitakiongeza kwenye kikapu chako."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "በምናሌያችን ላይ፦ {categories}። ምግብ ይንገሩኝ፣ ወደ ጋሪዎ እጨምረዋለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "எங்கள் மெனுவில்: {categories}. ஒரு உணவைச் சொல்லுங்கள், அதை உங்கள் கார்ட்டில் சேர்க்கிறேன்."}
+
+  utter_veg:
+  - text: "Vegetarian dishes: {dishes}. Tell me one and I'll add it to your cart."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Platos vegetarianos: {dishes}. Dime uno y lo añado a tu carrito."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Vegetarische Gerichte: {dishes}. Nennen Sie eines, und ich lege es in Ihren Warenkorb."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Plats végétariens : {dishes}. Dites-m'en un et je l'ajoute à votre panier."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "ベジタリアン料理：{dishes}。お選びいただければカートに追加します。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "शाकाहारी डिश: {dishes}। कोई एक बताइए, मैं उसे आपकी कार्ट में जोड़ दूँगा।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "الأطباق النباتية: {dishes}. اختر واحدًا وسأضيفه إلى سلتك."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Vyakula vya mboga: {dishes}. Niambie kimoja na nitakiongeza kwenye kikapu chako."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የአትክልት ምግቦች፦ {dishes}። አንዱን ይንገሩኝ፣ ወደ ጋሪዎ እጨምረዋለሁ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "சைவ உணவுகள்: {dishes}. ஒன்றைச் சொல்லுங்கள், அதை உங்கள் கார்ட்டில் சேர்க்கிறேன்."}
+
+  utter_price:
+  - text: "{dish} costs {price}."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "{dish} cuesta {price}."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "{dish} kostet {price}."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "{dish} coûte {price}."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{dish}は{price}です。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "{dish} की क़ीमत {price} है।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "سعر {dish} هو {price}."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "{dish} inagharimu {price}."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "የ{dish} ዋጋ {price} ነው።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "{dish} விலை {price}."}

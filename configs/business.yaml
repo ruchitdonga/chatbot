@@ -10,8 +10,9 @@ answered_intents:
   - takeaway_order     # order food
   - takeaway_query     # ask about an order
   - general_greet
-  - datetime_query
-  - weather_query
+# datetime_query and weather_query removed (user, 2026-11-17): not a food-delivery job, so they get
+# "I can't help with that here" like other MASSIVE intents. Store questions (fees, payment, menu) are FAQ intents
+# detected by keyword in the NLU component (configs/faq.yaml).
 
 # Any other MASSIVE intent gets a polite "I can't help with that here" (no handoff).
 # Predicted out_of_scope, or low confidence, goes to a human agent.

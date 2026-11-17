@@ -8,16 +8,16 @@
   ];
   // Suggested phrases per language (AI-written, not yet reviewed by native speakers, like the assistant's replies).
   const CHIPS = {
-    "en-US": ["I want to order a pizza", "Where is my order?", "My food arrived cold, I want a refund"],
-    "es-ES": ["Quiero pedir una pizza", "¿Dónde está mi pedido?", "La comida llegó fría y quiero un reembolso"],
-    "de-DE": ["Ich möchte eine Pizza bestellen", "Wo ist meine Bestellung?", "Das Essen kam kalt an, ich will mein Geld zurück"],
-    "fr-FR": ["Je veux commander une pizza", "Où est ma commande ?", "Le repas est arrivé froid, je veux être remboursé"],
-    "ja-JP": ["ピザを注文したい", "注文はどこですか", "料理が冷めていたので返金してほしい"],
-    "hi-IN": ["मुझे पिज़्ज़ा ऑर्डर करना है", "मेरा ऑर्डर कहाँ है", "खाना ठंडा आया और मुझे पैसे वापस चाहिए"],
-    "ar-SA": ["أريد أن أطلب بيتزا", "أين طلبي", "وصل الطعام باردًا وأريد استرداد أموالي"],
-    "sw-KE": ["Nataka kuagiza pizza", "Oda yangu iko wapi", "Chakula kilifika kikiwa baridi, nataka kurudishiwa pesa"],
-    "am-ET": ["ፒዛ ማዘዝ እፈልጋለሁ", "ትዕዛዜ የት ደረሰ", "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ"],
-    "ta-IN": ["எனக்கு பிட்சா ஆர்டர் செய்ய வேண்டும்", "என் ஆர்டர் எங்கே இருக்கிறது", "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்"],
+    "en-US": ["I want to order a pizza", "Where is my order?", "My food arrived cold, I want a refund", "How much is delivery?"],
+    "es-ES": ["Quiero pedir una pizza", "¿Dónde está mi pedido?", "La comida llegó fría y quiero un reembolso", "¿Cuánto cuesta la entrega?"],
+    "de-DE": ["Ich möchte eine Pizza bestellen", "Wo ist meine Bestellung?", "Das Essen kam kalt an, ich will mein Geld zurück", "Was kostet die Lieferung?"],
+    "fr-FR": ["Je veux commander une pizza", "Où est ma commande ?", "Le repas est arrivé froid, je veux être remboursé", "Combien coûte la livraison ?"],
+    "ja-JP": ["ピザを注文したい", "注文はどこですか", "料理が冷めていたので返金してほしい", "配達料はいくらですか"],
+    "hi-IN": ["मुझे पिज़्ज़ा ऑर्डर करना है", "मेरा ऑर्डर कहाँ है", "खाना ठंडा आया और मुझे पैसे वापस चाहिए", "डिलीवरी चार्ज कितना है?"],
+    "ar-SA": ["أريد أن أطلب بيتزا", "أين طلبي", "وصل الطعام باردًا وأريد استرداد أموالي", "كم رسوم التوصيل؟"],
+    "sw-KE": ["Nataka kuagiza pizza", "Oda yangu iko wapi", "Chakula kilifika kikiwa baridi, nataka kurudishiwa pesa", "Ada ya kuleta ni kiasi gani?"],
+    "am-ET": ["ፒዛ ማዘዝ እፈልጋለሁ", "ትዕዛዜ የት ደረሰ", "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ", "የማድረሻ ክፍያ ስንት ነው?"],
+    "ta-IN": ["எனக்கு பிட்சா ஆர்டர் செய்ய வேண்டும்", "என் ஆர்டர் எங்கே இருக்கிறது", "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்", "டெலிவரி கட்டணம் எவ்வளவு?"],
   };
 
   const $ = (id) => document.getElementById(id);

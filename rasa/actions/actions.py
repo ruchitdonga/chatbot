@@ -11,7 +11,6 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
 
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
@@ -93,12 +92,28 @@ class ActionCheckOrder(Action):
         return [SlotSet("order_id", None)]
 
 
-class ActionTellTime(Action):
+
+class ActionMenuInfo(Action):
+    """Menu questions from the orders API: categories, vegetarian dishes, or the price of a named dish."""
+
     def name(self):
-        return "action_tell_time"
+        return "action_menu_info"
 
     def run(self, dispatcher, tracker, domain):
-        dispatcher.utter_message(response="utter_time", time=datetime.now(timezone.utc).strftime("%H:%M"))
+        intent = tracker.latest_message["intent"]["name"]
+        if intent == "faq_price":
+            code, item = shop("/api/menu/match?q=" + urllib.parse.quote(tracker.latest_message.get("text", "")))
+            if code == 200:
+                dispatcher.utter_message(response="utter_price", dish=item["name"], price=f"₹{item['price'] // 100}")
+                return []
+        code, menu = shop("/api/menu")  # no dish named: show the menu instead
+        if code != 200:
+            dispatcher.utter_message(response="utter_handoff")
+        elif intent == "faq_veg":
+            dispatcher.utter_message(response="utter_veg", dishes=", ".join(m["name"] for m in menu["items"] if m["veg"]))
+        else:
+            dispatcher.utter_message(response="utter_menu",
+                                     categories=", ".join(dict.fromkeys(m["category"] for m in menu["items"])))
         return []
 
 

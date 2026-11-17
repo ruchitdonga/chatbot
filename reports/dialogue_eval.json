@@ -214,12 +214,12 @@
   "turn": 1,
   "user": "what's the weather going to be like tomorrow",
   "expected": [
-   "weather"
+   "cant_help"
   ],
   "got": [
-   "weather"
+   "cant_help"
   ],
-  "intent": "weather_query",
+  "intent": "unsupported_request",
   "detected_language": "en-US",
   "failure": null
  },
@@ -230,12 +230,12 @@
   "turn": 1,
   "user": "what time is it in london",
   "expected": [
-   "time"
+   "cant_help"
   ],
   "got": [
-   "time"
+   "cant_help"
   ],
-  "intent": "datetime_query",
+  "intent": "unsupported_request",
   "detected_language": "en-US",
   "failure": null
  },
@@ -486,12 +486,12 @@
   "turn": 1,
   "user": "wie wird das wetter morgen in berlin",
   "expected": [
-   "weather"
+   "cant_help"
   ],
   "got": [
-   "weather"
+   "cant_help"
   ],
-  "intent": "weather_query",
+  "intent": "unsupported_request",
   "detected_language": "de-DE",
   "failure": null
  },
@@ -758,12 +758,12 @@
   "turn": 1,
   "user": "明日の天気は？",
   "expected": [
-   "weather"
+   "cant_help"
   ],
   "got": [
-   "weather"
+   "cant_help"
   ],
-  "intent": "weather_query",
+  "intent": "unsupported_request",
   "detected_language": "ja-JP",
   "failure": null
  },

@@ -12,16 +12,6 @@ rules:
   - intent: general_greet
   - action: utter_greet
 
-- rule: time
-  steps:
-  - intent: datetime_query
-  - action: action_tell_time
-
-- rule: weather (mock)
-  steps:
-  - intent: weather_query
-  - action: utter_weather
-
 - rule: other MASSIVE intents are not supported here
   steps:
   - intent: unsupported_request
@@ -126,20 +116,6 @@ rules:
   - action: utter_disclosure
   - action: utter_greet
 
-- rule: disclose then time
-  conversation_start: true
-  steps:
-  - intent: datetime_query
-  - action: utter_disclosure
-  - action: action_tell_time
-
-- rule: disclose then weather
-  conversation_start: true
-  steps:
-  - intent: weather_query
-  - action: utter_disclosure
-  - action: utter_weather
-
 - rule: disclose then can't help
   conversation_start: true
   steps:
@@ -183,3 +159,76 @@ rules:
   - action: utter_disclosure
   - action: takeaway_query_form
   - active_loop: takeaway_query_form
+
+# ---- store questions (configs/faq.yaml) ----
+- rule: faq_fees
+  steps:
+  - intent: faq_fees
+  - action: utter_faq_fees
+
+- rule: disclose then faq_fees
+  conversation_start: true
+  steps:
+  - intent: faq_fees
+  - action: utter_disclosure
+  - action: utter_faq_fees
+
+- rule: faq_time
+  steps:
+  - intent: faq_time
+  - action: utter_faq_time
+
+- rule: disclose then faq_time
+  conversation_start: true
+  steps:
+  - intent: faq_time
+  - action: utter_disclosure
+  - action: utter_faq_time
+
+- rule: faq_payment
+  steps:
+  - intent: faq_payment
+  - action: utter_faq_payment
+
+- rule: disclose then faq_payment
+  conversation_start: true
+  steps:
+  - intent: faq_payment
+  - action: utter_disclosure
+  - action: utter_faq_payment
+
+- rule: faq_menu
+  steps:
+  - intent: faq_menu
+  - action: action_menu_info
+
+- rule: disclose then faq_menu
+  conversation_start: true
+  steps:
+  - intent: faq_menu
+  - action: utter_disclosure
+  - action: action_menu_info
+
+- rule: faq_veg
+  steps:
+  - intent: faq_veg
+  - action: action_menu_info
+
+- rule: disclose then faq_veg
+  conversation_start: true
+  steps:
+  - intent: faq_veg
+  - action: utter_disclosure
+  - action: action_menu_info
+
+- rule: faq_price
+  steps:
+  - intent: faq_price
+  - action: action_menu_info
+
+- rule: disclose then faq_price
+  conversation_start: true
+  steps:
+  - intent: faq_price
+  - action: utter_disclosure
+  - action: action_menu_info

@@ -34,6 +34,32 @@ LOCALE_KEY = "feastfleet_locale"
 ORDER_ID = re.compile(r"FF\s*-?\s*(\d{4})", re.IGNORECASE)
 
 
+FAQ_INTENTS = {"fees": "faq_fees", "time": "faq_time", "payment": "faq_payment", "price": "faq_price",
+               "veg": "faq_veg", "menu": "faq_menu"}
+
+
+def _has(text, word):
+    """Substring match; short Latin words ("upi", "menu") must be whole words so "cupid" is not "upi"."""
+    if word.isascii() and len(word) <= 5 and word.replace(" ", "").isalpha():
+        return re.search(rf"\b{re.escape(word)}\b", text) is not None
+    return word in text
+
+
+def with_faq(text, intent, faq):
+    """Store questions (configs/faq.yaml) the model has no intent for; complaints are never turned into FAQs.
+
+    Overrides out_of_scope too: the out-of-scope training data covered payment and allergy problems, so the model
+    sends "how can I pay?" to a person. Complaint words keep real complaints with a person (0 of the 110
+    challenge-set items match an FAQ topic without one, measured 2026-11-17)."""
+    t = text.casefold()
+    if any(_has(t, w) for w in faq["complaint_words"]):
+        return intent
+    for topic, words in faq["topics"].items():  # file order is priority order
+        if any(_has(t, w.casefold()) for w in words):
+            return {"name": FAQ_INTENTS[topic], "confidence": intent["confidence"]}
+    return intent
+
+
 def with_order_number(text, intent, ents):
     """Route a message carrying an order number to tracking, with the number as an order_id entity."""
     m = ORDER_ID.search(text)
@@ -62,6 +88,7 @@ class FeastFleetNLU(GraphComponent):
     @staticmethod
     def get_default_config():
         return {"url": "http://nlu:8000/predict", "business_config": "/configs/business.yaml",
+                "faq_config": "/configs/faq.yaml",
                 "entities": ["food_type"], "timeout": 5}
 
     def __init__(self, config):
@@ -69,6 +96,7 @@ class FeastFleetNLU(GraphComponent):
         business = read_yaml_file(config["business_config"])
         self.keep = set(business["answered_intents"]) | set(business["offer_handoff_intents"])
         self.exempt = set(business.get("low_confidence_exempt_intents", []))
+        self.faq = read_yaml_file(config["faq_config"])
 
     @classmethod
     def create(cls, config, model_storage: ModelStorage, resource: Resource, execution_context: ExecutionContext):
@@ -87,7 +115,8 @@ class FeastFleetNLU(GraphComponent):
                 response = requests.post(self.url, json={"text": text, "language": hint}, timeout=self.timeout)
                 response.raise_for_status()
                 pred = response.json()
-                intent, ents = with_order_number(text, *to_rasa(pred, self.keep, self.entities, self.exempt))
+                intent, ents = to_rasa(pred, self.keep, self.entities, self.exempt)
+                intent, ents = with_order_number(text, with_faq(text, intent, self.faq), ents)
                 locale = pred["locale"]
             except (requests.RequestException, KeyError, ValueError) as e:
                 # Service down or malformed: hand off rather than guess. Never log the text.
@@ -126,4 +155,14 @@ if __name__ == "__main__":  # self-check, run inside the Rasa image: python -m c
     complaint = {"name": "out_of_scope", "confidence": 0.9}
     assert with_order_number("FF-2016 arrived cold, refund me", complaint, [])[0]["name"] == "out_of_scope"
     assert with_order_number("pizza", low, []) == (low, [])
+    faq = read_yaml_file("/configs/faq.yaml")
+    order = {"name": "takeaway_order", "confidence": 0.9}
+    for words, name in [("how much is delivery?", "faq_fees"), ("डिलीवरी चार्ज कितना है?", "faq_fees"),
+                        ("can i pay cash on delivery", "faq_payment"), ("how much is the biryani", "faq_price"),
+                        ("do you have vegetarian food", "faq_veg"), ("what's on the menu", "faq_menu"),
+                        ("メニューを見せて", "faq_menu"), ("i want to order a pizza", "takeaway_order"),
+                        ("i was charged twice, refund me", "takeaway_order")]:
+        assert with_faq(words, order, faq)["name"] == name, (words, with_faq(words, order, faq))
+    assert with_faq("how can i pay?", complaint, faq)["name"] == "faq_payment"  # plain question beats out_of_scope
+    assert with_faq("my card payment failed, i want a refund", complaint, faq) == complaint  # complaint stays
     print("feastfleet_nlu self-check passed")

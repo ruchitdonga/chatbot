@@ -101,13 +101,13 @@ stories:
   - action: action_deactivate_loop
   - active_loop: null
 
-- story: en time, then an order in the same conversation (disclosure only once)
+- story: en delivery fee, then an order in the same conversation (disclosure only once)
   steps:
   - user: |
-      what time is it
-    intent: datetime_query
+      how much is delivery?
+    intent: faq_fees
   - action: utter_disclosure
-  - action: action_tell_time
+  - action: utter_faq_fees
   - user: |
       i want to order a [pizza](food_type)
     intent: takeaway_order
@@ -290,3 +290,27 @@ stories:
   - active_loop: takeaway_query_form
   - active_loop: null
   - action: action_check_order
+
+- story: hi delivery fee question
+  steps:
+  - user: |
+      डिलीवरी चार्ज कितना है?
+    intent: faq_fees
+  - action: utter_disclosure
+  - action: utter_faq_fees
+
+- story: en menu question
+  steps:
+  - user: |
+      what's on the menu?
+    intent: faq_menu
+  - action: utter_disclosure
+  - action: action_menu_info
+
+- story: es payment question
+  steps:
+  - user: |
+      ¿cómo puedo pagar?
+    intent: faq_payment
+  - action: utter_disclosure
+  - action: utter_faq_payment

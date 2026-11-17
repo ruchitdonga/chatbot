@@ -20,8 +20,8 @@ conversations:
 - {id: en-midform-person, locale: en-US, goal: handoff, turns: [{user: "i want to order food", expect: [ask_food_type]}, {user: "actually let me talk to a real person", expect: [handoff]}]}
 - {id: en-unsupported, locale: en-US, goal: cant_help, turns: [{user: "play some jazz music", expect: [cant_help]}]}
 - {id: en-greet-order, locale: en-US, goal: order, turns: [{user: "hey there", expect: [greet]}, {user: "order me two cheeseburgers", expect: [not_on_menu]}]}
-- {id: en-weather, locale: en-US, goal: info, turns: [{user: "what's the weather going to be like tomorrow", expect: [weather]}]}
-- {id: en-time, locale: en-US, goal: info, turns: [{user: "what time is it in london", expect: [time]}]}
+- {id: en-weather, locale: en-US, goal: info, turns: [{user: "what's the weather going to be like tomorrow", expect: [cant_help]}]}
+- {id: en-time, locale: en-US, goal: info, turns: [{user: "what time is it in london", expect: [cant_help]}]}
 
 # ---------------- es-ES ----------------
 - {id: es-order-full, locale: es-ES, goal: order, turns: [{user: "pídeme una hamburguesa con patatas", expect: [not_on_menu]}]}
@@ -36,7 +36,7 @@ conversations:
 - {id: de-order-ask, locale: de-DE, goal: order, turns: [{user: "ich will was zu essen bestellen", expect: [ask_food_type]}, {user: "döner", expect: [added_to_cart]}]}
 - {id: de-status, locale: de-DE, goal: status, turns: [{user: "wann kommt meine lieferung", expect: [ask_order_id]}, {user: "FF 1002", expect: [order_status]}]}
 - {id: de-complaint, locale: de-DE, goal: handoff, turns: [{user: "in meiner bestellung fehlt etwas, ich will eine erstattung", expect: [handoff]}]}
-- {id: de-weather, locale: de-DE, goal: info, turns: [{user: "wie wird das wetter morgen in berlin", expect: [weather]}]}
+- {id: de-weather, locale: de-DE, goal: info, turns: [{user: "wie wird das wetter morgen in berlin", expect: [cant_help]}]}
 - {id: de-unsupported, locale: de-DE, goal: cant_help, turns: [{user: "spiel mein lieblingslied", expect: [cant_help]}]}
 
 # ---------------- fr-FR ----------------
@@ -52,7 +52,7 @@ conversations:
 - {id: ja-order-ask, locale: ja-JP, goal: order, turns: [{user: "出前を頼みたい", expect: [ask_food_type]}, {user: "ラーメン", expect: [added_to_cart]}]}
 - {id: ja-status, locale: ja-JP, goal: status, turns: [{user: "私の注文はいつ届きますか", expect: [ask_order_id]}, {user: "FF-1002", expect: [order_status]}]}
 - {id: ja-complaint, locale: ja-JP, goal: handoff, turns: [{user: "料理が冷めていたので返金してほしい", expect: [handoff]}]}
-- {id: ja-weather, locale: ja-JP, goal: info, turns: [{user: "明日の天気は？", expect: [weather]}]}
+- {id: ja-weather, locale: ja-JP, goal: info, turns: [{user: "明日の天気は？", expect: [cant_help]}]}
 - {id: ja-unsupported, locale: ja-JP, goal: cant_help, turns: [{user: "音楽をかけて", expect: [cant_help]}]}
 
 # ---------------- hi-IN ----------------

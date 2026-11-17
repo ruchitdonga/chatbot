@@ -1,0 +1,241 @@
+# Store questions the assistant answers itself (FeastFleet is a fictional brand). The NLU model (MASSIVE) has no
+# intents for these, so rasa/components/feastfleet_nlu.py detects them by keyword, checked in the order below; the
+# first topic with a match wins. Keywords are lowercase substrings; short Latin words (5 letters or fewer) must
+# match a whole word. AI-written for ten languages and not reviewed by native speakers (decision 2026-11-17).
+# Never applied when the message contains a complaint word (below): complaints keep going to a person. It does
+# override the model's out_of_scope/general_quirky, because the out-of-scope training data covered payment and
+# allergy problems, so the model sends plain store questions ("how can I pay?") to a person too. Measured on the
+# 110-item challenge set before adopting (PROJECT_STATUS.md).
+
+topics:
+  fees:   # -> utter_faq_fees
+    - delivery fee
+    - delivery charge
+    - delivery cost
+    - cost of delivery
+    - how much is delivery
+    - how much for delivery
+    - free delivery
+    - डिलीवरी चार्ज
+    - डिलीवरी फीस
+    - डिलीवरी शुल्क
+    - டெலிவரி கட்டணம்
+    - cuesta la entrega
+    - gastos de envío
+    - costo de envío
+    - coste de envío
+    - liefergebühr
+    - lieferkosten
+    - kostet die lieferung
+    - frais de livraison
+    - coûte la livraison
+    - 配達料
+    - 送料
+    - رسوم التوصيل
+    - تكلفة التوصيل
+    - ada ya kuleta
+    - gharama ya kuleta
+    - gharama ya uletaji
+    - የማድረሻ ክፍያ
+  time:   # -> utter_faq_time
+    - how long does delivery
+    - how long is delivery
+    - how long will delivery
+    - delivery time
+    - how long does it take
+    - कितना समय लगता
+    - कितनी देर लगती
+    - डिलीवरी में कितना समय
+    - எவ்வளவு நேரம்
+    - cuánto tarda la entrega
+    - cuánto tiempo tarda
+    - wie lange dauert
+    - lieferzeit
+    - combien de temps
+    - délai de livraison
+    - どのくらいかかり
+    - 何分かかり
+    - كم من الوقت
+    - كم يستغرق
+    - itachukua muda gani
+    - inachukua muda gani
+    - ምን ያህል ጊዜ
+  payment:   # -> utter_faq_payment
+    - how can i pay
+    - how do i pay
+    - payment method
+    - payment option
+    - cash on delivery
+    - pay by card
+    - pay with card
+    - pay cash
+    - upi
+    - भुगतान कैसे
+    - पेमेंट कैसे
+    - कैश ऑन डिलीवरी
+    - எப்படி பணம் செலுத்த
+    - பணம் செலுத்துவது
+    - cómo puedo pagar
+    - cómo pago
+    - formas de pago
+    - pago contra entrega
+    - wie kann ich bezahlen
+    - zahlungsmethode
+    - barzahlung
+    - comment payer
+    - moyens de paiement
+    - paiement à la livraison
+    - 支払い方法
+    - 代金引換
+    - طرق الدفع
+    - كيف أدفع
+    - الدفع عند الاستلام
+    - nawezaje kulipa
+    - njia za malipo
+    - እንዴት መክፈል
+    - የክፍያ መንገድ
+  price:   # -> action_menu_info (price of the dish named in the message)
+    - how much is
+    - how much does
+    - price of
+    - what does the
+    - कितने का
+    - कितने की
+    - क़ीमत
+    - कीमत
+    - என்ன விலை
+    - விலை என்ன
+    - cuánto cuesta
+    - qué precio
+    - was kostet
+    - wie viel kostet
+    - combien coûte
+    - quel est le prix
+    - いくら
+    - 値段
+    - كم سعر
+    - بكم
+    - bei gani
+    - ni bei gani
+    - ዋጋው ስንት
+    - ስንት ነው
+  veg:   # -> action_menu_info (vegetarian dishes)
+    - vegetarian
+    - vegan
+    - veg dishes
+    - veg options
+    - veg food
+    - शाकाहारी
+    - वेज खाना
+    - சைவ
+    - vegetariano
+    - vegetarisch
+    - végétarien
+    - ベジタリアン
+    - 菜食
+    - نباتي
+    - vyakula vya mboga
+    - bila nyama
+    - የአትክልት ምግብ
+    - የጾም ምግብ
+  menu:   # -> action_menu_info (categories)
+    - menu
+    - what do you have
+    - what can i order
+    - what do you serve
+    - मेन्यू
+    - मेनू
+    - मेनु
+    - क्या मिलता है
+    - மெனு
+    - menú
+    - qué tienen
+    - speisekarte
+    - was gibt es
+    - la carte
+    - qu'avez-vous
+    - メニュー
+    - 何がありますか
+    - القائمة
+    - ماذا لديكم
+    - menyu
+    - mna nini
+    - ምናሌ
+
+complaint_words:
+  - refund
+  - money back
+  - charged twice
+  - overcharged
+  - wrong
+  - missing
+  - cold
+  - complaint
+  - रिफंड
+  - पैसे वापस
+  - दो बार
+  - பணம் திரும்ப
+  - reembolso
+  - dos veces
+  - erstattung
+  - zweimal
+  - remboursement
+  - deux fois
+  - 返金
+  - استرداد
+  - مرتين
+  - kurudishiwa pesa
+  - mara mbili
+  - ገንዘቤ ይመለስ
+  - failed
+  - declined
+  - deducted
+  - debited
+  - not received
+  - never arrived
+  - late
+  - rude
+  - cancel
+  - allerg
+  - sick
+  - spoiled
+  - stale
+  - human
+  - person
+  - agent
+  - complain
+  - नहीं मिला
+  - कट गए
+  - गलत
+  - देर
+  - एलर्जी
+  - रद्द
+  - இன்னும் வரவில்லை
+  - தவறான
+  - falló
+  - rechazada
+  - tarde
+  - alergia
+  - cancelar
+  - fehlgeschlagen
+  - abgelehnt
+  - allergie
+  - stornieren
+  - échoué
+  - refusé
+  - en retard
+  - annuler
+  - 失敗
+  - 遅れ
+  - アレルギー
+  - キャンセル
+  - فشل
+  - تأخر
+  - حساسية
+  - إلغاء
+  - imeshindwa
+  - imechelewa
+  - mzio
+  - kughairi
+  - ዘግይቷል
+  - አለርጂ
