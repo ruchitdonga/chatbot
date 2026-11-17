@@ -1,6 +1,6 @@
 """FeastFleet orders API (FeastFleet is a fictional brand). Shared by the website checkout and the chat assistant.
 
-GET  /api/menu                 menu with prices (integer cents, EUR)
+GET  /api/menu                 menu with prices (integer paise, INR) and veg/non-veg flags
 POST /api/orders               checkout: cart items, delivery or pickup, contact, payment (card or cash on delivery)
 POST /api/chat-orders          an order placed in chat: free-text food, cash on delivery
 GET  /api/orders/{id}          status timeline for tracking (no contact details)
@@ -17,24 +17,37 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-CURRENCY = "EUR"
-DELIVERY_FEE, FREE_DELIVERY_FROM = 249, 3000
+CURRENCY = "INR"  # amounts in paise
+DELIVERY_FEE, FREE_DELIVERY_FROM = 4000, 49900
 DELIVERY_MINUTES, PICKUP_MINUTES = 30, 15
-MENU = [
-    {"id": "margherita", "name": "Margherita pizza", "desc": "Tomato, mozzarella, basil", "price": 1150, "category": "Pizza", "emoji": "🍕"},
-    {"id": "pepperoni", "name": "Pepperoni pizza", "desc": "Spicy salami, mozzarella", "price": 1300, "category": "Pizza", "emoji": "🍕"},
-    {"id": "biryani", "name": "Chicken biryani", "desc": "Basmati rice, saffron, raita", "price": 1300, "category": "Indian", "emoji": "🍛"},
-    {"id": "paneer", "name": "Paneer butter masala", "desc": "Tomato cream sauce, naan", "price": 1200, "category": "Indian", "emoji": "🍲"},
-    {"id": "dosa", "name": "Masala dosa", "desc": "Rice crêpe, potato, sambar", "price": 950, "category": "Indian", "emoji": "🥞"},
-    {"id": "sushi", "name": "Salmon sushi", "desc": "12 pieces, pickled ginger", "price": 1690, "category": "Japanese", "emoji": "🍣"},
-    {"id": "ramen", "name": "Tonkotsu ramen", "desc": "Pork broth, egg, spring onion", "price": 1420, "category": "Japanese", "emoji": "🍜"},
-    {"id": "shawarma", "name": "Chicken shawarma", "desc": "Garlic sauce, pickles, fries", "price": 980, "category": "Middle Eastern", "emoji": "🌯"},
-    {"id": "falafel", "name": "Falafel wrap", "desc": "Tahini, salad, pickled turnip", "price": 890, "category": "Middle Eastern", "emoji": "🧆"},
-    {"id": "doner", "name": "Döner kebab", "desc": "Flatbread, salad, yoghurt sauce", "price": 850, "category": "Turkish", "emoji": "🥙"},
-    {"id": "doro-wat", "name": "Doro wat", "desc": "Spiced chicken stew, injera", "price": 1350, "category": "East African", "emoji": "🍗"},
-    {"id": "chips-mayai", "name": "Chips mayai", "desc": "Chips omelette, kachumbari", "price": 700, "category": "East African", "emoji": "🍳"},
-    {"id": "tiramisu", "name": "Tiramisu", "desc": "Mascarpone, espresso, cocoa", "price": 600, "category": "Desserts & drinks", "emoji": "🍰"},
-    {"id": "lassi", "name": "Mango lassi", "desc": "Yoghurt, mango, cardamom", "price": 400, "category": "Desserts & drinks", "emoji": "🥭"},
+
+
+def dish(id_, name, desc, rupees, category, emoji, veg):
+    return {"id": id_, "name": name, "desc": desc, "price": rupees * 100, "category": category, "emoji": emoji,
+            "veg": veg}
+
+
+MENU = [  # veg follows the Indian veg/non-veg marker; egg counts as non-veg
+    dish("biryani", "Hyderabadi chicken biryani", "Dum-cooked with saffron, served with mirchi ka salan and raita", 289, "Biryani & rice", "🍛", False),
+    dish("mutton-biryani", "Mutton biryani", "Slow-cooked basmati, fried onions, boiled egg", 349, "Biryani & rice", "🍲", False),
+    dish("veg-pulao", "Veg pulao", "Basmati with whole spices and vegetables, raita on the side", 189, "Biryani & rice", "🍚", True),
+    dish("dosa", "Masala dosa", "Crisp rice crêpe, spiced potato, sambar and coconut chutney", 129, "South Indian", "🥞", True),
+    dish("idli-vada", "Idli vada combo", "Two idli, one medu vada, sambar and chutney", 99, "South Indian", "🍘", True),
+    dish("paneer", "Paneer butter masala", "Cottage cheese in a tomato and cashew gravy", 239, "Curries & breads", "🍲", True),
+    dish("dal-makhani", "Dal makhani", "Black lentils slow-cooked with butter and cream", 199, "Curries & breads", "🥘", True),
+    dish("naan", "Butter naan", "Tandoor-baked, brushed with butter", 49, "Curries & breads", "🫓", True),
+    dish("pav-bhaji", "Pav bhaji", "Spiced mashed vegetables, two buttered pav", 149, "Street food", "🍛", True),
+    dish("vada-pav", "Vada pav", "Potato fritter in a pav with green and garlic chutney", 59, "Street food", "🍔", True),
+    dish("margherita", "Margherita pizza", "Tomato, mozzarella, basil", 249, "Pizza", "🍕", True),
+    dish("tikka-pizza", "Chicken tikka pizza", "Tandoori chicken, onion, capsicum", 329, "Pizza", "🍕", False),
+    dish("sushi", "Salmon sushi", "12 pieces, pickled ginger, wasabi", 499, "Japanese", "🍣", False),
+    dish("ramen", "Chicken ramen", "Rich broth, noodles, soft egg, spring onion", 399, "Japanese", "🍜", False),
+    dish("shawarma", "Chicken shawarma roll", "Garlic toum, pickles, fries", 179, "Middle Eastern", "🌯", False),
+    dish("falafel", "Falafel wrap", "Tahini, salad, pickled turnip", 159, "Middle Eastern", "🧆", True),
+    dish("doro-wat", "Doro wat", "Ethiopian spiced chicken stew with injera", 329, "East African", "🍗", False),
+    dish("chips-mayai", "Chips mayai", "Kenyan chips omelette with kachumbari", 169, "East African", "🍳", False),
+    dish("gulab-jamun", "Gulab jamun", "Two warm dumplings in rose-cardamom syrup", 89, "Sweets & drinks", "🍮", True),
+    dish("lassi", "Mango lassi", "Yoghurt, Alphonso mango, cardamom", 79, "Sweets & drinks", "🥭", True),
 ]
 MENU_BY_ID = {m["id"]: m for m in MENU}
 STEPS = ["confirmed", "preparing", "on_the_way", "delivered"]

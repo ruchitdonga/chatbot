@@ -20,10 +20,18 @@
         </svg>
         <span>FeastFleet</span>
       </a>
+      <label class="search" for="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="sr-only">Search dishes</span>
+        <input id="search" type="search" placeholder="Search for biryani, dosa, paneer…" autocomplete="off" maxlength="60">
+      </label>
       <nav class="site-nav" aria-label="Main">
-        <a href="#/">Menu</a>
-        <a href="#/track">Track order</a>
-        <button class="link-btn" type="button" data-open-chat>Help</button>
+        <a href="#/track">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.8" fill="currentColor"/><circle cx="17" cy="17.5" r="1.8" fill="currentColor"/></svg>
+          Track order</a>
+        <button class="link-btn" type="button" data-open-chat>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Help</button>
       </nav>
       <button class="cart-btn" id="cart-btn" type="button" aria-controls="cart" aria-expanded="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg>
@@ -47,16 +55,18 @@
     <div class="drawer-foot" id="cart-foot"></div>
   </aside>
 
+  <a class="cart-bar" id="cart-bar" href="#/checkout" hidden></a>
+
   <footer class="site-footer">
     <div class="wrap footer-row">
       <div>
         <p class="footer-brand">FeastFleet</p>
-        <p>Neighbourhood food, delivered. Help in English, Español, Deutsch, Français, 日本語, हिन्दी, العربية, Kiswahili, አማርኛ and தமிழ்.</p>
+        <p>Support in English, हिन्दी, தமிழ், العربية, Kiswahili, አማርኛ, 日本語, Français, Deutsch and Español.</p>
       </div>
       <nav aria-label="Footer">
         <a href="#/">Menu</a>
         <a href="#/track">Track order</a>
-        <button class="link-btn" type="button" data-open-chat>Help &amp; support</button>
+        <button class="link-btn" type="button" data-open-chat>Help and support</button>
       </nav>
     </div>
     <p class="wrap legal">FeastFleet is a fictional brand. © 2026</p>

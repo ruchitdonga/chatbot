@@ -11,6 +11,69 @@
         ],
         "createdAt": "2026-11-16T17:59:07.790Z",
         "reason": "Claude: the .dot in the chat header is static (no animation in styles.css) and sits beside the text label 'AI assistant, not a person'"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-17T02:15:49.223Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-11-17T02:15:49.448Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-ticket-wallet.html"
+        ],
+        "createdAt": "2026-11-17T02:15:49.681Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-11-17T02:15:49.907Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-ticket-wallet.html"
+        ],
+        "createdAt": "2026-11-17T02:15:50.144Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-11-17T02:15:50.367Z",
+        "reason": "Claude: decision-round sketch under .impeccable/mocks/decision, never shipped; the built site is checked separately"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "demo/styles.css"
+        ],
+        "createdAt": "2026-11-17T02:35:28.131Z",
+        "reason": "Claude: the only match is .diet.nonveg::after, the Indian non-veg triangle drawn with the CSS border-triangle technique; styles.css has no accent-bordered cards"
       }
     ]
   }

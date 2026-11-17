@@ -5,12 +5,12 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const view = $("view");
-  const money = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
+  const money = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
   const fmt = (cents) => money.format(cents / 100);
   const CART_KEY = "feastfleet-cart", LAST_ORDER_KEY = "feastfleet-last-order";
   const STEP_LABELS = { confirmed: "Order confirmed", preparing: "Preparing your food", on_the_way: "On the way",
                         delivered: "Delivered", ready: "Ready for pickup" };
-  let menu = null, category = "All", pollTimer = null, fulfilment = "delivery", refreshCheckout = null;
+  let menu = null, category = "All", query = "", pollTimer = null, fulfilment = "delivery", refreshCheckout = null;
   let cart = read(localStorage, CART_KEY) || {};
 
   // ---------- helpers ----------
@@ -73,31 +73,46 @@
       h("button", { type: "button", "aria-label": `Add one ${name}`, onclick: () => setQty(id, qty + 1) }, "+"));
   }
 
+  function cartNodes() {
+    const ls = lines();
+    if (!ls.length) {
+      return { body: [h("div", { class: "empty-cart" }, h("p", { class: "empty-title" }, "Your cart is empty"),
+        h("p", { class: "muted" }, "Add dishes from the menu and they'll show up here."))], foot: [] };
+    }
+    const s = sums("delivery");
+    const more = menu.free_delivery_from - s.subtotal;
+    return {
+      body: ls.map(({ item, qty }) => h("div", { class: "cart-line" },
+        h("span", { class: `diet ${item.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": item.veg ? "Vegetarian" : "Non-vegetarian" }),
+        h("div", { class: "cart-info" }, h("p", { class: "cart-name" }, item.name), h("p", { class: "muted" }, fmt(item.price * qty))),
+        stepper(item.id, qty))),
+      foot: [
+        more > 0 ? h("p", { class: "free-hint" }, `Add ${fmt(more)} more for free delivery`) : h("p", { class: "free-hint ok" }, "Free delivery unlocked"),
+        h("div", { class: "sum-row" }, h("span", {}, "Item total"), h("span", {}, fmt(s.subtotal))),
+        h("div", { class: "sum-row" }, h("span", {}, "Delivery fee"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
+        h("div", { class: "sum-row total" }, h("span", {}, "To pay"), h("span", {}, fmt(s.total))),
+        h("a", { class: "btn btn-primary block", href: "#/checkout", onclick: closeCart }, "Checkout")],
+    };
+  }
+
   function renderCart() {
     const count = Object.values(cart).reduce((a, b) => a + b, 0);
     $("cart-count").textContent = count;
     $("cart-count").hidden = count === 0;
     if (!menu) return;
-    const body = $("cart-body"), foot = $("cart-foot");
-    const ls = lines();
-    if (!ls.length) {
-      body.replaceChildren(h("div", { class: "empty-cart" }, h("p", { class: "big" }, "🛒"),
-        h("p", {}, "Your cart is empty."), h("button", { class: "btn btn-ghost", type: "button", onclick: closeCart }, "Browse the menu")));
-      foot.replaceChildren();
-      return;
+    const fill = (body, foot) => { const c = cartNodes(); body.replaceChildren(...c.body); foot.replaceChildren(...c.foot); };
+    fill($("cart-body"), $("cart-foot"));
+    const side = $("cart-side");
+    if (side) {
+      const body = h("div", { class: "side-body" }), foot = h("div", { class: "side-foot" });
+      fill(body, foot);
+      side.replaceChildren(h("h2", {}, "Your cart"), body, foot);
     }
-    body.replaceChildren(...ls.map(({ item, qty }) => h("div", { class: "cart-line" },
-      h("span", { class: "cart-emoji", "aria-hidden": "true" }, item.emoji),
-      h("div", { class: "cart-info" }, h("p", { class: "cart-name" }, item.name), h("p", { class: "muted" }, fmt(item.price))),
-      stepper(item.id, qty))));
-    const s = sums("delivery");
-    const more = menu.free_delivery_from - s.subtotal;
-    foot.replaceChildren(
-      more > 0 ? h("p", { class: "free-hint" }, `Add ${fmt(more)} more for free delivery`) : h("p", { class: "free-hint ok" }, "You get free delivery"),
-      h("div", { class: "sum-row" }, h("span", {}, "Subtotal"), h("span", {}, fmt(s.subtotal))),
-      h("div", { class: "sum-row" }, h("span", {}, "Delivery"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
-      h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(s.total))),
-      h("a", { class: "btn btn-primary block", href: "#/checkout", onclick: closeCart }, "Go to checkout"));
+    const bar = $("cart-bar");
+    const page = (location.hash || "#/").split("/")[1] || "";
+    bar.hidden = !count || page !== "";
+    bar.replaceChildren(h("span", {}, `${count} item${count === 1 ? "" : "s"} · ${fmt(sums("delivery").total)}`),
+      h("strong", {}, "View cart"));
   }
   function openCart() {
     $("cart").hidden = false; $("scrim").hidden = false;
@@ -110,38 +125,59 @@
   }
 
   // ---------- pages ----------
+  function dishRow(m) {
+    const qty = cart[m.id];
+    return h("li", { class: "dish" },
+      h("div", { class: "dish-info" },
+        h("span", { class: `diet ${m.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": m.veg ? "Vegetarian" : "Non-vegetarian" }),
+        h("h3", {}, m.name),
+        h("p", { class: "dish-price" }, fmt(m.price)),
+        h("p", { class: "dish-desc" }, m.desc)),
+      h("div", { class: "dish-pic" },
+        h("div", { class: "pic", "aria-hidden": "true" }, m.emoji),
+        qty ? stepper(m.id, qty)
+          : h("button", { class: "add", type: "button", "aria-label": `Add ${m.name} to cart`,
+                          onclick: () => { setQty(m.id, 1); toast(`${m.name} added`); } }, "ADD")));
+  }
+
+  function clearSearch() {
+    query = "";
+    $("search").value = "";
+    route(false);
+  }
+
   function renderHome() {
-    const cats = ["All", ...new Set(menu.items.map((m) => m.category))];
-    const shown = menu.items.filter((m) => category === "All" || m.category === category);
+    const q = query.trim().toLowerCase();
+    const cats = [...new Set(menu.items.map((m) => m.category))];
+    const shown = menu.items.filter((m) => (category === "All" || m.category === category)
+      && (!q || `${m.name} ${m.desc}`.toLowerCase().includes(q)));
+    const groups = cats.map((c) => [c, shown.filter((m) => m.category === c)]).filter(([, list]) => list.length);
     view.replaceChildren(
-      h("section", { class: "hero wrap" },
-        h("div", { class: "hero-text" },
-          h("h1", {}, "Dinner from your neighbourhood, delivered."),
-          h("p", { class: "lede" }, "Pizza, biryani, sushi, shawarma, doro wat and more, from kitchens near you. Questions about an order? Our assistant answers in ten languages."),
-          h("div", { class: "hero-actions" },
-            h("button", { class: "btn btn-primary", type: "button",
-                          onclick: () => $("menu").scrollIntoView({ behavior: "smooth" }) }, "Order now"),
-            h("a", { class: "btn btn-ghost", href: "#/track" }, "Track an order"))),
-        h("div", { class: "hero-art", "aria-hidden": "true" },
-          h("div", { class: "plate plate-a" }, "🍕"), h("div", { class: "plate plate-b" }, "🍜"), h("div", { class: "plate plate-c" }, "🍛"))),
-      h("ul", { class: "perks wrap", "aria-label": "Why FeastFleet" },
-        h("li", {}, h("strong", {}, "~30 min"), " delivery"),
-        h("li", {}, h("strong", {}, "Free delivery"), ` over ${fmt(menu.free_delivery_from)}`),
-        h("li", {}, h("strong", {}, "Card or cash"), " on delivery"),
-        h("li", {}, h("strong", {}, "Help in 10 languages"))),
-      h("section", { class: "menu wrap", id: "menu", "aria-labelledby": "menu-title" },
-        h("div", { class: "section-head" }, h("h2", { id: "menu-title" }, "Menu")),
-        h("div", { class: "cats", role: "group", "aria-label": "Categories" }, cats.map((c) =>
-          h("button", { type: "button", class: "cat", "aria-pressed": String(c === category),
-                        onclick: () => { category = c; route(false); } }, c))),
-        h("ul", { class: "cards" }, shown.map((m, i) => h("li", { class: "card" },
-          h("div", { class: `card-art art-${i % 6}`, "aria-hidden": "true" }, m.emoji),
-          h("div", { class: "card-body" },
-            h("h3", {}, m.name), h("p", {}, m.desc),
-            h("div", { class: "card-foot" }, h("span", { class: "price" }, fmt(m.price)),
-              cart[m.id] ? stepper(m.id, cart[m.id])
-                : h("button", { class: "btn btn-small", type: "button", "aria-label": `Add ${m.name} to cart`,
-                                onclick: () => { setQty(m.id, 1); toast(`${m.name} added to cart`); } }, "Add"))))))));
+      h("section", { class: "store wrap" },
+        h("div", { class: "store-text" },
+          h("h1", {}, "FeastFleet Kitchen"),
+          h("p", { class: "muted" }, "Biryani, South Indian, curries, street food, pizza, Japanese, Middle Eastern and East African"),
+          h("ul", { class: "store-meta" },
+            h("li", {}, h("strong", {}, "30–35 min"), " delivery"),
+            h("li", {}, "Free delivery above ", h("strong", {}, fmt(menu.free_delivery_from))),
+            h("li", {}, "Card or cash on delivery"))),
+        h("button", { class: "help-card", type: "button", "data-open-chat": "" },
+          h("strong", {}, "Questions about an order?"),
+          h("span", {}, "Ask our AI assistant in हिन्दी, தமிழ், العربية, Kiswahili and six more languages"))),
+      h("div", { class: "layout wrap" },
+        h("div", { class: "menu-col" },
+          h("nav", { class: "cats", "aria-label": "Categories" }, ["All", ...cats].map((c) =>
+            h("button", { type: "button", class: "cat", "aria-pressed": String(c === category),
+                          onclick: () => { category = c; route(false); } }, c))),
+          groups.length
+            ? groups.map(([c, list]) => h("section", { class: "menu-sec", "aria-label": c },
+                h("h2", {}, c, h("span", { class: "count" }, ` (${list.length})`)),
+                h("ul", { class: "dishes" }, list.map(dishRow))))
+            : h("div", { class: "no-results" },
+                h("p", { class: "empty-title" }, `No dishes match “${query}”`),
+                h("p", { class: "muted" }, "Try another dish or clear the search."),
+                h("button", { class: "btn btn-ghost", type: "button", onclick: clearSearch }, "Clear search"))),
+        h("aside", { class: "cart-side", id: "cart-side", "aria-label": "Your cart" })));
   }
 
   function field(label, input, hint) {
@@ -175,7 +211,7 @@
     }
     let payMethod = "card";
     const name = h("input", { id: "c-name", autocomplete: "name", maxlength: "80", required: true });
-    const phone = h("input", { id: "c-phone", type: "tel", autocomplete: "tel", maxlength: "25", required: true, placeholder: "+49 30 1234567" });
+    const phone = h("input", { id: "c-phone", type: "tel", autocomplete: "tel", maxlength: "25", required: true, placeholder: "+91 98765 43210" });
     const address = h("textarea", { id: "c-address", autocomplete: "street-address", rows: "2", maxlength: "200" });
     const notes = h("input", { id: "c-notes", maxlength: "200", placeholder: "Gate code, floor, allergies…" });
     // Card fields: autocomplete off so the browser neither fills in nor saves a real card here.
@@ -221,9 +257,9 @@
       summary.replaceChildren(...lines().map(({ item, qty }) =>
         h("div", { class: "sum-row" }, h("span", {}, `${qty} × ${item.name}`), h("span", {}, fmt(item.price * qty)))),
         h("hr"),
-        h("div", { class: "sum-row" }, h("span", {}, "Subtotal"), h("span", {}, fmt(s.subtotal))),
-        h("div", { class: "sum-row" }, h("span", {}, fulfilment === "pickup" ? "Pickup" : "Delivery"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
-        h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(s.total))));
+        h("div", { class: "sum-row" }, h("span", {}, "Item total"), h("span", {}, fmt(s.subtotal))),
+        h("div", { class: "sum-row" }, h("span", {}, fulfilment === "pickup" ? "Pickup" : "Delivery fee"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
+        h("div", { class: "sum-row total" }, h("span", {}, "To pay"), h("span", {}, fmt(s.total))));
       placeBtn.textContent = `Place order · ${fmt(s.total)}`;
     }
     function mark(input, message) {
@@ -369,6 +405,7 @@
     else if (page === "order" && arg) renderOrder(decodeURIComponent(arg));
     else if (page === "track") renderTrack();
     else renderHome();
+    renderCart();
     if (scrollTop) window.scrollTo(0, 0);
   }
 
@@ -378,6 +415,11 @@
     $("scrim").addEventListener("click", closeCart);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("cart").hidden) closeCart(); });
     window.addEventListener("hashchange", () => route());
+    $("search").addEventListener("input", (e) => {
+      query = e.target.value;
+      category = "All";
+      if ((location.hash || "#/") !== "#/") location.hash = "#/"; else route(false);
+    });
     renderCart();
     try {
       menu = await api("/api/menu");

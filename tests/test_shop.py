@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 
 from src.shop.app import create_app, status
 
-ORDER = {"items": [{"id": "margherita", "qty": 2}, {"id": "lassi", "qty": 1}], "fulfilment": "delivery",
-         "contact": {"name": "Test Customer", "phone": "+49 30 1234567", "address": "1 Test Street", "notes": ""},
+ORDER = {"items": [{"id": "dosa", "qty": 1}, {"id": "lassi", "qty": 1}], "fulfilment": "delivery",
+         "contact": {"name": "Test Customer", "phone": "+91 98765 43210", "address": "1 Test Street", "notes": ""},
          "payment": {"method": "cod"}}
 
 
@@ -21,7 +21,7 @@ def test_menu_and_cod_order_totals():
     assert r.status_code == 201
     order = r.json()
     assert order["id"] == "FF-2001" and order["status"] == "confirmed"
-    assert order["totals"] == {"subtotal": 2700, "delivery_fee": 249, "total": 2949, "currency": "EUR"}
+    assert order["totals"] == {"subtotal": 20800, "delivery_fee": 4000, "total": 24800, "currency": "INR"}
     assert order["payment"] == {"method": "cod"}
 
 

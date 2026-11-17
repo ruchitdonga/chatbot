@@ -31,3 +31,8 @@ rasa/results/
 rasa/.cache/
 rasa/.config/
 rasa/.keras/
+
+# Impeccable design-tool runtime files (decision page logs, throwaway direction sketches, hook cache)
+.impeccable/questions/
+.impeccable/mocks/
+.impeccable/hook.cache.json
