@@ -74,6 +74,7 @@
   // The assistant matched a dish to the menu: put it in the page's cart (app.js) and offer checkout.
   function addedToCart(item) {
     window.dispatchEvent(new CustomEvent("feastfleet:cart-add", { detail: item }));
+    if (messages.lastElementChild?.classList.contains("chat-checkout")) return;  // one link for several dishes
     const link = document.createElement("a");
     link.className = "chat-checkout";
     link.href = "#/checkout";

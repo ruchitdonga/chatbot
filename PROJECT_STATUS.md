@@ -202,6 +202,13 @@ Upgraded from the first demo page to a working storefront at `http://localhost:8
 - Close (by the agent, or the customer restarting/changing language) deletes the messages; the customer is told and goes back to the AI assistant with a new conversation. Text held in memory only, never logged; max 50 open chats; no agent login (localhost only). Policy: `reports/data_minimisation_policy.md`.
 - Checked: `pytest` 66 passed (2 new handoff tests); live through the website: complaint → handoff → agent reply shown in the widget → customer reply shown in the inbox → agent closes → widget back to the assistant.
 
+**Several dishes, typos and price wording (2026-11-17, user reports "whats the price for veg ulao" and "butter naan and ppav bhaji"):**
+- Bugs found: dish names matched inside other words ("p**rice**" -> rice, German "P**reis**" -> reis); "what's the price for" was not a price phrase; only the longest dish name in a message was added to the cart.
+- Fixes: English-letter dish names must be whole words; more price phrasings (`price for`, `the price`, `prices`, `cost of`, `how much for`); `/api/menu/match?all=true` returns every dish named and the add-to-cart and price actions use it; `typos=true` accepts a close spelling of a dish's own menu name ("ulao" -> pulao, "birynai"), used only once the message is known to be an order or price question.
+- Measured: the first typo rule named a dish in 400 of 14,585 non-food MASSIVE test sentences (en/es/de/fr/sw), e.g. French "nouvelles" -> noodles; the adopted rule (dish names only, cutoff 0.85, no cut-off endings) names **0**. Store-question keywords still answer **0 of 110** challenge items.
+- Checked: `pytest` 67 passed; `rasa test core --e2e` 29/29 stories, 117/117 actions; live: both reported messages, two-dish price, typos, burger (not on menu, shows categories), complaint still handed off.
+- Known gap: the Swahili rice word "wali" is also a common Hinglish word ("spicy wali"), so it can add Veg pulao by mistake.
+
 ### First demo page (2026-11-16, superseded by the website above)
 
 A FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`).

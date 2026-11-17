@@ -3,6 +3,7 @@
 GET  /api/menu                 menu with prices (integer paise, INR) and veg/non-veg flags
 POST /api/orders               checkout: cart items, delivery or pickup, contact, payment (card or cash on delivery)
 GET  /api/menu/match?q=        the menu item a customer's words mean, in any of the assistant's languages
+                               (&all=true: every dish named; &typos=true: close spellings, for orders only)
 GET  /api/orders/{id}          status timeline for tracking (no contact details)
 POST /api/handoffs             the chat widget hands a conversation to a person (transcript so far)
 GET  /api/handoffs             agent inbox: open chats; GET/POST /api/handoffs/{id}/messages; POST .../close
@@ -12,6 +13,7 @@ Payments are simulated: the browser sends only the card brand and last four digi
 CVC; a card ending 0002 is declined (test card). Orders live in memory only and are never logged.
 Run: uvicorn src.shop.app:app --port 8001
 """
+import difflib
 import itertools
 import re
 from datetime import datetime, timedelta, timezone
@@ -80,14 +82,48 @@ ALIASES = {
 }
 
 
-def match_dish(text):
-    """(menu item, matched alias) a customer's words most likely mean (longest alias in the text), or None."""
-    words = (text or "").casefold()
-    hits = [(len(a), dish_id, a) for dish_id, aliases in ALIASES.items() for a in aliases if a.casefold() in words]
-    if not hits:
-        return None
-    _, dish_id, alias = max(hits)
-    return MENU_BY_ID[dish_id], alias
+def _alias_spans(alias, text):
+    """Where an alias occurs. ASCII aliases must be whole words ("price" is not "rice", German "preis" is not
+    "reis"); other scripts (Japanese has no spaces) match as substrings."""
+    pattern = rf"\b{re.escape(alias)}\b" if alias.isascii() else re.escape(alias)
+    return [m.span() for m in re.finditer(pattern, text)]
+
+
+# Typos are matched only against the dishes' own names ("pulao", "biryani"), not generic words like "bread" or
+# "postre", which near-miss everyday words ("read", "poste"); words of 5+ letters, so a slip stays unambiguous.
+TYPO_ALIASES = {w: d for d, aliases in ALIASES.items() for a in aliases if a.isascii() and a.isalpha() and len(a) >= 5
+                for w in [a] if w in re.findall(r"[a-z]+", MENU_BY_ID[d]["name"].casefold())}
+BY_LENGTH = sorted(((a.casefold(), d) for d, aliases in ALIASES.items() for a in aliases), key=lambda x: -len(x[0]))
+
+
+def match_dishes(text, typos=False):
+    """Every menu item named in the text, in the order written: [(item, matched words)]. Longest alias first, so
+    "chicken pizza" is one dish, not two. typos=True also accepts a close spelling of a long one-word alias
+    ("veg ulao"); only for text already known to be an order or a price question, because on everyday text it
+    names dishes that were never meant (French "nouvelles" -> noodles; measured on MASSIVE, 2026-11-17)."""
+    t = (text or "").casefold()
+    found = []  # (position, dish id, matched words)
+    for alias, dish_id in BY_LENGTH:
+        for start, end in _alias_spans(alias, t):
+            found.append((start, dish_id, alias))
+            t = t[:start] + " " * (end - start) + t[end:]  # blank it so "pizza" inside "chicken pizza" is not reused
+    if typos:
+        for m in re.finditer(r"[a-z]{4,}", t):
+            close = difflib.get_close_matches(m.group(), TYPO_ALIASES, n=1, cutoff=0.85)
+            if close and not close[0].startswith(m.group()):  # a cut-off name is usually another word (German "lass")
+                found.append((m.start(), TYPO_ALIASES[close[0]], m.group()))
+    seen, out = set(), []
+    for _, dish_id, words in sorted(found):
+        if dish_id not in seen:
+            seen.add(dish_id)
+            out.append((MENU_BY_ID[dish_id], words))
+    return out
+
+
+def match_dish(text, typos=False):
+    """(menu item, matched words) for the longest dish name in the text, or None."""
+    hits = match_dishes(text, typos)
+    return max(hits, key=lambda h: len(h[1])) if hits else None
 STEPS = ["confirmed", "preparing", "on_the_way", "delivered"]
 PICKUP_STEPS = ["confirmed", "preparing", "ready"]
 PHONE = re.compile(r"^\+?[0-9 ()-]{7,20}$")
@@ -201,13 +237,14 @@ def create_app():
         return {**public(order), "contact": order["contact"]}  # contact echoed only to the person who placed it
 
     @app.get("/api/menu/match")
-    def match(q: str = Query(min_length=1, max_length=100)):
-        """The assistant asks which menu item a customer means; 404 when nothing on the menu matches."""
-        hit = match_dish(q)
-        if hit is None:
+    def match(q: str = Query(min_length=1, max_length=300), typos: bool = False, all: bool = False):
+        """The assistant asks which menu item a customer means; 404 when nothing on the menu matches.
+        all=true returns {"items": [...]} for every dish named; typos=true accepts close spellings (see match_dishes)."""
+        hits = match_dishes(q, typos) if all else [h for h in [match_dish(q, typos)] if h]
+        if not hits:
             raise HTTPException(404, "Not on the menu.")
-        item, alias = hit
-        return {**item, "matched": alias}  # the words that matched, so the assistant can locate the dish
+        found = [{**item, "matched": words} for item, words in hits]  # the matched words locate the dish in the text
+        return {"items": found} if all else found[0]
 
     @app.get("/api/orders/{order_id}")
     def track(order_id: str):

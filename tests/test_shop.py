@@ -93,6 +93,19 @@ def test_menu_match_across_scripts():
     assert c.get("/api/orders/FF-9999").status_code == 404
 
 
+def test_menu_match_words_typos_and_several_dishes():
+    c = client()
+    match = lambda q, **kw: c.get("/api/menu/match", params={"q": q, **kw})
+    assert match("what's the price for veg ulao").status_code == 404  # "price" is not "rice"; no typos by default
+    assert match("Was kostet der Preis?").status_code == 404  # German "Preis" is not "reis" (rice)
+    assert match("what's the price for veg ulao", typos=True).json()["id"] == "veg-pulao"
+    assert match("lass mich bestellen", typos=True).status_code == 404  # a cut-off name is another word
+    got = match("i want to order butter naan and ppav bhaji", all=True, typos=True).json()["items"]
+    assert [i["id"] for i in got] == ["naan", "pav-bhaji"]
+    got = match("pizza and chicken pizza", all=True).json()["items"]
+    assert [i["id"] for i in got] == ["margherita", "tikka-pizza"]  # the longer name is one dish, not two
+
+
 def test_status_timeline():
     now = datetime.now(timezone.utc)
     order = {"fulfilment": "delivery", "created_at": (now - timedelta(minutes=20)).isoformat()}

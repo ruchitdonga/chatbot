@@ -53,6 +53,11 @@ class ValidateSlotMappings(ValidationAction):
         return {"language": value} if value else {}
 
 
+def menu_matches(text):
+    """Every dish named in an order or price question, close spellings included -> (status, {"items": [...]})."""
+    return shop("/api/menu/match?all=true&typos=true&q=" + urllib.parse.quote(text[:300]))
+
+
 class ActionAddToCart(Action):
     """Match the dish to the menu and put it in the website cart; checkout takes address and payment."""
 
@@ -61,16 +66,16 @@ class ActionAddToCart(Action):
 
     def run(self, dispatcher, tracker, domain):
         food = tracker.get_slot("food_type")
-        code, item = shop("/api/menu/match?q=" + urllib.parse.quote(food or ""))
-        if code == 404:  # the tagger may catch part of a name ("butter masala"): try the whole message
-            whole = tracker.latest_message.get("text", "")
-            code2, item2 = shop("/api/menu/match?q=" + urllib.parse.quote(whole))
-            if code2 == 200:
-                code, item = code2, item2
+        # The whole message, not just the tagged words: it may name several dishes ("butter naan and pav bhaji") or
+        # the tagger may catch part of a name ("butter masala"). It is an order, so close spellings count.
+        code, found = menu_matches(tracker.latest_message.get("text", "") or food or "")
+        if code == 404 and food:
+            code, found = menu_matches(food)
         if code == 200:
-            dispatcher.utter_message(response="utter_added_to_cart", dish=item["name"])
-            # The website's chat widget reads this and adds the dish to the visitor's cart (demo/chat.js).
-            dispatcher.utter_message(json_message={"cart_add": {"id": item["id"], "qty": 1}})
+            items = found["items"]
+            dispatcher.utter_message(response="utter_added_to_cart", dish=", ".join(i["name"] for i in items))
+            for item in items:  # the website's chat widget adds each to the visitor's cart (demo/chat.js)
+                dispatcher.utter_message(json_message={"cart_add": {"id": item["id"], "qty": 1}})
         elif code == 404:
             dispatcher.utter_message(response="utter_not_on_menu", food_type=food)
         else:
@@ -107,9 +112,10 @@ class ActionMenuInfo(Action):
     def run(self, dispatcher, tracker, domain):
         intent = tracker.latest_message["intent"]["name"]
         if intent == "faq_price":
-            code, item = shop("/api/menu/match?q=" + urllib.parse.quote(tracker.latest_message.get("text", "")))
+            code, found = menu_matches(tracker.latest_message.get("text", ""))
             if code == 200:
-                dispatcher.utter_message(response="utter_price", dish=item["name"], price=f"₹{item['price'] // 100}")
+                for item in found["items"]:
+                    dispatcher.utter_message(response="utter_price", dish=item["name"], price=f"₹{item['price'] // 100}")
                 return []
         code, menu = shop("/api/menu")  # no dish named: show the menu instead
         if code != 200:
