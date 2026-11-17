@@ -113,6 +113,37 @@ def test_menu_match_words_typos_and_several_dishes():
     assert match("nataka wali").json()["id"] == "veg-pulao"
 
 
+# One order per language (AI-written, not reviewed by native speakers): dish variants split around other words,
+# plurals, hyphens, and quantities before or after the dish, as numbers or number words.
+ORDERS = [
+    ("I want 3 large chicken tikka pizzas and 2 mutton biryanis", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Je veux 3 Large Chicken Tikka Pizza et 2 Mutton Biryani.", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Je voudrais trois pizzas poulet tikka et deux biryanis à l'agneau", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Ich möchte 3 große Chicken-Tikka-Pizzen und 2 Lamm-Biryanis", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Zwei Pizzen und drei Lassi bitte", [("margherita", 2), ("lassi", 3)]),
+    ("Quiero 3 pizzas grandes de pollo tikka y 2 biryanis de cordero", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("dos dosas y una lassi", [("dosa", 2), ("lassi", 1)]),
+    ("मुझे 3 चिकन पिज़्ज़ा और 2 मटन बिरयानी चाहिए", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("दो डोसा और तीन लस्सी", [("dosa", 2), ("lassi", 3)]),
+    ("mujhe 2 mutton biryani aur 3 lassi chahiye", [("mutton-biryani", 2), ("lassi", 3)]),
+    ("チキンピザを3枚とビリヤニを2つください", [("tikka-pizza", 3), ("biryani", 2)]),
+    ("أريد ٣ بيتزا دجاج و٢ برياني لحم", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Nataka pizza 3 za kuku tikka na biryani 2 ya mbuzi", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("Nataka pizza tatu na lassi mbili", [("margherita", 3), ("lassi", 2)]),
+    ("எனக்கு 3 சிக்கன் பிட்சா மற்றும் 2 மட்டன் பிரியாணி வேண்டும்", [("tikka-pizza", 3), ("mutton-biryani", 2)]),
+    ("3 ፒዛ እና 2 ብርያኒ እፈልጋለሁ", [("margherita", 3), ("biryani", 2)]),
+    ("a pizza and a chicken pizza", [("margherita", 1), ("tikka-pizza", 1)]),  # two dishes, not one variant
+    ("biryani x2", [("biryani", 2)]),
+]
+
+
+def test_orders_in_every_language():
+    c = client()
+    for text, want in ORDERS:
+        got = c.get("/api/menu/match", params={"q": text, "all": True, "typos": True}).json().get("items", [])
+        assert [(i["id"], i["qty"]) for i in got] == want, text
+
+
 def test_status_timeline():
     now = datetime.now(timezone.utc)
     order = {"fulfilment": "delivery", "created_at": (now - timedelta(minutes=20)).isoformat()}

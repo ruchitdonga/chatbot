@@ -61,7 +61,7 @@ MENU_BY_ID = {m["id"]: m for m in MENU}
 # Words customers use for each dish in the assistant's languages (AI-written, unreviewed). The longest alias found in
 # the customer's words wins, so "chicken pizza" beats "pizza".
 ALIASES = {
-    "biryani": ["biryani", "biriyani", "बिरयानी", "பிரியாணி", "برياني", "ビリヤニ"],
+    "biryani": ["biryani", "biriyani", "बिरयानी", "பிரியாணி", "برياني", "ビリヤニ", "ብርያኒ", "ብሪያኒ"],
     "mutton-biryani": ["mutton biryani", "mutton", "मटन", "மட்டன்"],
     "veg-pulao": ["pulao", "pulav", "पुलाव", "चावल", "rice", "arroz", "reis", "riz", "wali", "أرز", "ご飯", "சாதம்"],
     "dosa": ["dosa", "dosai", "डोसा", "தோசை", "ドーサ"],
@@ -71,7 +71,7 @@ ALIASES = {
     "naan": ["naan", "नान", "roti", "रोटी", "bread", "brot", "pain", "ナン", "خبز"],
     "pav-bhaji": ["pav bhaji", "bhaji", "पाव भाजी", "भाजी"],
     "vada-pav": ["vada pav", "vadapav", "वड़ा पाव", "वडा पाव"],
-    "margherita": ["pizza", "pizze", "margherita", "पिज़्ज़ा", "पिज्जा", "பிட்சா", "பீட்சா", "بيتزا", "ピザ", "ፒዛ"],
+    "margherita": ["pizza", "pizze", "pizzen", "margherita", "पिज़्ज़ा", "पिज्जा", "பிட்சா", "பீட்சா", "بيتزا", "ピザ", "ፒዛ"],
     "tikka-pizza": ["chicken pizza", "tikka pizza", "pepperoni", "salami pizza", "salamipizza", "चिकन पिज़्ज़ा"],
     "sushi": ["sushi", "sushis", "寿司", "すし", "सुशी", "سوشي", "ሱሺ"],
     "ramen": ["ramen", "ラーメン", "noodles", "noodle", "नूडल्स", "nudeln", "nouilles", "fideos"],
@@ -85,9 +85,9 @@ ALIASES = {
 
 
 def _alias_spans(alias, text):
-    """Where an alias occurs. ASCII aliases must be whole words ("price" is not "rice", German "preis" is not
-    "reis"); other scripts (Japanese has no spaces) match as substrings."""
-    pattern = rf"\b{re.escape(alias)}\b" if alias.isascii() else re.escape(alias)
+    """Where an alias occurs. ASCII aliases must be whole words, plurals allowed ("price" is not "rice", German
+    "preis" is not "reis", "biryanis" is biryani); other scripts (Japanese has no spaces) match as substrings."""
+    pattern = rf"\b{re.escape(alias)}(?:s|es)?\b" if alias.isascii() else re.escape(alias)
     return [m.span() for m in re.finditer(pattern, text)]
 
 
@@ -97,49 +97,138 @@ TYPO_ALIASES = {w: d for d, aliases in ALIASES.items() for a in aliases if a.isa
                 for w in [a] if w in re.findall(r"[a-z]+", MENU_BY_ID[d]["name"].casefold())}
 BY_LENGTH = sorted(((a.casefold(), d) for d, aliases in ALIASES.items() for a in aliases), key=lambda x: -len(x[0]))
 
+# Words that turn a plain pizza or biryani into its variant when written next to it ("pizza de pollo tikka",
+# "Lamm-Biryanis", "biryani ya mbuzi"); on their own they name no dish ("chicken" is also chicken biryani).
+VARIANTS = {
+    "tikka-pizza": ("margherita", ["tikka", "chicken", "pollo", "poulet", "hähnchen", "huhn", "kuku", "चिकन",
+                                   "சிக்கன்", "دجاج", "بالدجاج", "チキン"]),
+    "mutton-biryani": ("biryani", ["lamm", "lamb", "agneau", "mouton", "cordero", "mbuzi", "لحم", "ضأن", "マトン"]),
+}
+MODIFIERS = sorted(((w.casefold(), v) for v, (_, words) in VARIANTS.items() for w in words), key=lambda x: -len(x[0]))
+# Words that join two separate dishes: "a pizza and a chicken pizza" is two dishes, not one variant.
+AND = {"and", "et", "und", "y", "e", "aur", "or", "ou", "oder", "o", "na", "और", "மற்றும்", "እና", "و", "&", "+"}
 
 # Swahili "wali" (rice) is also Hinglish "the one" ("spicy wali biryani"): not a dish in a message that has Hinglish
 # marker words (configs/faq.yaml, the list the assistant uses to spot Hinglish).
 HINGLISH = set(yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "faq.yaml").read_text(encoding="utf-8"))
                ["hinglish_words"])
 NOT_IN_HINGLISH = {"wali"}
-NUMBER_WORDS = {w: n for n, w in enumerate("one two three four five six seven eight nine ten".split(), 1)}
-# A quantity just before the dish, with at most one word between: "2 dosa", "two butter naan", "3x lassi".
-QTY = re.compile(r"(?:^|[\s,(])(\d{1,2}|" + "|".join(NUMBER_WORDS) + r")\s*(?:x\s*)?(?:[^\W\d]+\s+)?$")
+# Quantities (AI-written, unreviewed). Words before the dish in every language listed; after the dish only where the
+# language puts it there (Swahili "pizza tatu"), because Hindi "दो" after a dish is "give" ("डोसा दे दो").
+SWAHILI_NUMBERS = dict(zip("mbili tatu nne tano sita saba nane tisa kumi".split(), range(2, 11)))
+NUMBER_WORDS = SWAHILI_NUMBERS | {w: n for words in [
+    "two three four five six seven eight nine ten",          # English
+    "deux trois quatre cinq six sept huit neuf dix",         # French
+    "zwei drei vier fünf sechs sieben acht neun zehn",       # German
+    "dos tres cuatro cinco seis siete ocho nueve diez",      # Spanish
+    "दो तीन चार पाँच छह सात आठ नौ दस",                        # Hindi
+] for n, w in enumerate(words.split(), 2)} | {"पांच": 5}
+KANJI = dict(zip("二三四五六七八九十", range(2, 11)))
+AFTER = re.compile(r"\s*(?:を|が|は)?\s*(?:[x×]\s*)?(?:(\d{1,2})(?!\d)|([二三四五六七八九十])(?=[つ枚個皿本杯人])|("
+                   + "|".join(SWAHILI_NUMBERS) + r")\b)")
 
 
-def _qty(before):
-    m = QTY.search(before)
-    if not m:
-        return 1
-    n = NUMBER_WORDS.get(m.group(1)) or int(m.group(1))  # int() reads Devanagari and Arabic-Indic digits too
-    return min(max(n, 1), 20)  # the cart allows 1-20 of a dish
+def _number(token):
+    """A quantity written as one token ("2", "3x", "२", "و٢", "drei"), else None."""
+    tok = token.strip(".,!?;:()").removeprefix("و")
+    digits = tok.strip("x×")  # "3x"; only for digits, so "deux" and "six" keep their x
+    if digits.isdigit() and len(digits) <= 2:
+        return int(digits)  # int() reads Devanagari and Arabic-Indic digits too
+    return NUMBER_WORDS.get(tok)
+
+
+def _qty_before(segment, offset):
+    """A number at most three words before the dish, not across "and" or a comma -> (qty, position) or None."""
+    for m in reversed(list(re.finditer(r"\S+", segment))[-4:]):
+        n = _number(m.group())
+        if n:
+            return n, offset + m.start()
+        if m.group().strip(".!?") in AND or "," in m.group() or "、" in m.group():
+            return None
+    return None
+
+
+def _joined(gap):
+    """True when two words belong to one dish: at most four other words between, no "and" or comma."""
+    if any(c in gap for c in ",、と"):
+        return False
+    toks = gap.split()
+    return len(toks) <= 4 and not any(t.strip(".!?") in AND or t.startswith("و") for t in toks)
 
 
 def match_dishes(text, typos=False):
     """Every menu item named in the text, in the order written: [(item, matched words, quantity)]. Longest alias
-    first, so "chicken pizza" is one dish, not two. typos=True also accepts a close spelling of a long one-word alias
-    ("veg ulao"); only for text already known to be an order or a price question, because on everyday text it
-    names dishes that were never meant (French "nouvelles" -> noodles; measured on MASSIVE, 2026-11-17)."""
-    original = t = (text or "").casefold()
+    first, so "chicken pizza" is one dish, not two; a plain pizza or biryani next to a variant word becomes that
+    variant (VARIANTS). The quantity is a number just before the dish or, where the language puts it there, just
+    after (else 1). typos=True also accepts a close spelling of a long one-word alias ("veg ulao"); only for text
+    already known to be an order or a price question, because on everyday text it names dishes that were never
+    meant (French "nouvelles" -> noodles; measured on MASSIVE, 2026-11-17)."""
+    raw = (text or "").casefold()
+    t = raw.replace("-", " ")  # "Chicken-Tikka-Pizzen"; same length, so positions match raw
     hinglish = bool(HINGLISH & set(re.findall(r"[a-z]+", t)))
-    found = []  # (position, dish id, matched words)
-    for alias, dish_id in BY_LENGTH:
-        if hinglish and alias in NOT_IN_HINGLISH:
-            continue
-        for start, end in _alias_spans(alias, t):
-            found.append((start, dish_id, alias))
+    hits = []  # [start, end, dish id, is a variant word]
+
+    def take(words, dish_id, modifier=False):
+        nonlocal t
+        for start, end in _alias_spans(words, t):
+            hits.append([start, end, dish_id, modifier])
             t = t[:start] + " " * (end - start) + t[end:]  # blank it so "pizza" inside "chicken pizza" is not reused
+
+    for alias, dish_id in BY_LENGTH:
+        if not (hinglish and alias in NOT_IN_HINGLISH):
+            take(alias, dish_id)
+    for word, variant in MODIFIERS:
+        take(word, variant, modifier=True)
     if typos:
         for m in re.finditer(r"[a-z]{4,}", t):
             close = difflib.get_close_matches(m.group(), TYPO_ALIASES, n=1, cutoff=0.85)
             if close and not close[0].startswith(m.group()):  # a cut-off name is usually another word (German "lass")
-                found.append((m.start(), TYPO_ALIASES[close[0]], m.group()))
-    seen, out = set(), []
-    for start, dish_id, words in sorted(found):
-        if dish_id not in seen:
-            seen.add(dish_id)
-            out.append((MENU_BY_ID[dish_id], words, _qty(original[:start])))
+                hits.append([m.start(), m.end(), TYPO_ALIASES[close[0]], False])
+    hits.sort()
+
+    # Quantities: first a number before each dish, then, for dishes still without one, a number after it that no
+    # other dish has taken. Variant words do not end the stretch searched ("3 large chicken tikka pizzas").
+    dishes = [h for h in hits if not h[3]]
+    qty, used = {}, set()
+    for i, (start, _, _, _) in enumerate(dishes):
+        offset = dishes[i - 1][1] if i else 0
+        found = _qty_before(raw[offset:start], offset)
+        if found:
+            qty[start] = found[0]
+            used.add(found[1])
+    for i, (start, end, _, _) in enumerate(dishes):
+        stop = dishes[i + 1][0] if i + 1 < len(dishes) else len(raw)
+        m = AFTER.match(raw, end, stop)
+        if start not in qty and m and m.start(m.lastindex) not in used:
+            g = m.group(m.lastindex)
+            qty[start] = KANJI.get(g) or SWAHILI_NUMBERS.get(g) or int(g)
+            used.add(m.start(m.lastindex))
+
+    # A plain pizza or biryani next to one of its variant words is that variant.
+    merged = []
+    for h in hits:
+        h = [*h, qty.get(h[0])]
+        prev = merged[-1] if merged else None
+        if prev and _joined(raw[prev[1]:h[0]]):
+            pair = {prev[2], h[2]}
+            variant = next((v for v, (plain, _) in VARIANTS.items()
+                            if pair == {v, plain} or (pair == {v} and prev[3] != h[3])), None)
+            if variant:
+                prev[1], prev[2], prev[3], prev[4] = h[1], variant, prev[3] and h[3], prev[4] or h[4]
+                continue
+        merged.append(h)
+
+    out, index = [], {}
+    for start, end, dish_id, modifier, n in merged:
+        if modifier:
+            continue  # "chicken" with no pizza next to it names no dish
+        n = n or 1
+        if dish_id in index:  # the same dish twice: add the quantities
+            item, words, old = out[index[dish_id]]
+            out[index[dish_id]] = (item, words, min(old + n, 20))
+        else:
+            index[dish_id] = len(out)
+            out.append((MENU_BY_ID[dish_id], raw[start:end], min(max(n, 1), 20)))  # the cart allows 1-20 of a dish
     return out
 
 
