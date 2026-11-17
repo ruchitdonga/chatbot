@@ -62,6 +62,11 @@ class ActionAddToCart(Action):
     def run(self, dispatcher, tracker, domain):
         food = tracker.get_slot("food_type")
         code, item = shop("/api/menu/match?q=" + urllib.parse.quote(food or ""))
+        if code == 404:  # the tagger may catch part of a name ("butter masala"): try the whole message
+            whole = tracker.latest_message.get("text", "")
+            code2, item2 = shop("/api/menu/match?q=" + urllib.parse.quote(whole))
+            if code2 == 200:
+                code, item = code2, item2
         if code == 200:
             dispatcher.utter_message(response="utter_added_to_cart", dish=item["name"])
             # The website's chat widget reads this and adds the dish to the visitor's cart (demo/chat.js).

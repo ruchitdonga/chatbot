@@ -190,6 +190,12 @@ Upgraded from the first demo page to a working storefront at `http://localhost:8
 - Chat widget: fourth suggestion "How much is delivery?" in every language.
 - Checked: component and actions self-checks; `rasa test core --e2e` **29/29 stories, 117/117 actions** (new: Hindi fee, English menu, Spanish payment, fee then order); 25 live questions through the website all correct (fees in en/hi/es/ja, payment in en/hi/ar/sw/de, time, menu in en/hi/ja, vegetarian, prices in en/hi/ja, weather/time now declined, three payment complaints still handed off); scripted evaluation unchanged (83% / 89%); `pytest` 64 passed.
 
+**Hinglish and dish detection (2026-11-17, user request):**
+- Romanised Hindi keywords for price, fees, time, payment, menu and veg (`configs/faq.yaml`), plus Hinglish tracking ("mera order kahan hai") and ordering ("mujhe biryani chahiye", "order karna hai"; also Devanagari "चाहिए"/"मंगवाना" and Tamil "வேண்டும்"). Ordering by keyword only fires when a menu dish is named ("mujhe help chahiye" still goes to a person). Hinglish complaint words added (paise wapas, galat, thanda, nahi mila, …).
+- Replies in English for Hinglish: with no language chosen, a Latin-script message with two or more Hinglish marker words gets `language = en-US` (fastText read "samosa kitne ka hai" as Spanish). A language chosen in the chat always wins.
+- The NLU component asks the orders API for the dish named in a message (`/api/menu/match` now returns the matched words) and marks it as `food_type` when the model's slot tagger missed it, for orders and short form answers; the add-to-cart action retries on the whole message when the tagged words name no dish ("butter masala" → Paneer butter masala).
+- Checked: self-checks; `rasa test core --e2e` 29/29; live Hinglish/Hindi/Tamil checks (prices, cart, fees, payment, menu, veg, tracking, time, complaints and "I need help" to a person); with the NLU container down every message was handed off (safe fallback seen live); keyword topics answer **0 of 110** challenge-set items; scripted evaluation **task completion 32/35 (91%), turns 82/89 (92%), conversations 57/64 (89%)** (this set has now been run many times during development, so it is no longer a blind measure); `pytest` 64 passed.
+
 ### First demo page (2026-11-16, superseded by the website above)
 
 A FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`).

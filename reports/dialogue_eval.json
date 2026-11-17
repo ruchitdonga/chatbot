@@ -425,11 +425,11 @@
    "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "added_to_cart"
   ],
   "intent": "nlu_fallback",
   "detected_language": "de-DE",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "de-status",
@@ -825,11 +825,11 @@
    "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "added_to_cart"
   ],
   "intent": "nlu_fallback",
   "detected_language": "hi-IN",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "hi-status",
@@ -953,11 +953,11 @@
    "added_to_cart"
   ],
   "got": [
-   "default"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "ar-SA",
-  "failure": "misroute"
+  "failure": null
  },
  {
   "conversation": "ar-status",

@@ -9,6 +9,12 @@
 
 topics:
   fees:   # -> utter_faq_fees
+    - delivery charge kitna
+    - delivery charges kitne
+    - delivery kitne ka
+    - delivery fee kitni
+    - delivery free hai
+    - delivery ka charge
     - delivery fee
     - delivery charge
     - delivery cost
@@ -38,6 +44,10 @@ topics:
     - gharama ya uletaji
     - የማድረሻ ክፍያ
   time:   # -> utter_faq_time
+    - kitna time
+    - kitni der
+    - kitne time mein
+    - kitne minute
     - how long does delivery
     - how long is delivery
     - how long will delivery
@@ -61,6 +71,14 @@ topics:
     - inachukua muda gani
     - ምን ያህል ጊዜ
   payment:   # -> utter_faq_payment
+    - payment kaise
+    - pay kaise
+    - kaise pay
+    - paise kaise
+    - cash on delivery hai
+    - cod hai
+    - card se pay
+    - online pay
     - how can i pay
     - how do i pay
     - payment method
@@ -95,6 +113,15 @@ topics:
     - እንዴት መክፈል
     - የክፍያ መንገድ
   price:   # -> action_menu_info (price of the dish named in the message)
+    - kitne ka
+    - kitne ki
+    - kitna hai
+    - kitne ka hai
+    - price kya
+    - kya price
+    - rate kya
+    - kitne rupaye
+    - kitne rupees
     - how much is
     - how much does
     - price of
@@ -120,6 +147,11 @@ topics:
     - ዋጋው ስንት
     - ስንት ነው
   veg:   # -> action_menu_info (vegetarian dishes)
+    - veg khana
+    - veg kya hai
+    - shakahari
+    - bina meat
+    - veg dish
     - vegetarian
     - vegan
     - veg dishes
@@ -139,6 +171,12 @@ topics:
     - የአትክልት ምግብ
     - የጾም ምግብ
   menu:   # -> action_menu_info (categories)
+    - menu dikhao
+    - menu batao
+    - kya milta hai
+    - kya kya hai
+    - kya hai menu
+    - menu kya hai
     - menu
     - what do you have
     - what can i order
@@ -161,6 +199,33 @@ topics:
     - menyu
     - mna nini
     - ምናሌ
+
+  track:   # -> takeaway_query (Hinglish order tracking; an FF-#### number is handled before this)
+    - order kahan
+    - order kaha
+    - kahan hai mera order
+    - order kab aayega
+    - order kab tak
+    - khana kab aayega
+    - order status
+  order:   # -> takeaway_order, only when the message also names a dish on the menu (Hinglish, Hindi, Tamil)
+    - chahiye
+    - order karna
+    - order kar do
+    - order karo
+    - mangwana
+    - mangana
+    - bhej do
+    - dila do
+    - lena hai
+    - चाहिए
+    - ऑर्डर करना
+    - ऑर्डर कर
+    - मंगवाना
+    - मँगवाना
+    - भेज दो
+    - வேண்டும்
+    - ஆர்டர் செய்
 
 complaint_words:
   - refund
@@ -239,3 +304,39 @@ complaint_words:
   - kughairi
   - ዘግይቷል
   - አለርጂ
+  - paise wapas
+  - paisa wapas
+  - galat
+  - thanda
+  - nahi mila
+  - nahi aaya
+  - kharab
+  - der se
+  - shikayat
+  - insaan se baat
+  - agent se baat
+
+# Romanised Hindi marker words: with two or more of them in a Latin-script message (and no language chosen in the
+# chat), replies are set to English, since fastText reads Hinglish as Spanish or Indonesian and so on.
+hinglish_words:
+  - hai
+  - kya
+  - kitne
+  - kitna
+  - kitni
+  - kaise
+  - mujhe
+  - mera
+  - meri
+  - kahan
+  - kaha
+  - chahiye
+  - dikhao
+  - batao
+  - milta
+  - karna
+  - kab
+  - aayega
+  - wapas
+  - nahi
+  - bhai

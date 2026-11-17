@@ -60,6 +60,7 @@ def test_menu_match_across_scripts():
                         ("ፒዛ", "margherita")]:
         assert c.get("/api/menu/match", params={"q": words}).json()["id"] == dish, words
     assert c.get("/api/menu/match", params={"q": "cheeseburger"}).status_code == 404
+    assert c.get("/api/menu/match", params={"q": "mujhe biryani chahiye"}).json()["matched"] == "biryani"
     assert c.get("/api/orders/FF-1001").json()["status"] == "preparing"  # seeded order, 10 minutes old
     assert c.get("/api/orders/FF-9999").status_code == 404
 

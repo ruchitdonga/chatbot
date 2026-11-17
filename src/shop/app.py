@@ -78,10 +78,13 @@ ALIASES = {
 
 
 def match_dish(text):
-    """Menu item a customer's words most likely mean (longest alias contained in the text), or None."""
+    """(menu item, matched alias) a customer's words most likely mean (longest alias in the text), or None."""
     words = (text or "").casefold()
-    hits = [(len(a), dish_id) for dish_id, aliases in ALIASES.items() for a in aliases if a.casefold() in words]
-    return MENU_BY_ID[max(hits)[1]] if hits else None
+    hits = [(len(a), dish_id, a) for dish_id, aliases in ALIASES.items() for a in aliases if a.casefold() in words]
+    if not hits:
+        return None
+    _, dish_id, alias = max(hits)
+    return MENU_BY_ID[dish_id], alias
 STEPS = ["confirmed", "preparing", "on_the_way", "delivered"]
 PICKUP_STEPS = ["confirmed", "preparing", "ready"]
 PHONE = re.compile(r"^\+?[0-9 ()-]{7,20}$")
@@ -181,10 +184,11 @@ def create_app():
     @app.get("/api/menu/match")
     def match(q: str = Query(min_length=1, max_length=100)):
         """The assistant asks which menu item a customer means; 404 when nothing on the menu matches."""
-        item = match_dish(q)
-        if item is None:
+        hit = match_dish(q)
+        if hit is None:
             raise HTTPException(404, "Not on the menu.")
-        return item
+        item, alias = hit
+        return {**item, "matched": alias}  # the words that matched, so the assistant can locate the dish
 
     @app.get("/api/orders/{order_id}")
     def track(order_id: str):

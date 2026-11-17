@@ -35,7 +35,7 @@ ORDER_ID = re.compile(r"FF\s*-?\s*(\d{4})", re.IGNORECASE)
 
 
 FAQ_INTENTS = {"fees": "faq_fees", "time": "faq_time", "payment": "faq_payment", "price": "faq_price",
-               "veg": "faq_veg", "menu": "faq_menu"}
+               "veg": "faq_veg", "menu": "faq_menu", "track": "takeaway_query", "order": "takeaway_order"}
 
 
 def _has(text, word):
@@ -45,7 +45,7 @@ def _has(text, word):
     return word in text
 
 
-def with_faq(text, intent, faq):
+def with_faq(text, intent, faq, dish=None):
     """Store questions (configs/faq.yaml) the model has no intent for; complaints are never turned into FAQs.
 
     Overrides out_of_scope too: the out-of-scope training data covered payment and allergy problems, so the model
@@ -55,9 +55,33 @@ def with_faq(text, intent, faq):
     if any(_has(t, w) for w in faq["complaint_words"]):
         return intent
     for topic, words in faq["topics"].items():  # file order is priority order
+        if topic == "order" and dish is None:  # "mujhe help chahiye" is not an order: a menu dish must be named
+            continue
         if any(_has(t, w.casefold()) for w in words):
             return {"name": FAQ_INTENTS[topic], "confidence": intent["confidence"]}
     return intent
+
+
+def with_dish_entity(text, intent, ents, dish):
+    """Mark the menu dish in an order or a short form answer when the model's slot tagger missed it ("बिरयानी")."""
+    if dish is None or intent["name"] not in ("takeaway_order", "nlu_fallback"):
+        return ents
+    if any(e["entity"] == "food_type" for e in ents):
+        return ents
+    start = text.casefold().find(dish["matched"].casefold())
+    if start < 0:
+        return ents
+    end = start + len(dish["matched"])
+    return ents + [{"entity": "food_type", "value": text[start:end], "start": start, "end": end, "extractor": EXTRACTOR}]
+
+
+def hinglish_locale(text, faq, locale, source):
+    """English replies for romanised Hindi: fastText reads "samosa kitne ka hai" as Spanish. Only without a
+    language hint, only for Latin script, and only with two or more Hinglish marker words."""
+    if source != "detected" or not text.isascii():
+        return locale
+    words = set(re.findall(r"[a-z]+", text.casefold()))
+    return "en-US" if len(words & set(faq.get("hinglish_words", []))) >= 2 else locale
 
 
 def with_order_number(text, intent, ents):
@@ -88,7 +112,7 @@ class FeastFleetNLU(GraphComponent):
     @staticmethod
     def get_default_config():
         return {"url": "http://nlu:8000/predict", "business_config": "/configs/business.yaml",
-                "faq_config": "/configs/faq.yaml",
+                "faq_config": "/configs/faq.yaml", "shop_url": "http://shop:8001",
                 "entities": ["food_type"], "timeout": 5}
 
     def __init__(self, config):
@@ -97,6 +121,15 @@ class FeastFleetNLU(GraphComponent):
         self.keep = set(business["answered_intents"]) | set(business["offer_handoff_intents"])
         self.exempt = set(business.get("low_confidence_exempt_intents", []))
         self.faq = read_yaml_file(config["faq_config"])
+        self.shop_url = config["shop_url"]
+
+    def match_dish(self, text):
+        """The menu dish named in the text ({..., "matched": words}) from the orders API, or None."""
+        try:
+            r = requests.get(f"{self.shop_url}/api/menu/match", params={"q": text[:100]}, timeout=self.timeout)
+            return r.json() if r.status_code == 200 else None
+        except (requests.RequestException, ValueError):
+            return None  # no dish help when the orders API is down; the model's own tagging still works
 
     @classmethod
     def create(cls, config, model_storage: ModelStorage, resource: Resource, execution_context: ExecutionContext):
@@ -116,8 +149,10 @@ class FeastFleetNLU(GraphComponent):
                 response.raise_for_status()
                 pred = response.json()
                 intent, ents = to_rasa(pred, self.keep, self.entities, self.exempt)
-                intent, ents = with_order_number(text, with_faq(text, intent, self.faq), ents)
-                locale = pred["locale"]
+                dish = self.match_dish(text)
+                intent, ents = with_order_number(text, with_faq(text, intent, self.faq, dish), ents)
+                ents = with_dish_entity(text, intent, ents, dish)
+                locale = hinglish_locale(text, self.faq, pred["locale"], pred.get("language_source"))
             except (requests.RequestException, KeyError, ValueError) as e:
                 # Service down or malformed: hand off rather than guess. Never log the text.
                 logger.warning("NLU service call failed (%s); routing to nlu_fallback", type(e).__name__)
@@ -165,4 +200,16 @@ if __name__ == "__main__":  # self-check, run inside the Rasa image: python -m c
         assert with_faq(words, order, faq)["name"] == name, (words, with_faq(words, order, faq))
     assert with_faq("how can i pay?", complaint, faq)["name"] == "faq_payment"  # plain question beats out_of_scope
     assert with_faq("my card payment failed, i want a refund", complaint, faq) == complaint  # complaint stays
+    biryani = {"id": "biryani", "name": "Hyderabadi chicken biryani", "matched": "biryani"}
+    assert with_faq("biryani kitne ka hai", order, faq, biryani)["name"] == "faq_price"
+    assert with_faq("mujhe biryani chahiye", low, faq, biryani)["name"] == "takeaway_order"
+    assert with_faq("mujhe help chahiye", low, faq, None) == low  # no dish named: not an order
+    assert with_faq("mera order kahan hai", low, faq)["name"] == "takeaway_query"
+    assert with_faq("mujhe paise wapas chahiye", low, faq, biryani) == low  # complaint stays with a person
+    e = with_dish_entity("मुझे बिरयानी चाहिए", order, [], {"matched": "बिरयानी"})
+    assert e[0]["entity"] == "food_type" and e[0]["value"] == "बिरयानी"
+    assert with_dish_entity("how much is the biryani", {"name": "faq_price"}, [], biryani) == []
+    assert hinglish_locale("samosa kitne ka hai?", faq, "es-ES", "detected") == "en-US"
+    assert hinglish_locale("quiero pedir una pizza", faq, "es-ES", "detected") == "es-ES"
+    assert hinglish_locale("kitne ka hai", faq, "sw-KE", "hint") == "sw-KE"  # a chosen language wins
     print("feastfleet_nlu self-check passed")
