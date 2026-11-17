@@ -196,6 +196,12 @@ Upgraded from the first demo page to a working storefront at `http://localhost:8
 - The NLU component asks the orders API for the dish named in a message (`/api/menu/match` now returns the matched words) and marks it as `food_type` when the model's slot tagger missed it, for orders and short form answers; the add-to-cart action retries on the whole message when the tagged words name no dish ("butter masala" → Paneer butter masala).
 - Checked: self-checks; `rasa test core --e2e` 29/29; live Hinglish/Hindi/Tamil checks (prices, cart, fees, payment, menu, veg, tracking, time, complaints and "I need help" to a person); with the NLU container down every message was handed off (safe fallback seen live); keyword topics answer **0 of 110** challenge-set items; scripted evaluation **task completion 32/35 (91%), turns 82/89 (92%), conversations 57/64 (89%)** (this set has now been run many times during development, so it is no longer a blind measure); `pytest` 64 passed.
 
+**Human agent handoff (2026-11-17, user request "how is human supposed to answer the chat"):**
+- When the assistant hands off (`utter_handoff`, `utter_order_not_found`; marked with `custom: {handoff: true}` in all 20 variations), the widget opens a chat in the orders API (`POST /api/handoffs`, with the widget transcript) and shows "Waiting for a person"; it switches to "Connected to a person" when an agent replies. Customer messages then go to the agent, not to Rasa.
+- Support inbox at **http://localhost:8080/agent**: open chats with language, age and "Needs reply"; full thread (customer, assistant, agent); reply box; Close chat. Polls every 2-3 s.
+- Close (by the agent, or the customer restarting/changing language) deletes the messages; the customer is told and goes back to the AI assistant with a new conversation. Text held in memory only, never logged; max 50 open chats; no agent login (localhost only). Policy: `reports/data_minimisation_policy.md`.
+- Checked: `pytest` 66 passed (2 new handoff tests); live through the website: complaint → handoff → agent reply shown in the widget → customer reply shown in the inbox → agent closes → widget back to the assistant.
+
 ### First demo page (2026-11-16, superseded by the website above)
 
 A FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`).
@@ -331,3 +337,4 @@ Nothing is committed yet.
 - 2026-11-16: Phase 0 completed. Python 3.10.22 chosen to match Rasa 3.6's limit (`>=3.8,<3.11`).
 - 2026-11-16: Phase 4 completed. Found mBERT cannot tokenise Amharic (97.2% `[UNK]`). User decided: keep am-ET, deploy XLM-R, keep training mBERT for comparison.
 - 2026-11-16: Phase 1 completed. Official splits kept despite text overlap; overlap and annotator-flag effects will be reported as sensitivity checks, not filtered out.
+- 2026-11-17: Human agent handoff: support inbox at `/agent`, chats held in memory only while open.

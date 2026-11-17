@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FeastFleet · Support inbox</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="agent-page">
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/" aria-label="FeastFleet store">
+        <span>FeastFleet support</span>
+      </a>
+      <p class="agent-note">Agents only. Runs on this computer, no login.</p>
+    </div>
+  </header>
+
+  <main class="wrap inbox-layout">
+    <section class="inbox" aria-labelledby="inbox-title">
+      <h1 id="inbox-title">Waiting for a person</h1>
+      <ul id="inbox" class="inbox-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="convo" aria-label="Conversation">
+      <div id="convo-empty" class="convo-empty">
+        <p class="empty-title">Pick a chat</p>
+        <p class="muted">Chats appear here when the assistant hands a customer to a person. Reply in the customer's language. Pressing Close ends the chat and deletes its text.</p>
+      </div>
+      <div id="convo" class="convo-body" hidden>
+        <div class="convo-head">
+          <div>
+            <h2 id="convo-title">Chat</h2>
+            <p id="convo-meta" class="muted small"></p>
+          </div>
+          <button id="close-chat" class="btn btn-ghost" type="button">Close chat</button>
+        </div>
+        <div id="thread" class="thread" aria-live="polite"></div>
+        <form id="reply" class="composer agent-composer">
+          <label class="sr-only" for="reply-input">Reply</label>
+          <input id="reply-input" autocomplete="off" maxlength="1000" dir="auto" placeholder="Reply to the customer…">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="agent.js"></script>
+</body>
+</html>

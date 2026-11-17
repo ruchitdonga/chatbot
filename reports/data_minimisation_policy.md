@@ -27,6 +27,15 @@ Only these fields, per conversation turn (`logging.allowed_fields` in `configs/p
 - Any user identifier. Conversation IDs are random per session and never linked to a person.
 - Bot replies that echo slot values.
 
+## Human handoff chats (added 2026-11-17)
+
+When the assistant hands a conversation to a person, the website opens a chat in the orders service (`/api/handoffs`) so an agent can reply from the support inbox (`/agent`).
+- What it holds: up to the last 50 widget messages as the transcript, then the customer's and agent's messages (at most 200 per chat, 1,000 characters each), the language and the time opened. An agent has to read the words to help, so this is the one place message text is kept.
+- Where: process memory only. It is never written to disk and never logged. A service restart deletes it.
+- How long: until the chat is closed by the agent or the customer (restart, language change). Closing deletes the messages immediately; only the closed status stays, so the widget can see that the chat ended.
+- Limits: at most 50 open chats; more get "all agents are busy".
+- Not production-ready: the inbox has **no login**. That is acceptable only because every service is bound to localhost. A real deployment needs agent authentication, TLS, and a retention rule agreed with the data owner.
+
 ## Personal-data slot types
 
 Defined once in `privacy.pii_slot_types` in `configs/project.yaml`:
@@ -54,7 +63,7 @@ spaCy NER is not used: spaCy has no trained pipelines for Swahili, Amharic or Ta
 
 ## Retention
 
-- Raw text: not retained anywhere.
+- Raw text: not retained anywhere, except open human-handoff chats, held in memory until the chat closes (see above).
 - Turn-level allowed fields: kept locally for the project's duration, then deleted.
 - Evaluation predictions contain MASSIVE test utterances. These are public CC BY 4.0 data, not user data, and are stored under `artifacts/`, which Git ignores.
 

@@ -53,6 +53,34 @@ def test_tracking_hides_contact():
     assert "contact" not in tracked and tracked["id"] == oid
 
 
+def test_handoff_conversation_lifecycle():
+    c = client()
+    cid = "web-test-1234"
+    opened = c.post("/api/handoffs", json={"conversation_id": cid, "language": "hi-IN", "transcript": [
+        {"sender": "customer", "text": "मुझे पैसे वापस चाहिए"}, {"sender": "bot", "text": "Connecting you"}]})
+    assert opened.status_code == 201 and opened.json()["status"] == "open"
+    inbox = c.get("/api/handoffs").json()
+    assert inbox[0]["id"] == cid and inbox[0]["waiting"] and inbox[0]["language"] == "hi-IN"
+    assert c.post(f"/api/handoffs/{cid}/messages", json={"sender": "agent", "text": "Namaste, I can help"}).status_code == 201
+    got = c.get(f"/api/handoffs/{cid}/messages", params={"after": 2}).json()
+    assert [m["text"] for m in got["messages"]] == ["Namaste, I can help"] and got["next"] == 3
+    assert not c.get("/api/handoffs").json()[0]["waiting"]  # last message is the agent's
+    assert c.post(f"/api/handoffs/{cid}/close").json()["status"] == "closed"
+    closed = c.get(f"/api/handoffs/{cid}/messages").json()
+    assert closed["status"] == "closed" and closed["messages"] == []  # text deleted on close
+    assert c.post(f"/api/handoffs/{cid}/messages", json={"sender": "customer", "text": "hello?"}).status_code == 410
+    assert c.get("/api/handoffs").json() == []
+
+
+def test_handoff_validation():
+    c = client()
+    assert c.post("/api/handoffs", json={"conversation_id": "x"}).status_code == 422  # malformed id
+    assert c.post("/api/handoffs", json={"conversation_id": "web-ok-1234", "transcript": [{"sender": "admin", "text": "hi"}]}).status_code == 422
+    c.post("/api/handoffs", json={"conversation_id": "web-ok-1234"})
+    assert c.post("/api/handoffs/web-ok-1234/messages", json={"sender": "agent", "text": "x" * 1001}).status_code == 422
+    assert c.get("/api/handoffs/web-none-0000/messages").status_code == 404
+
+
 def test_menu_match_across_scripts():
     c = client()
     for words, dish in [("a large chicken biryani", "biryani"), ("पिज़्ज़ा", "margherita"), ("தோசை", "dosa"),

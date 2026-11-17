@@ -4,6 +4,8 @@ GET  /api/menu                 menu with prices (integer paise, INR) and veg/non
 POST /api/orders               checkout: cart items, delivery or pickup, contact, payment (card or cash on delivery)
 GET  /api/menu/match?q=        the menu item a customer's words mean, in any of the assistant's languages
 GET  /api/orders/{id}          status timeline for tracking (no contact details)
+POST /api/handoffs             the chat widget hands a conversation to a person (transcript so far)
+GET  /api/handoffs             agent inbox: open chats; GET/POST /api/handoffs/{id}/messages; POST .../close
 The assistant never places orders itself: it adds the matched dish to the website cart, and checkout does the rest.
 
 Payments are simulated: the browser sends only the card brand and last four digits, never the card number, expiry or
@@ -21,6 +23,7 @@ from pydantic import BaseModel, Field
 CURRENCY = "INR"  # amounts in paise
 DELIVERY_FEE, FREE_DELIVERY_FROM = 4000, 49900
 DELIVERY_MINUTES, PICKUP_MINUTES = 30, 15
+MAX_OPEN_HANDOFFS, MAX_HANDOFF_MESSAGES = 50, 200
 
 
 def dish(id_, name, desc, rupees, category, emoji, veg):
@@ -106,6 +109,22 @@ class Payment(BaseModel):
     method: Literal["card", "cod"]
     card_brand: str | None = Field(default=None, max_length=20)
     card_last4: str | None = Field(default=None, pattern=r"^\d{4}$")  # the only card data the server ever sees
+
+
+class ChatMessage(BaseModel):
+    sender: Literal["customer", "bot", "agent"]
+    text: str = Field(min_length=1, max_length=1000)
+
+
+class HandoffRequest(BaseModel):
+    conversation_id: str = Field(pattern=r"^[A-Za-z0-9_-]{8,64}$")
+    language: str = Field(default="auto", max_length=10)
+    transcript: list[ChatMessage] = Field(default_factory=list, max_length=50)  # the chat so far, for the agent
+
+
+class AgentMessage(BaseModel):
+    sender: Literal["customer", "agent"]
+    text: str = Field(min_length=1, max_length=1000)
 
 
 class OrderRequest(BaseModel):
@@ -196,6 +215,60 @@ def create_app():
         if order is None:
             raise HTTPException(404, "Order not found.")
         return public(order)
+
+    # ---- Human handoff: an agent reads and answers a chat the assistant handed off -------------------------
+    # Message text is held in memory only while the handoff is open and deleted when the agent closes it
+    # (reports/data_minimisation_policy.md). Never logged. No agent login: localhost demo only.
+    handoffs = {}
+
+    def open_one(hid):
+        h = handoffs.get(hid)
+        if h is None:
+            raise HTTPException(404, "No such chat.")
+        return h
+
+    @app.post("/api/handoffs", status_code=201)
+    def open_handoff(req: HandoffRequest):
+        h = handoffs.get(req.conversation_id)
+        if h is None or h["status"] == "closed":
+            if sum(x["status"] == "open" for x in handoffs.values()) >= MAX_OPEN_HANDOFFS:
+                raise HTTPException(503, "All agents are busy. Please try again shortly.")
+            stamp = datetime.now(timezone.utc).isoformat()
+            h = {"id": req.conversation_id, "language": req.language, "status": "open", "opened_at": stamp,
+                 "messages": [{**m.model_dump(), "at": stamp} for m in req.transcript]}
+            handoffs[req.conversation_id] = h
+        return {"id": h["id"], "status": h["status"]}
+
+    @app.get("/api/handoffs")
+    def inbox():
+        """Open chats for the agent inbox, oldest first, without message bodies."""
+        rows = [{"id": h["id"], "language": h["language"], "opened_at": h["opened_at"], "count": len(h["messages"]),
+                 "waiting": bool(h["messages"]) and h["messages"][-1]["sender"] != "agent",
+                 "last": h["messages"][-1]["text"][:80] if h["messages"] else ""}
+                for h in handoffs.values() if h["status"] == "open"]
+        return sorted(rows, key=lambda r: r["opened_at"])
+
+    @app.get("/api/handoffs/{hid}/messages")
+    def messages(hid: str, after: int = Query(0, ge=0)):
+        h = open_one(hid)
+        return {"id": hid, "status": h["status"], "language": h["language"], "messages": h["messages"][after:],
+                "next": len(h["messages"])}
+
+    @app.post("/api/handoffs/{hid}/messages", status_code=201)
+    def post_message(hid: str, msg: AgentMessage):
+        h = open_one(hid)
+        if h["status"] != "open":
+            raise HTTPException(410, "This chat has been closed.")
+        if len(h["messages"]) >= MAX_HANDOFF_MESSAGES:
+            raise HTTPException(429, "This chat is too long; please start a new one.")
+        h["messages"].append({**msg.model_dump(), "at": datetime.now(timezone.utc).isoformat()})
+        return {"next": len(h["messages"])}
+
+    @app.post("/api/handoffs/{hid}/close")
+    def close(hid: str):
+        h = open_one(hid)
+        h["status"], h["messages"] = "closed", []  # the conversation text is deleted here
+        return {"id": hid, "status": "closed"}
 
     return app
 

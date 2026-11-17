@@ -7,7 +7,8 @@
         "rule": "pulsing-dot",
         "value": "*",
         "files": [
-          "demo/index.html"
+          "demo/index.html",
+          "demo/agent.html"
         ],
         "createdAt": "2026-11-16T17:59:07.790Z",
         "reason": "Claude: the .dot in the chat header is static (no animation in styles.css) and sits beside the text label 'AI assistant, not a person'"

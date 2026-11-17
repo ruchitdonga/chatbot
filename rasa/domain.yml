@@ -172,16 +172,16 @@ responses:
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "ஆர்டர் {order_id} முடிந்தது. உணவை ரசியுங்கள்!"}
 
   utter_order_not_found:
-  - text: "I couldn't find that order. I'll connect you to a human agent."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "No he encontrado ese pedido. Te pondré en contacto con un agente humano."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich konnte diese Bestellung nicht finden. Ich verbinde Sie mit einem Mitarbeiter."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je n'ai pas trouvé cette commande. Je vous mets en relation avec un conseiller."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "その注文が見つかりませんでした。担当者におつなぎします。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मुझे वह ऑर्डर नहीं मिला। मैं आपको एक मानव एजेंट से जोड़ रहा हूँ।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "لم أتمكن من العثور على هذا الطلب. سأحوّلك إلى موظف بشري."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sikuweza kupata oda hiyo. Nitakuunganisha na wakala wa kibinadamu."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "ያንን ትዕዛዝ ማግኘት አልቻልኩም። ከሰው ወኪል ጋር አገናኝዎታለሁ።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "அந்த ஆர்டரை என்னால் கண்டுபிடிக்க முடியவில்லை. உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்."}
+  - {text: "I couldn't find that order. I'll connect you to a human agent.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "No he encontrado ese pedido. Te pondré en contacto con un agente humano.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich konnte diese Bestellung nicht finden. Ich verbinde Sie mit einem Mitarbeiter.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je n'ai pas trouvé cette commande. Je vous mets en relation avec un conseiller.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "その注文が見つかりませんでした。担当者におつなぎします。", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मुझे वह ऑर्डर नहीं मिला। मैं आपको एक मानव एजेंट से जोड़ रहा हूँ।", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "لم أتمكن من العثور على هذا الطلب. سأحوّلك إلى موظف بشري.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Sikuweza kupata oda hiyo. Nitakuunganisha na wakala wa kibinadamu.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ያንን ትዕዛዝ ማግኘት አልቻልኩም። ከሰው ወኪል ጋር አገናኝዎታለሁ።", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "அந்த ஆர்டரை என்னால் கண்டுபிடிக்க முடியவில்லை. உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்.", custom: {handoff: true}}
 
   utter_cant_help:
   - text: "Sorry, I can't help with that here. I can take food orders and check on orders."
@@ -209,16 +209,16 @@ responses:
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், இங்கே அதற்கு என்னால் உதவ முடியாது. உங்களை ஒரு மனித முகவருடன் இணைக்கட்டுமா?", buttons: [{title: "ஆம்", payload: /affirm}, {title: "இல்லை", payload: /deny}]}
 
   utter_handoff:
-  - text: "I'm connecting you to a human agent now."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Te estoy poniendo en contacto con un agente humano."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich verbinde Sie jetzt mit einem Mitarbeiter."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je vous mets en relation avec un conseiller."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "ただいま担当者におつなぎします。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मैं अभी आपको एक मानव एजेंट से जोड़ रहा हूँ।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "سأحوّلك الآن إلى موظف بشري."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Ninakuunganisha na wakala wa kibinadamu sasa."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "አሁን ከሰው ወኪል ጋር አገናኝዎታለሁ።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்."}
+  - {text: "I'm connecting you to a human agent now.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Te estoy poniendo en contacto con un agente humano.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ich verbinde Sie jetzt mit einem Mitarbeiter.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Je vous mets en relation avec un conseiller.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "ただいま担当者におつなぎします。", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "मैं अभी आपको एक मानव एजेंट से जोड़ रहा हूँ।", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "سأحوّلك الآن إلى موظف بشري.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Ninakuunganisha na wakala wa kibinadamu sasa.", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "አሁን ከሰው ወኪል ጋር አገናኝዎታለሁ።", custom: {handoff: true}}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "இப்போது உங்களை ஒரு மனித முகவருடன் இணைக்கிறேன்.", custom: {handoff: true}}
 
   utter_anything_else:
   - text: "OK. Is there anything else I can help with?"

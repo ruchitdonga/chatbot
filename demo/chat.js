@@ -25,6 +25,8 @@
   const langSelect = $("lang"), chips = $("chips"), composer = $("composer"), sendBtn = composer.querySelector(".send");
   let sender = newSender();
   let busy = false;
+  let agent = null;  // {id, next, timer} while a person has the chat (orders API /api/handoffs)
+  const sub = chat.querySelector(".chat-sub");
 
   function newSender() { return "web-" + crypto.randomUUID(); }
 
@@ -93,13 +95,81 @@
   }
 
   function restart(note) {
+    if (agent) closeHandoff();
     sender = newSender();
     messages.replaceChildren();
     if (note) bubble("system", note);
   }
 
+  // ---- Human handoff: the assistant handed off, so the chat now goes to a person in the agent inbox ----
+  function transcript() {
+    return [...messages.querySelectorAll(".msg.user, .msg.bot")].slice(-50)
+      .map((el) => ({ sender: el.classList.contains("user") ? "customer" : "bot", text: el.textContent.slice(0, 1000) }));
+  }
+
+  function setAgentMode(on) {
+    sub.lastChild.textContent = on ? " Waiting for a person" : " AI assistant, not a person";  // poll() flips to Connected
+    chat.classList.toggle("with-agent", on);
+    chips.hidden = on;
+    input.placeholder = on ? "Message the agent…" : "Type a message…";
+  }
+
+  async function startAgent() {
+    try {
+      const res = await fetch("/api/handoffs", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: sender, language: langSelect.value || "auto", transcript: transcript() }) });
+      if (!res.ok) throw new Error(res.status === 503 ? "busy" : `HTTP ${res.status}`);
+      const { id } = await res.json();
+      agent = { id, next: transcript().length, timer: setInterval(poll, 2000) };
+      setAgentMode(true);
+      bubble("system", "You're now in the queue for a person. Write here and an agent will reply in this chat.");
+    } catch (err) {
+      bubble("system", err.message === "busy" ? "All agents are busy right now. Please try again shortly."
+                                             : "We couldn't reach an agent right now. Please try again shortly.");
+    }
+  }
+
+  async function poll() {
+    if (!agent) return;
+    try {
+      const res = await fetch(`/api/handoffs/${encodeURIComponent(agent.id)}/messages?after=${agent.next}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      for (const m of data.messages) if (m.sender === "agent") {
+        bubble("agent", m.text);
+        sub.lastChild.textContent = " Connected to a person";
+      }
+      agent.next = data.next;
+      if (data.status === "closed") endAgent("The agent closed this chat. You're back with the AI assistant.");
+    } catch { /* network blip: try again on the next tick */ }
+  }
+
+  async function sendToAgent(text) {
+    bubble("user", text);
+    const res = await fetch(`/api/handoffs/${encodeURIComponent(agent.id)}/messages`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: "customer", text: text.slice(0, 1000) }) }).catch(() => null);
+    if (!res || !res.ok) bubble("system", "Your message didn't reach the agent. Please try again.");
+  }
+
+  function endAgent(note) {
+    clearInterval(agent.timer);
+    agent = null;
+    setAgentMode(false);
+    sender = newSender();  // the assistant starts a fresh conversation
+    bubble("system", note);
+  }
+
+  function closeHandoff() {
+    fetch(`/api/handoffs/${encodeURIComponent(agent.id)}/close`, { method: "POST" }).catch(() => {});
+    clearInterval(agent.timer);
+    agent = null;
+    setAgentMode(false);
+  }
+
   async function send(message, shown = message) {
     if (busy || !message.trim()) return;
+    if (agent) return sendToAgent(message);
     busy = true;
     sendBtn.disabled = true;
     bubble("user", shown);
@@ -117,11 +187,14 @@
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       typing.remove();
+      let handoff = false;
       for (const reply of await res.json()) {
         if (reply.text) bubble("bot", reply.text);
         if (reply.buttons?.length) quickReplies(reply.buttons);
         if (reply.custom?.cart_add) addedToCart(reply.custom.cart_add);
+        if (reply.custom?.handoff) handoff = true;
       }
+      if (handoff) await startAgent();
     } catch (err) {
       typing.remove();
       bubble("system", "The assistant is unavailable right now. Please try again in a moment.");

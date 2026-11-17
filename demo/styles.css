@@ -235,6 +235,9 @@ legend { font-weight: 800; font-size: 17px; padding: 0 6px; margin-left: -6px; }
 .msg { max-width: 84%; padding: 9px 13px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; animation: pop .16s ease-out; }
 .msg.user { align-self: flex-end; background: var(--ink); color: #fff; border-bottom-right-radius: 4px; }
 .msg.bot { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.agent { align-self: flex-start; background: #fff; border: 1px solid var(--add); border-bottom-left-radius: 4px; }
+.msg.agent::before { content: "Agent"; display: block; font-size: 12px; font-weight: 700; color: var(--add); margin-bottom: 2px; }
+.chat.with-agent .dot { background: var(--brand); }
 .msg.system { align-self: center; background: none; color: var(--muted); font-size: 13px; text-align: center; }
 .quick { display: flex; gap: 8px; flex-wrap: wrap; align-self: flex-start; }
 .quick button { border: 1px solid var(--brand); color: var(--brand-hover); background: #fff; border-radius: 8px; padding: 6px 16px; font-weight: 700; }
@@ -255,6 +258,35 @@ legend { font-weight: 800; font-size: 17px; padding: 0 6px; margin-left: -6px; }
 .send:hover { background: var(--brand-hover); }
 .send svg { width: 20px; height: 20px; }
 .send:disabled { opacity: .5; }
+
+/* Support inbox (agent.html) */
+.agent-note { margin: 0 0 0 auto; font-size: 13px; color: var(--muted); }
+.inbox-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; padding-top: 24px; padding-bottom: 40px; min-height: calc(100vh - 72px); }
+.inbox h1 { font-size: 19px; margin: 0 0 12px; }
+.inbox-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.inbox-empty { padding: 16px 0; }
+.inbox-item { width: 100%; display: grid; gap: 4px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.inbox-item:hover { border-color: var(--ink-2); }
+.inbox-item[aria-current="true"] { border-color: var(--brand); background: var(--brand-soft); }
+.inbox-top { display: flex; justify-content: space-between; gap: 8px; }
+.inbox-last { color: var(--ink-2); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.waiting { justify-self: start; background: var(--brand); color: #fff; border-radius: 6px; padding: 1px 8px; font-size: 12px; font-weight: 700; }
+.convo { border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; min-height: 520px; }
+.convo-empty { margin: auto; max-width: 46ch; text-align: center; padding: 24px; }
+.convo-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.convo-body[hidden] { display: none; }
+.convo-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.convo-head h2 { margin: 0; font-size: 17px; }
+.convo-head p { margin: 0; }
+.thread { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; background: var(--bg-soft); max-height: 60vh; }
+.line { max-width: 78%; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; align-self: flex-start; }
+.line p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.line .who { display: block; font-size: 12px; font-weight: 700; color: var(--muted); }
+.line.from-customer .who { color: var(--ink); }
+.line.from-agent { align-self: flex-end; background: var(--ink); border-color: var(--ink); color: #fff; }
+.line.from-agent .who { color: #c9cbd6; }
+.agent-composer { border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .inbox-layout { grid-template-columns: minmax(0, 1fr); } .agent-note { display: none; } }
 
 @keyframes pop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes blink { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
