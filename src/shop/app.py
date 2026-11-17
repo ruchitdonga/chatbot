@@ -262,8 +262,9 @@ def create_app():
     @app.get("/api/menu/match")
     def match(q: str = Query(min_length=1, max_length=300), typos: bool = False, all: bool = False):
         """The assistant asks which menu item a customer means; 404 when nothing on the menu matches.
-        all=true returns {"items": [...]} for every dish named; typos=true accepts close spellings (see match_dishes). Each item carries "matched" (the words, to locate the dish in
-        the text) and "qty" (a number written just before it, else 1)."""
+        all=true returns {"items": [...]} for every dish named; typos=true accepts close spellings (see match_dishes).
+        Each item carries "matched" (the words, to locate the dish in the text) and "qty" (a number written just
+        before it, else 1)."""
         hits = match_dishes(q, typos) if all else [h for h in [match_dish(q, typos)] if h]
         if not hits:
             raise HTTPException(404, "Not on the menu.")
