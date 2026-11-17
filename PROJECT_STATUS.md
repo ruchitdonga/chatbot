@@ -8,7 +8,7 @@ Phase 2 (ethics audit and privacy design): **done**, AI-disclosure translations 
 Phase 3 (NLU data pipeline): **done.**
 Phase 4 (baselines and MLflow): **done.**
 Phase 5 (joint model): **in progress.** XLM-R is the deployed model (Amharic decision below).
-Phases 6–10: **done** (Docker Hub push pending). Phase 11: **done locally**, CI pending. Phase 12: not started.
+Phases 6–10: **done** (Docker Hub push pending). Phase 11: **done** (CI green on main). Phase 12: not started.
 
 ## Phase 5 evidence (so far)
 
@@ -132,7 +132,7 @@ The bug is gone ("let me talk to a real person" now hands off). The cost: three 
 
 Phase 9: **done.**
 
-## Phase 11 (monitoring, retraining policy, CI): done locally; CI result pending first push
+## Phase 11 (monitoring, retraining policy, CI): **done** (CI green on main, 2026-11-17)
 
 | Step | Outcome |
 |---|---|
@@ -175,6 +175,13 @@ Upgraded from the first demo page to a working storefront at `http://localhost:8
 - Tested in the browser: add to cart, free-delivery threshold, declined card (message shown and scrolled into view), card payment → confirmation, pickup + pay at pickup, chat tracking. `rasa test core --e2e` 24/24, `pytest` 63 passed.
 
 **Redesign (2026-11-17, user request):** the user found the site AI-generated-looking and rejected themed directions (signboard, railway, ticket wallet, tiffin) from an Impeccable direction round; decision: **"make it swiggy zomato"**, i.e. the Indian food-delivery app standard, recorded in `PRODUCT.md` (new: product truth for design work). Now: prices in **INR** (orders API in paise; ₹40 delivery, free above ₹499), Indian-first menu of 20 dishes with **veg/non-veg markers**, header search, category chips, dish rows with an emoji tile and an ADD/quantity control, an always-visible cart panel on desktop and a sticky "items · total · View cart" bar on phones, bill details (Item total, Delivery fee, To pay) in cart and checkout, +91 phone format. Emoji kept as dish pictures (user choice); all interface icons are drawn SVG. Checked in the browser at 1440 px and 375 px, no console errors; Impeccable detector: one false positive (CSS triangle used for the non-veg marker) suppressed for `demo/styles.css`; `pytest` 63 passed. Not run: Impeccable's finish-reviewer and documenter agents (no DESIGN.md yet).
+
+**Assistant ordering and tracking fixed (2026-11-17, user request "a and check other commands too"):**
+- Ordering in chat no longer creates unpriced cash-on-delivery orders with no address. `action_add_to_cart` matches the dish to the menu (`GET /api/menu/match`, aliases in Latin, Devanagari, Tamil, Arabic, Japanese and Ethiopic scripts, longest alias wins) and the website chat widget adds it to the real cart with a "View cart and check out" button; checkout takes address and card or cash on delivery. A dish not on the menu gets "Sorry, X isn't on our menu" (new replies `utter_added_to_cart`, `utter_not_on_menu`, ten languages, unreviewed). `/api/chat-orders` removed.
+- Tracking: any message containing an order number (`FF-2016`, "मेरा ऑर्डर FF-1001 कहाँ है") becomes a tracking request with the number filled in (NLU component, `order_id` entity), except complaints, which still go to a person. Fixes the earlier "number typed again is handed off".
+- Checked: component and actions self-checks; `rasa test core --e2e` **26/26 stories, 108/108 actions** (two new tracking stories); live chats through the website for every command (order named / asked / not on menu, Swahili with hint, tracking alone / inside a question / website order / unknown / repeated, greeting, time, weather, unsupported request, complaint with and without a number, person mid-order, Russian, "are you a robot" → Yes/No offer): all correct except a not-on-menu cheeseburger, handed off by the energy rule.
+- Scripted evaluation (expectations remapped mechanically through the menu matcher; evaluator now ignores data-only bot messages): **task completion 24/35 (69%), turns 71/89 (80%)**, disclosure 64/64. The 16 remaining failures are the energy rule handing off messages the model understood.
+- **Decision (user, 2026-11-17): `takeaway_order` and `takeaway_query` exempt from low-confidence handoff** (like `general_greet`; `configs/business.yaml`). Measured before adopting: none of the 55 held-out out-of-scope challenge items changes (still 50/55 routed, 90.9%; the model-level NFR-3 figure is unchanged). After: scripted **task completion 29/35 (83%), turns 79/89 (89%), conversations 54/64 (84%)**; three test-story turns ("pizza" as a short answer) now arrive as `takeaway_order` and were relabelled; `rasa test core --e2e` 26/26; `pytest` 64 passed. A not-on-menu burger now gets "not on our menu" in English and Hindi. Remaining misses include model errors, e.g. Hindi "मुझे बिरयानी चाहिए" predicted `weather_query` at 0.98.
 
 ### First demo page (2026-11-16, superseded by the website above)
 

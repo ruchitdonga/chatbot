@@ -15,6 +15,7 @@ tracker, so personal-data slots such as person or place_name are never stored. T
 the parse field `feastfleet_locale` and fills the `language` slot.
 """
 import logging
+import re
 
 import requests
 from rasa.engine.graph import ExecutionContext, GraphComponent
@@ -28,6 +29,19 @@ from rasa.shared.utils.io import read_yaml_file
 logger = logging.getLogger(__name__)
 EXTRACTOR = "FeastFleetNLU"
 LOCALE_KEY = "feastfleet_locale"
+# A FeastFleet order number in any message means "track this order", whatever the model makes of the rest
+# ("FF-2016" alone scores as low confidence). \d also matches Arabic-Indic and Devanagari digits.
+ORDER_ID = re.compile(r"FF\s*-?\s*(\d{4})", re.IGNORECASE)
+
+
+def with_order_number(text, intent, ents):
+    """Route a message carrying an order number to tracking, with the number as an order_id entity."""
+    m = ORDER_ID.search(text)
+    if not m or intent["name"] == "out_of_scope":  # a complaint that quotes its order number still goes to a person
+        return intent, ents
+    order = {"entity": "order_id", "value": f"FF-{int(m.group(1)):04d}", "start": m.start(), "end": m.end(),
+             "extractor": EXTRACTOR}
+    return {"name": "takeaway_query", "confidence": intent["confidence"]}, ents + [order]
 
 
 def to_rasa(pred, keep, entities, exempt=frozenset()):
@@ -73,7 +87,7 @@ class FeastFleetNLU(GraphComponent):
                 response = requests.post(self.url, json={"text": text, "language": hint}, timeout=self.timeout)
                 response.raise_for_status()
                 pred = response.json()
-                intent, ents = to_rasa(pred, self.keep, self.entities, self.exempt)
+                intent, ents = with_order_number(text, *to_rasa(pred, self.keep, self.entities, self.exempt))
                 locale = pred["locale"]
             except (requests.RequestException, KeyError, ValueError) as e:
                 # Service down or malformed: hand off rather than guess. Never log the text.
@@ -105,4 +119,11 @@ if __name__ == "__main__":  # self-check, run inside the Rasa image: python -m c
     assert to_rasa(greet, keep2, ents, exempt)[0]["name"] == "general_greet"
     assert to_rasa(greet, keep2, ents)[0]["name"] == "nlu_fallback"  # no exemption configured
     assert to_rasa({**greet, "handoff_reason": "unsupported_language"}, keep2, ents, exempt)[0]["name"] == "nlu_fallback"
+    low = {"name": "nlu_fallback", "confidence": 0.3}
+    i, e = with_order_number("FF-2016", low, [])
+    assert i["name"] == "takeaway_query" and e[0]["entity"] == "order_id" and e[0]["value"] == "FF-2016"
+    assert with_order_number("where is my order ff 1001?", low, [])[1][0]["value"] == "FF-1001"
+    complaint = {"name": "out_of_scope", "confidence": 0.9}
+    assert with_order_number("FF-2016 arrived cold, refund me", complaint, [])[0]["name"] == "out_of_scope"
+    assert with_order_number("pizza", low, []) == (low, [])
     print("feastfleet_nlu self-check passed")

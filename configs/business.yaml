@@ -26,8 +26,13 @@ offer_handoff_intents:
 # ("hello", "bonjour", "guten morgen", ...) is predicted general_greet but falls below the threshold, so the bot
 # handed plain greetings to a human. Only the low_confidence reason is overridden (never out_of_scope, empty or
 # unsupported language). Dialogue-level rule; the model-level NFR-3 result is unchanged.
+# Decision (user, 2026-11-17): ordering and tracking added. Measured first: scripted task completion 69% -> 83%,
+# turns 80% -> 89%, and none of the 55 held-out out-of-scope challenge items changes (still 50/55 handed off).
+# Low risk because ordering only adds a dish to the cart (the customer checks out) and tracking only reads status.
 low_confidence_exempt_intents:
   - general_greet
+  - takeaway_order
+  - takeaway_query
 handoff_topics:
   - missing items
   - wrong order

@@ -23,6 +23,7 @@ intents:
 
 entities:
   - food_type
+  - order_id  # an FF-#### number found in the message (rasa/components/feastfleet_nlu.py)
 
 slots:
   language:
@@ -49,6 +50,8 @@ slots:
     type: text
     influence_conversation: false
     mappings:
+      - type: from_entity
+        entity: order_id
       - type: from_text
         not_intent: [out_of_scope]
         conditions:
@@ -62,7 +65,7 @@ forms:
     required_slots: [order_id]
 
 actions:
-  - action_place_order
+  - action_add_to_cart
   - action_check_order
   - action_tell_time
   - action_validate_slot_mappings
@@ -104,17 +107,29 @@ responses:
   - {condition: [{type: slot, name: language, value: am-ET}], text: "ምን ማዘዝ ይፈልጋሉ?"}
   - {condition: [{type: slot, name: language, value: ta-IN}], text: "நீங்கள் என்ன ஆர்டர் செய்ய விரும்புகிறீர்கள்?"}
 
-  utter_order_placed:
-  - text: "Your order of {food_type} is placed, to be paid on delivery. Order number: {order_id}."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "Tu pedido de {food_type} está hecho; pagarás en la entrega. Número de pedido: {order_id}."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Ihre Bestellung ({food_type}) ist aufgegeben, Zahlung bei Lieferung. Bestellnummer: {order_id}."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Votre commande ({food_type}) est passée, paiement à la livraison. Numéro de commande : {order_id}."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{food_type}のご注文を受け付けました。お支払いは配達時です。注文番号：{order_id}"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "आपका {food_type} का ऑर्डर हो गया है, भुगतान डिलीवरी पर होगा। ऑर्डर नंबर: {order_id}।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "تم تسجيل طلبك ({food_type})، والدفع عند الاستلام. رقم الطلب: {order_id}."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Oda yako ya {food_type} imepokelewa, utalipa wakati wa kupokea. Nambari ya oda: {order_id}."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "የ{food_type} ትዕዛዝዎ ተመዝግቧል፣ ክፍያው ሲደርስ ነው። የትዕዛዝ ቁጥር፦ {order_id}።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "உங்கள் {food_type} ஆர்டர் பதிவு செய்யப்பட்டது, டெலிவரியின் போது பணம் செலுத்தலாம். ஆர்டர் எண்: {order_id}."}
+  utter_added_to_cart:
+  - text: "Added {dish} to your cart. Check out when you're ready and pay by card or cash on delivery."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "He añadido {dish} a tu carrito. Cuando quieras, finaliza el pedido y paga con tarjeta o en efectivo al recibirlo."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "{dish} liegt jetzt in Ihrem Warenkorb. Schließen Sie die Bestellung ab und zahlen Sie per Karte oder bar bei Lieferung."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "J'ai ajouté {dish} à votre panier. Validez la commande quand vous voulez et payez par carte ou en espèces à la livraison."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "{dish}をカートに追加しました。準備ができたらお会計へ進み、カードまたは代金引換でお支払いください。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "{dish} आपकी कार्ट में जोड़ दिया गया है। तैयार हों तो चेकआउट करें और कार्ड या कैश ऑन डिलीवरी से भुगतान करें।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "أضفت {dish} إلى سلتك. أكمل الطلب عندما تكون جاهزًا وادفع بالبطاقة أو نقدًا عند الاستلام."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Nimeongeza {dish} kwenye kikapu chako. Ukiwa tayari, kamilisha oda na ulipe kwa kadi au pesa taslimu wakati wa kupokea."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "{dish} ወደ ጋሪዎ ታክሏል። ሲዘጋጁ ትዕዛዙን ያጠናቅቁ፤ በካርድ ወይም ሲደርስ በጥሬ ገንዘብ ይክፈሉ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "{dish} உங்கள் கார்ட்டில் சேர்க்கப்பட்டது. தயாரானதும் செக்அவுட் செய்து கார்டு அல்லது டெலிவரியின் போது பணமாகச் செலுத்துங்கள்."}
+
+  utter_not_on_menu:
+  - text: "Sorry, {food_type} isn't on our menu. Tell me another dish, or browse the menu."
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "Lo siento, {food_type} no está en nuestro menú. Dime otro plato o mira el menú."}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Entschuldigung, {food_type} steht nicht auf unserer Karte. Nennen Sie ein anderes Gericht oder sehen Sie sich die Karte an."}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Désolé, {food_type} n'est pas sur notre carte. Proposez un autre plat ou consultez la carte."}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "申し訳ありません、{food_type}はメニューにありません。別の料理を教えていただくか、メニューをご覧ください。"}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "माफ़ कीजिए, {food_type} हमारे मेन्यू में नहीं है। कोई और डिश बताइए या मेन्यू देखिए।"}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "عذرًا، {food_type} ليس في قائمتنا. اذكر طبقًا آخر أو تصفّح القائمة."}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Samahani, {food_type} haipo kwenye menyu yetu. Niambie chakula kingine, au angalia menyu."}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ይቅርታ፣ {food_type} በምናሌያችን ላይ የለም። ሌላ ምግብ ይንገሩኝ ወይም ምናሌውን ይመልከቱ።"}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "மன்னிக்கவும், {food_type} எங்கள் மெனுவில் இல்லை. வேறு உணவைச் சொல்லுங்கள் அல்லது மெனுவைப் பாருங்கள்."}
 
   utter_ask_order_id:
   - text: "What is your order number? It looks like FF-1001."

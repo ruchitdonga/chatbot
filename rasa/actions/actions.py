@@ -1,14 +1,15 @@
 """Custom actions for the FeastFleet assistant (FeastFleet is a fictional brand).
 
-Orders go to the FeastFleet orders API (src/shop/app.py; SHOP_URL), the same system the website checkout uses, so an
-order placed on the site can be tracked in chat and the other way round. If the API is unreachable the assistant
-hands off to a person instead of claiming an order was placed.
+The assistant uses the FeastFleet orders API (src/shop/app.py; SHOP_URL): it matches a requested dish to the menu
+and adds it to the website cart (checkout then takes address and payment), and it tracks orders placed at checkout.
+If the API is unreachable it hands off to a person rather than guessing.
 """
 import json
 import logging
 import os
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
@@ -53,15 +54,21 @@ class ValidateSlotMappings(ValidationAction):
         return {"language": value} if value else {}
 
 
-class ActionPlaceOrder(Action):
+class ActionAddToCart(Action):
+    """Match the dish to the menu and put it in the website cart; checkout takes address and payment."""
+
     def name(self):
-        return "action_place_order"
+        return "action_add_to_cart"
 
     def run(self, dispatcher, tracker, domain):
         food = tracker.get_slot("food_type")
-        code, order = shop("/api/chat-orders", {"food": food})
-        if code == 201:
-            dispatcher.utter_message(response="utter_order_placed", order_id=order["id"], food_type=food)
+        code, item = shop("/api/menu/match?q=" + urllib.parse.quote(food or ""))
+        if code == 200:
+            dispatcher.utter_message(response="utter_added_to_cart", dish=item["name"])
+            # The website's chat widget reads this and adds the dish to the visitor's cart (demo/chat.js).
+            dispatcher.utter_message(json_message={"cart_add": {"id": item["id"], "qty": 1}})
+        elif code == 404:
+            dispatcher.utter_message(response="utter_not_on_menu", food_type=food)
         else:
             dispatcher.utter_message(response="utter_handoff")
         return [SlotSet("food_type", None)]  # a second order in the same conversation asks again

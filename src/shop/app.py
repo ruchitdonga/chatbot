@@ -2,8 +2,9 @@
 
 GET  /api/menu                 menu with prices (integer paise, INR) and veg/non-veg flags
 POST /api/orders               checkout: cart items, delivery or pickup, contact, payment (card or cash on delivery)
-POST /api/chat-orders          an order placed in chat: free-text food, cash on delivery
+GET  /api/menu/match?q=        the menu item a customer's words mean, in any of the assistant's languages
 GET  /api/orders/{id}          status timeline for tracking (no contact details)
+The assistant never places orders itself: it adds the matched dish to the website cart, and checkout does the rest.
 
 Payments are simulated: the browser sends only the card brand and last four digits, never the card number, expiry or
 CVC; a card ending 0002 is declined (test card). Orders live in memory only and are never logged.
@@ -14,7 +15,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
 CURRENCY = "INR"  # amounts in paise
@@ -50,6 +51,37 @@ MENU = [  # veg follows the Indian veg/non-veg marker; egg counts as non-veg
     dish("lassi", "Mango lassi", "Yoghurt, Alphonso mango, cardamom", 79, "Sweets & drinks", "🥭", True),
 ]
 MENU_BY_ID = {m["id"]: m for m in MENU}
+# Words customers use for each dish in the assistant's languages (AI-written, unreviewed). The longest alias found in
+# the customer's words wins, so "chicken pizza" beats "pizza".
+ALIASES = {
+    "biryani": ["biryani", "biriyani", "बिरयानी", "பிரியாணி", "برياني", "ビリヤニ"],
+    "mutton-biryani": ["mutton biryani", "mutton", "मटन", "மட்டன்"],
+    "veg-pulao": ["pulao", "pulav", "पुलाव", "चावल", "rice", "arroz", "reis", "riz", "wali", "أرز", "ご飯", "சாதம்"],
+    "dosa": ["dosa", "dosai", "डोसा", "தோசை", "ドーサ"],
+    "idli-vada": ["idli", "vada", "इडली", "இட்லி", "வடை"],
+    "paneer": ["paneer", "पनीर", "பனீர்"],
+    "dal-makhani": ["dal", "daal", "दाल", "பருப்பு"],
+    "naan": ["naan", "नान", "roti", "रोटी", "bread", "brot", "pain", "ナン", "خبز"],
+    "pav-bhaji": ["pav bhaji", "bhaji", "पाव भाजी", "भाजी"],
+    "vada-pav": ["vada pav", "vadapav", "वड़ा पाव", "वडा पाव"],
+    "margherita": ["pizza", "pizze", "margherita", "पिज़्ज़ा", "पिज्जा", "பிட்சா", "பீட்சா", "بيتزا", "ピザ", "ፒዛ"],
+    "tikka-pizza": ["chicken pizza", "tikka pizza", "pepperoni", "salami pizza", "salamipizza", "चिकन पिज़्ज़ा"],
+    "sushi": ["sushi", "sushis", "寿司", "すし", "सुशी", "سوشي", "ሱሺ"],
+    "ramen": ["ramen", "ラーメン", "noodles", "noodle", "नूडल्स", "nudeln", "nouilles", "fideos"],
+    "shawarma": ["shawarma", "shawerma", "شاورما", "शावरमा", "döner", "doner", "kebab", "كباب"],
+    "falafel": ["falafel", "فلافل", "फलाफल"],
+    "doro-wat": ["doro wat", "doro wot", "ዶሮ ወጥ", "ዶሮ", "injera", "እንጀራ"],
+    "chips-mayai": ["chips mayai", "chipsi mayai", "chipsi", "mayai"],
+    "gulab-jamun": ["gulab jamun", "jamun", "गुलाब जामुन", "मिठाई", "dessert", "postre", "nachtisch"],
+    "lassi": ["lassi", "लस्सी", "லஸ்ஸி", "لاسي"],
+}
+
+
+def match_dish(text):
+    """Menu item a customer's words most likely mean (longest alias contained in the text), or None."""
+    words = (text or "").casefold()
+    hits = [(len(a), dish_id) for dish_id, aliases in ALIASES.items() for a in aliases if a.casefold() in words]
+    return MENU_BY_ID[max(hits)[1]] if hits else None
 STEPS = ["confirmed", "preparing", "on_the_way", "delivered"]
 PICKUP_STEPS = ["confirmed", "preparing", "ready"]
 PHONE = re.compile(r"^\+?[0-9 ()-]{7,20}$")
@@ -80,13 +112,7 @@ class OrderRequest(BaseModel):
     payment: Payment
 
 
-class ChatOrderRequest(BaseModel):
-    food: str = Field(min_length=1, max_length=100)
-
-
 def totals(lines, fulfilment):
-    if any(line["price"] is None for line in lines):  # chat orders are priced by the kitchen, so no total yet
-        return {"subtotal": None, "delivery_fee": None, "total": None, "currency": CURRENCY}
     subtotal = sum(line["price"] * line["qty"] for line in lines)
     fee = 0 if fulfilment == "pickup" or subtotal >= FREE_DELIVERY_FROM else DELIVERY_FEE
     return {"subtotal": subtotal, "delivery_fee": fee, "total": subtotal + fee, "currency": CURRENCY}
@@ -152,11 +178,13 @@ def create_app():
                       "payment": req.payment.model_dump(exclude_none=True), "totals": totals(lines, req.fulfilment)})
         return {**public(order), "contact": order["contact"]}  # contact echoed only to the person who placed it
 
-    @app.post("/api/chat-orders", status_code=201)
-    def chat_order(req: ChatOrderRequest):
-        lines = [{"id": None, "name": req.food.strip(), "qty": 1, "price": None}]  # priced by the kitchen later
-        return public(save({"items": lines, "fulfilment": "delivery", "contact": None, "source": "chat",
-                            "payment": {"method": "cod"}, "totals": totals(lines, "delivery")}))
+    @app.get("/api/menu/match")
+    def match(q: str = Query(min_length=1, max_length=100)):
+        """The assistant asks which menu item a customer means; 404 when nothing on the menu matches."""
+        item = match_dish(q)
+        if item is None:
+            raise HTTPException(404, "Not on the menu.")
+        return item
 
     @app.get("/api/orders/{order_id}")
     def track(order_id: str):

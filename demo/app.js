@@ -415,6 +415,12 @@
     $("scrim").addEventListener("click", closeCart);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("cart").hidden) closeCart(); });
     window.addEventListener("hashchange", () => route());
+    window.addEventListener("feastfleet:cart-add", (e) => {  // a dish the assistant matched (chat.js)
+      const { id, qty } = e.detail || {};
+      if (!menu?.byId[id]) return;
+      setQty(id, (cart[id] || 0) + (qty || 1));
+      toast(`${menu.byId[id].name} added to cart`);
+    });
     $("search").addEventListener("input", (e) => {
       query = e.target.value;
       category = "All";

@@ -6,7 +6,7 @@
   "turn": 1,
   "user": "can i get a large pepperoni pizza delivered",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
    "ask_order_id"
@@ -25,11 +25,11 @@
    "ask_food_type"
   ],
   "got": [
-   "handoff"
+   "ask_food_type"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "en-US",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "en-order-ask",
@@ -38,14 +38,14 @@
   "turn": 2,
   "user": "chicken biryani",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "en-US",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "en-status",
@@ -75,7 +75,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "en-US",
   "failure": null
  },
@@ -107,7 +107,7 @@
   "got": [
    "order_not_found"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "en-US",
   "failure": null
  },
@@ -198,10 +198,10 @@
   "turn": 2,
   "user": "order me two cheeseburgers",
   "expected": [
-   "order_placed"
+   "not_on_menu"
   ],
   "got": [
-   "order_placed"
+   "not_on_menu"
   ],
   "intent": "takeaway_order",
   "detected_language": "en-US",
@@ -246,10 +246,10 @@
   "turn": 1,
   "user": "pídeme una hamburguesa con patatas",
   "expected": [
-   "order_placed"
+   "not_on_menu"
   ],
   "got": [
-   "order_placed"
+   "not_on_menu"
   ],
   "intent": "takeaway_order",
   "detected_language": "es-ES",
@@ -278,12 +278,12 @@
   "turn": 2,
   "user": "sushi",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "es-ES",
   "failure": null
  },
@@ -315,7 +315,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "es-ES",
   "failure": null
  },
@@ -374,10 +374,10 @@
   "turn": 2,
   "user": "quiero una paella para llevar",
   "expected": [
-   "order_placed"
+   "not_on_menu"
   ],
   "got": [
-   "order_placed"
+   "not_on_menu"
   ],
   "intent": "takeaway_order",
   "detected_language": "es-ES",
@@ -390,10 +390,10 @@
   "turn": 1,
   "user": "bestell mir bitte eine große salamipizza",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "de-DE",
@@ -422,7 +422,7 @@
   "turn": 2,
   "user": "döner",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
    "handoff"
@@ -459,7 +459,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "de-DE",
   "failure": null
  },
@@ -518,10 +518,10 @@
   "turn": 1,
   "user": "je voudrais commander des sushis",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "fr-FR",
@@ -537,11 +537,11 @@
    "ask_food_type"
   ],
   "got": [
-   "handoff"
+   "ask_food_type"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "fr-FR",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "fr-order-ask",
@@ -550,14 +550,14 @@
   "turn": 2,
   "user": "un burger",
   "expected": [
-   "order_placed"
+   "not_on_menu"
   ],
   "got": [
-   "handoff"
+   "not_on_menu"
   ],
   "intent": "nlu_fallback",
   "detected_language": "fr-FR",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "fr-status",
@@ -587,7 +587,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "fr-FR",
   "failure": null
  },
@@ -646,10 +646,10 @@
   "turn": 2,
   "user": "commande-moi une pizza quatre fromages",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "fr-FR",
@@ -662,14 +662,14 @@
   "turn": 1,
   "user": "寿司を注文したいです",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "ja-JP",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "ja-order-ask",
@@ -681,11 +681,11 @@
    "ask_food_type"
   ],
   "got": [
-   "handoff"
+   "ask_food_type"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "ja-JP",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "ja-order-ask",
@@ -694,14 +694,14 @@
   "turn": 2,
   "user": "ラーメン",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "ja-JP",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "ja-status",
@@ -731,7 +731,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "ja-JP",
   "failure": null
  },
@@ -790,14 +790,14 @@
   "turn": 1,
   "user": "मुझे एक बर्गर मंगवाना है",
   "expected": [
-   "order_placed"
+   "not_on_menu"
   ],
   "got": [
-   "handoff"
+   "not_on_menu"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "hi-IN",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "hi-order-ask",
@@ -822,7 +822,7 @@
   "turn": 2,
   "user": "बिरयानी",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
    "handoff"
@@ -859,7 +859,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "hi-IN",
   "failure": null
  },
@@ -918,10 +918,10 @@
   "turn": 1,
   "user": "أريد أن أطلب بيتزا",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "ar-SA",
@@ -950,14 +950,14 @@
   "turn": 2,
   "user": "شاورما",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "handoff"
+   "default"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "ar-SA",
-  "failure": "handoff instead of answer"
+  "failure": "misroute"
  },
  {
   "conversation": "ar-status",
@@ -987,7 +987,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "ar-SA",
   "failure": null
  },
@@ -1046,10 +1046,10 @@
   "turn": 1,
   "user": "nataka kuagiza pizza",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "sw-KE",
@@ -1078,12 +1078,12 @@
   "turn": 2,
   "user": "chipsi mayai",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "sw-KE",
   "failure": null
  },
@@ -1113,11 +1113,11 @@
    "order_status"
   ],
   "got": [
-   "handoff"
+   "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "sw-KE",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "sw-complaint",
@@ -1158,10 +1158,10 @@
   "turn": 1,
   "user": "nataka kuagiza wali na nyama",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "en-US",
@@ -1174,10 +1174,10 @@
   "turn": 1,
   "user": "ፒዛ ማዘዝ እፈልጋለሁ",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "am-ET",
@@ -1206,12 +1206,12 @@
   "turn": 2,
   "user": "ዶሮ ወጥ",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "am-ET",
   "failure": null
  },
@@ -1243,7 +1243,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "am-ET",
   "failure": null
  },
@@ -1286,10 +1286,10 @@
   "turn": 1,
   "user": "எனக்கு ஒரு பிரியாணி ஆர்டர் செய்ய வேண்டும்",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
   "intent": "takeaway_order",
   "detected_language": "ta-IN",
@@ -1318,12 +1318,12 @@
   "turn": 2,
   "user": "தோசை",
   "expected": [
-   "order_placed"
+   "added_to_cart"
   ],
   "got": [
-   "order_placed"
+   "added_to_cart"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_order",
   "detected_language": "ta-IN",
   "failure": null
  },
@@ -1355,7 +1355,7 @@
   "got": [
    "order_status"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "ta-IN",
   "failure": null
  },

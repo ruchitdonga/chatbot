@@ -4,89 +4,91 @@
 #
 # locale: the language the replies should be in (null = unsupported language, only the handoff is checked).
 # hint:   optional client language hint sent as REST metadata on every turn.
+# Ordering in chat adds the dish to the website cart (added_to_cart) or says it is not on the menu (not_on_menu),
+# decided by the menu matcher (src/shop/app.py match_dish) when the flow changed on 2026-11-17.
 # expect: the bot replies (response names without "utter_") for that turn, in order, excluding the disclosure,
 #         which is checked separately on the first turn.
 
 conversations:
 
 # ---------------- en-US ----------------
-- {id: en-order-full, locale: en-US, goal: order, turns: [{user: "can i get a large pepperoni pizza delivered", expect: [order_placed]}]}
-- {id: en-order-ask, locale: en-US, goal: order, turns: [{user: "i'd like to place an order", expect: [ask_food_type]}, {user: "chicken biryani", expect: [order_placed]}]}
+- {id: en-order-full, locale: en-US, goal: order, turns: [{user: "can i get a large pepperoni pizza delivered", expect: [added_to_cart]}]}
+- {id: en-order-ask, locale: en-US, goal: order, turns: [{user: "i'd like to place an order", expect: [ask_food_type]}, {user: "chicken biryani", expect: [added_to_cart]}]}
 - {id: en-status, locale: en-US, goal: status, turns: [{user: "has my food left the restaurant yet", expect: [ask_order_id]}, {user: "it's FF-1002", expect: [order_status]}]}
 - {id: en-status-unknown, locale: en-US, goal: status, turns: [{user: "track my order please", expect: [ask_order_id]}, {user: "FF-9999", expect: [order_not_found]}]}
 - {id: en-complaint, locale: en-US, goal: handoff, turns: [{user: "the rider was rude to me and i want to complain", expect: [handoff]}]}
 - {id: en-midform-person, locale: en-US, goal: handoff, turns: [{user: "i want to order food", expect: [ask_food_type]}, {user: "actually let me talk to a real person", expect: [handoff]}]}
 - {id: en-unsupported, locale: en-US, goal: cant_help, turns: [{user: "play some jazz music", expect: [cant_help]}]}
-- {id: en-greet-order, locale: en-US, goal: order, turns: [{user: "hey there", expect: [greet]}, {user: "order me two cheeseburgers", expect: [order_placed]}]}
+- {id: en-greet-order, locale: en-US, goal: order, turns: [{user: "hey there", expect: [greet]}, {user: "order me two cheeseburgers", expect: [not_on_menu]}]}
 - {id: en-weather, locale: en-US, goal: info, turns: [{user: "what's the weather going to be like tomorrow", expect: [weather]}]}
 - {id: en-time, locale: en-US, goal: info, turns: [{user: "what time is it in london", expect: [time]}]}
 
 # ---------------- es-ES ----------------
-- {id: es-order-full, locale: es-ES, goal: order, turns: [{user: "pídeme una hamburguesa con patatas", expect: [order_placed]}]}
-- {id: es-order-ask, locale: es-ES, goal: order, turns: [{user: "quiero hacer un pedido", expect: [ask_food_type]}, {user: "sushi", expect: [order_placed]}]}
+- {id: es-order-full, locale: es-ES, goal: order, turns: [{user: "pídeme una hamburguesa con patatas", expect: [not_on_menu]}]}
+- {id: es-order-ask, locale: es-ES, goal: order, turns: [{user: "quiero hacer un pedido", expect: [ask_food_type]}, {user: "sushi", expect: [added_to_cart]}]}
 - {id: es-status, locale: es-ES, goal: status, turns: [{user: "cuánto tarda mi pedido", expect: [ask_order_id]}, {user: "FF-1001", expect: [order_status]}]}
 - {id: es-complaint, locale: es-ES, goal: handoff, turns: [{user: "me cobraron dos veces y quiero hablar con una persona", expect: [handoff]}]}
 - {id: es-unsupported, locale: es-ES, goal: cant_help, turns: [{user: "pon música de los beatles", expect: [cant_help]}]}
-- {id: es-greet-order, locale: es-ES, goal: order, turns: [{user: "hola, buenas tardes", expect: [greet]}, {user: "quiero una paella para llevar", expect: [order_placed]}]}
+- {id: es-greet-order, locale: es-ES, goal: order, turns: [{user: "hola, buenas tardes", expect: [greet]}, {user: "quiero una paella para llevar", expect: [not_on_menu]}]}
 
 # ---------------- de-DE ----------------
-- {id: de-order-full, locale: de-DE, goal: order, turns: [{user: "bestell mir bitte eine große salamipizza", expect: [order_placed]}]}
-- {id: de-order-ask, locale: de-DE, goal: order, turns: [{user: "ich will was zu essen bestellen", expect: [ask_food_type]}, {user: "döner", expect: [order_placed]}]}
+- {id: de-order-full, locale: de-DE, goal: order, turns: [{user: "bestell mir bitte eine große salamipizza", expect: [added_to_cart]}]}
+- {id: de-order-ask, locale: de-DE, goal: order, turns: [{user: "ich will was zu essen bestellen", expect: [ask_food_type]}, {user: "döner", expect: [added_to_cart]}]}
 - {id: de-status, locale: de-DE, goal: status, turns: [{user: "wann kommt meine lieferung", expect: [ask_order_id]}, {user: "FF 1002", expect: [order_status]}]}
 - {id: de-complaint, locale: de-DE, goal: handoff, turns: [{user: "in meiner bestellung fehlt etwas, ich will eine erstattung", expect: [handoff]}]}
 - {id: de-weather, locale: de-DE, goal: info, turns: [{user: "wie wird das wetter morgen in berlin", expect: [weather]}]}
 - {id: de-unsupported, locale: de-DE, goal: cant_help, turns: [{user: "spiel mein lieblingslied", expect: [cant_help]}]}
 
 # ---------------- fr-FR ----------------
-- {id: fr-order-full, locale: fr-FR, goal: order, turns: [{user: "je voudrais commander des sushis", expect: [order_placed]}]}
-- {id: fr-order-ask, locale: fr-FR, goal: order, turns: [{user: "je veux passer une commande", expect: [ask_food_type]}, {user: "un burger", expect: [order_placed]}]}
+- {id: fr-order-full, locale: fr-FR, goal: order, turns: [{user: "je voudrais commander des sushis", expect: [added_to_cart]}]}
+- {id: fr-order-ask, locale: fr-FR, goal: order, turns: [{user: "je veux passer une commande", expect: [ask_food_type]}, {user: "un burger", expect: [not_on_menu]}]}
 - {id: fr-status, locale: fr-FR, goal: status, turns: [{user: "où en est ma livraison", expect: [ask_order_id]}, {user: "FF-1001", expect: [order_status]}]}
 - {id: fr-complaint, locale: fr-FR, goal: handoff, turns: [{user: "le livreur a été impoli, je veux parler à quelqu'un", expect: [handoff]}]}
 - {id: fr-unsupported, locale: fr-FR, goal: cant_help, turns: [{user: "allume la lumière du salon", expect: [cant_help]}]}
-- {id: fr-greet-order, locale: fr-FR, goal: order, turns: [{user: "salut", expect: [greet]}, {user: "commande-moi une pizza quatre fromages", expect: [order_placed]}]}
+- {id: fr-greet-order, locale: fr-FR, goal: order, turns: [{user: "salut", expect: [greet]}, {user: "commande-moi une pizza quatre fromages", expect: [added_to_cart]}]}
 
 # ---------------- ja-JP ----------------
-- {id: ja-order-full, locale: ja-JP, goal: order, turns: [{user: "寿司を注文したいです", expect: [order_placed]}]}
-- {id: ja-order-ask, locale: ja-JP, goal: order, turns: [{user: "出前を頼みたい", expect: [ask_food_type]}, {user: "ラーメン", expect: [order_placed]}]}
+- {id: ja-order-full, locale: ja-JP, goal: order, turns: [{user: "寿司を注文したいです", expect: [added_to_cart]}]}
+- {id: ja-order-ask, locale: ja-JP, goal: order, turns: [{user: "出前を頼みたい", expect: [ask_food_type]}, {user: "ラーメン", expect: [added_to_cart]}]}
 - {id: ja-status, locale: ja-JP, goal: status, turns: [{user: "私の注文はいつ届きますか", expect: [ask_order_id]}, {user: "FF-1002", expect: [order_status]}]}
 - {id: ja-complaint, locale: ja-JP, goal: handoff, turns: [{user: "料理が冷めていたので返金してほしい", expect: [handoff]}]}
 - {id: ja-weather, locale: ja-JP, goal: info, turns: [{user: "明日の天気は？", expect: [weather]}]}
 - {id: ja-unsupported, locale: ja-JP, goal: cant_help, turns: [{user: "音楽をかけて", expect: [cant_help]}]}
 
 # ---------------- hi-IN ----------------
-- {id: hi-order-full, locale: hi-IN, goal: order, turns: [{user: "मुझे एक बर्गर मंगवाना है", expect: [order_placed]}]}
-- {id: hi-order-ask, locale: hi-IN, goal: order, turns: [{user: "मैं खाना ऑर्डर करना चाहता हूँ", expect: [ask_food_type]}, {user: "बिरयानी", expect: [order_placed]}]}
+- {id: hi-order-full, locale: hi-IN, goal: order, turns: [{user: "मुझे एक बर्गर मंगवाना है", expect: [not_on_menu]}]}
+- {id: hi-order-ask, locale: hi-IN, goal: order, turns: [{user: "मैं खाना ऑर्डर करना चाहता हूँ", expect: [ask_food_type]}, {user: "बिरयानी", expect: [added_to_cart]}]}
 - {id: hi-status, locale: hi-IN, goal: status, turns: [{user: "मेरा खाना कब तक आएगा", expect: [ask_order_id]}, {user: "FF-1001", expect: [order_status]}]}
 - {id: hi-complaint, locale: hi-IN, goal: handoff, turns: [{user: "मुझसे दो बार पैसे काट लिए गए, किसी इंसान से बात कराओ", expect: [handoff]}]}
 - {id: hi-unsupported, locale: hi-IN, goal: cant_help, turns: [{user: "कोई गाना बजाओ", expect: [cant_help]}]}
 - {id: hi-greet, locale: hi-IN, goal: info, turns: [{user: "नमस्ते", expect: [greet]}]}
 
 # ---------------- ar-SA ----------------
-- {id: ar-order-full, locale: ar-SA, goal: order, turns: [{user: "أريد أن أطلب بيتزا", expect: [order_placed]}]}
-- {id: ar-order-ask, locale: ar-SA, goal: order, turns: [{user: "أريد طلب طعام", expect: [ask_food_type]}, {user: "شاورما", expect: [order_placed]}]}
+- {id: ar-order-full, locale: ar-SA, goal: order, turns: [{user: "أريد أن أطلب بيتزا", expect: [added_to_cart]}]}
+- {id: ar-order-ask, locale: ar-SA, goal: order, turns: [{user: "أريد طلب طعام", expect: [ask_food_type]}, {user: "شاورما", expect: [added_to_cart]}]}
 - {id: ar-status, locale: ar-SA, goal: status, turns: [{user: "أين طلبي", expect: [ask_order_id]}, {user: "FF-1002", expect: [order_status]}]}
 - {id: ar-complaint, locale: ar-SA, goal: handoff, turns: [{user: "وصل الطعام باردًا وأريد استرداد أموالي", expect: [handoff]}]}
 - {id: ar-unsupported, locale: ar-SA, goal: cant_help, turns: [{user: "شغل موسيقى", expect: [cant_help]}]}
 - {id: ar-greet, locale: ar-SA, goal: info, turns: [{user: "مرحبا", expect: [greet]}]}
 
 # ---------------- sw-KE (client hint, except the last conversation) ----------------
-- {id: sw-order-full, locale: sw-KE, hint: sw-KE, goal: order, turns: [{user: "nataka kuagiza pizza", expect: [order_placed]}]}
-- {id: sw-order-ask, locale: sw-KE, hint: sw-KE, goal: order, turns: [{user: "naomba kuagiza chakula", expect: [ask_food_type]}, {user: "chipsi mayai", expect: [order_placed]}]}
+- {id: sw-order-full, locale: sw-KE, hint: sw-KE, goal: order, turns: [{user: "nataka kuagiza pizza", expect: [added_to_cart]}]}
+- {id: sw-order-ask, locale: sw-KE, hint: sw-KE, goal: order, turns: [{user: "naomba kuagiza chakula", expect: [ask_food_type]}, {user: "chipsi mayai", expect: [added_to_cart]}]}
 - {id: sw-status, locale: sw-KE, hint: sw-KE, goal: status, turns: [{user: "oda yangu iko wapi", expect: [ask_order_id]}, {user: "FF-1001", expect: [order_status]}]}
 - {id: sw-complaint, locale: sw-KE, hint: sw-KE, goal: handoff, turns: [{user: "chakula kilifika kikiwa baridi, nataka kurudishiwa pesa", expect: [handoff]}]}
 - {id: sw-unsupported, locale: sw-KE, hint: sw-KE, goal: cant_help, turns: [{user: "cheza muziki", expect: [cant_help]}]}
-- {id: sw-order-nohint, locale: sw-KE, goal: order, turns: [{user: "nataka kuagiza wali na nyama", expect: [order_placed]}]}
+- {id: sw-order-nohint, locale: sw-KE, goal: order, turns: [{user: "nataka kuagiza wali na nyama", expect: [added_to_cart]}]}
 
 # ---------------- am-ET ----------------
-- {id: am-order-full, locale: am-ET, goal: order, turns: [{user: "ፒዛ ማዘዝ እፈልጋለሁ", expect: [order_placed]}]}
-- {id: am-order-ask, locale: am-ET, goal: order, turns: [{user: "ምግብ ማዘዝ እፈልጋለሁ", expect: [ask_food_type]}, {user: "ዶሮ ወጥ", expect: [order_placed]}]}
+- {id: am-order-full, locale: am-ET, goal: order, turns: [{user: "ፒዛ ማዘዝ እፈልጋለሁ", expect: [added_to_cart]}]}
+- {id: am-order-ask, locale: am-ET, goal: order, turns: [{user: "ምግብ ማዘዝ እፈልጋለሁ", expect: [ask_food_type]}, {user: "ዶሮ ወጥ", expect: [added_to_cart]}]}
 - {id: am-status, locale: am-ET, goal: status, turns: [{user: "ትዕዛዜ የት ደረሰ", expect: [ask_order_id]}, {user: "FF-1002", expect: [order_status]}]}
 - {id: am-complaint, locale: am-ET, goal: handoff, turns: [{user: "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ", expect: [handoff]}]}
 - {id: am-unsupported, locale: am-ET, goal: cant_help, turns: [{user: "ሙዚቃ አጫውት", expect: [cant_help]}]}
 
 # ---------------- ta-IN ----------------
-- {id: ta-order-full, locale: ta-IN, goal: order, turns: [{user: "எனக்கு ஒரு பிரியாணி ஆர்டர் செய்ய வேண்டும்", expect: [order_placed]}]}
-- {id: ta-order-ask, locale: ta-IN, goal: order, turns: [{user: "நான் உணவு ஆர்டர் செய்ய விரும்புகிறேன்", expect: [ask_food_type]}, {user: "தோசை", expect: [order_placed]}]}
+- {id: ta-order-full, locale: ta-IN, goal: order, turns: [{user: "எனக்கு ஒரு பிரியாணி ஆர்டர் செய்ய வேண்டும்", expect: [added_to_cart]}]}
+- {id: ta-order-ask, locale: ta-IN, goal: order, turns: [{user: "நான் உணவு ஆர்டர் செய்ய விரும்புகிறேன்", expect: [ask_food_type]}, {user: "தோசை", expect: [added_to_cart]}]}
 - {id: ta-status, locale: ta-IN, goal: status, turns: [{user: "என் ஆர்டர் எங்கே இருக்கிறது", expect: [ask_order_id]}, {user: "FF-1001", expect: [order_status]}]}
 - {id: ta-complaint, locale: ta-IN, goal: handoff, turns: [{user: "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்", expect: [handoff]}]}
 - {id: ta-unsupported, locale: ta-IN, goal: cant_help, turns: [{user: "பாட்டு போடு", expect: [cant_help]}]}

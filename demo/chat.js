@@ -69,6 +69,18 @@
     scrollDown();
   }
 
+  // The assistant matched a dish to the menu: put it in the page's cart (app.js) and offer checkout.
+  function addedToCart(item) {
+    window.dispatchEvent(new CustomEvent("feastfleet:cart-add", { detail: item }));
+    const link = document.createElement("a");
+    link.className = "chat-checkout";
+    link.href = "#/checkout";
+    link.textContent = "View cart and check out";
+    link.addEventListener("click", () => { if (window.matchMedia("(max-width: 640px)").matches) closeChat(); });
+    messages.append(link);
+    scrollDown();
+  }
+
   function renderChips() {
     chips.replaceChildren(...(CHIPS[langSelect.value] || CHIPS["en-US"]).map((text) => {
       const b = document.createElement("button");
@@ -108,6 +120,7 @@
       for (const reply of await res.json()) {
         if (reply.text) bubble("bot", reply.text);
         if (reply.buttons?.length) quickReplies(reply.buttons);
+        if (reply.custom?.cart_add) addedToCart(reply.custom.cart_add);
       }
     } catch (err) {
       typing.remove();

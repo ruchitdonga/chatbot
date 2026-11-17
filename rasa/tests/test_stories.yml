@@ -15,7 +15,7 @@ stories:
   - action: takeaway_order_form
   - active_loop: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: en order, missing food asked for
   steps:
@@ -27,10 +27,10 @@ stories:
   - active_loop: takeaway_order_form
   - user: |
       [pizza](food_type)
-    intent: nlu_fallback
+    intent: takeaway_order
   - action: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: en order status, order number asked for
   steps:
@@ -41,8 +41,8 @@ stories:
   - action: takeaway_query_form
   - active_loop: takeaway_query_form
   - user: |
-      FF-1001
-    intent: nlu_fallback
+      [FF-1001](order_id)
+    intent: takeaway_query
   - action: takeaway_query_form
   - active_loop: null
   - action: action_check_order
@@ -114,7 +114,7 @@ stories:
   - action: takeaway_order_form
   - active_loop: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: en greeting is answered, not handed off (low_confidence_exempt_intents)
   steps:
@@ -142,7 +142,7 @@ stories:
   - action: takeaway_order_form
   - active_loop: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: es order, missing food asked for
   steps:
@@ -154,10 +154,10 @@ stories:
   - active_loop: takeaway_order_form
   - user: |
       una [pizza](food_type)
-    intent: nlu_fallback
+    intent: takeaway_order
   - action: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: es unknown intent
   steps:
@@ -193,7 +193,7 @@ stories:
   - action: takeaway_order_form
   - active_loop: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: de order, missing food asked for
   steps:
@@ -205,10 +205,10 @@ stories:
   - active_loop: takeaway_order_form
   - user: |
       eine [pizza](food_type)
-    intent: nlu_fallback
+    intent: takeaway_order
   - action: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: de unknown intent
   steps:
@@ -236,7 +236,7 @@ stories:
   - action: takeaway_order_form
   - active_loop: takeaway_order_form
   - active_loop: null
-  - action: action_place_order
+  - action: action_add_to_cart
 
 - story: hi order status, order number asked for
   steps:
@@ -247,8 +247,8 @@ stories:
   - action: takeaway_query_form
   - active_loop: takeaway_query_form
   - user: |
-      FF-1001
-    intent: nlu_fallback
+      [FF-1001](order_id)
+    intent: takeaway_query
   - action: takeaway_query_form
   - active_loop: null
   - action: action_check_order
@@ -268,3 +268,25 @@ stories:
     intent: out_of_scope
   - action: utter_disclosure
   - action: utter_handoff
+
+- story: en order number on its own goes straight to tracking
+  steps:
+  - user: |
+      [FF-1002](order_id)
+    intent: takeaway_query
+  - action: utter_disclosure
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form
+  - active_loop: null
+  - action: action_check_order
+
+- story: hi asking about a named order tracks it in one message
+  steps:
+  - user: |
+      मेरा ऑर्डर [FF-1001](order_id) कहाँ है
+    intent: takeaway_query
+  - action: utter_disclosure
+  - action: takeaway_query_form
+  - active_loop: takeaway_query_form
+  - active_loop: null
+  - action: action_check_order

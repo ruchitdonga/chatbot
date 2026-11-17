@@ -35,7 +35,11 @@ def split_turns(events):
         if e["event"] == "user":
             turns.append({"intent": e["parse_data"]["intent"]["name"], "bot": []})
         elif e["event"] == "bot" and turns:
-            turns[-1]["bot"].append((e.get("metadata") or {}).get("utter_action", "?").removeprefix("utter_"))
+            utter = (e.get("metadata") or {}).get("utter_action")
+            if utter:  # data-only messages (the cart_add payload for the website) are not replies
+                turns[-1]["bot"].append(utter.removeprefix("utter_"))
+            elif e.get("text"):
+                turns[-1]["bot"].append("?")
         elif e["event"] == "slot" and e["name"] == "language":
             language = e["value"]
     return turns, language

@@ -46,14 +46,20 @@ def test_validation():
     assert c.post("/api/orders", json={**ORDER, "items": [{"id": "lassi", "qty": 99}]}).status_code == 422
 
 
-def test_tracking_hides_contact_and_accepts_chat_orders():
+def test_tracking_hides_contact():
     c = client()
     oid = c.post("/api/orders", json=ORDER).json()["id"]
     tracked = c.get(f"/api/orders/{oid.lower()}").json()
     assert "contact" not in tracked and tracked["id"] == oid
-    chat = c.post("/api/chat-orders", json={"food": "pilau"}).json()
-    assert chat["items"][0]["name"] == "pilau" and chat["source"] == "chat"
-    assert chat["totals"]["total"] is None  # unpriced until the kitchen confirms; no fee-only "total"
+
+
+def test_menu_match_across_scripts():
+    c = client()
+    for words, dish in [("a large chicken biryani", "biryani"), ("पिज़्ज़ा", "margherita"), ("தோசை", "dosa"),
+                        ("寿司", "sushi"), ("شاورما", "shawarma"), ("chicken pizza please", "tikka-pizza"),
+                        ("ፒዛ", "margherita")]:
+        assert c.get("/api/menu/match", params={"q": words}).json()["id"] == dish, words
+    assert c.get("/api/menu/match", params={"q": "cheeseburger"}).status_code == 404
     assert c.get("/api/orders/FF-1001").json()["status"] == "preparing"  # seeded order, 10 minutes old
     assert c.get("/api/orders/FF-9999").status_code == 404
 
