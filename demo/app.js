@@ -7,6 +7,7 @@
   const view = $("view");
   const money = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
   const fmt = (cents) => money.format(cents / 100);
+  const t = (text, vars) => window.FF_I18N.t(text, vars);  // i18n.js: the store language
   const CART_KEY = "feastfleet-cart", LAST_ORDER_KEY = "feastfleet-last-order";
   const STEP_LABELS = { confirmed: "Order confirmed", preparing: "Preparing your food", on_the_way: "On the way",
                         delivered: "Delivered", ready: "Ready for pickup" };
@@ -32,7 +33,7 @@
     const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const err = new Error(typeof data.detail === "string" ? data.detail : "Please check your details and try again.");
+      const err = new Error(typeof data.detail === "string" ? data.detail : t("Please check your details and try again."));
       err.status = res.status;
       throw err;
     }
@@ -68,30 +69,30 @@
   function stepper(id, qty) {
     const name = menu.byId[id].name;
     return h("div", { class: "stepper" },
-      h("button", { type: "button", "aria-label": `Remove one ${name}`, onclick: () => setQty(id, qty - 1) }, "−"),
+      h("button", { type: "button", "aria-label": t("Remove one {name}", { name }), onclick: () => setQty(id, qty - 1) }, "−"),
       h("span", { "aria-live": "polite" }, qty),
-      h("button", { type: "button", "aria-label": `Add one ${name}`, onclick: () => setQty(id, qty + 1) }, "+"));
+      h("button", { type: "button", "aria-label": t("Add one {name}", { name }), onclick: () => setQty(id, qty + 1) }, "+"));
   }
 
   function cartNodes() {
     const ls = lines();
     if (!ls.length) {
-      return { body: [h("div", { class: "empty-cart" }, h("p", { class: "empty-title" }, "Your cart is empty"),
-        h("p", { class: "muted" }, "Add dishes from the menu and they'll show up here."))], foot: [] };
+      return { body: [h("div", { class: "empty-cart" }, h("p", { class: "empty-title" }, t("Your cart is empty")),
+        h("p", { class: "muted" }, t("Add dishes from the menu and they'll show up here.")))], foot: [] };
     }
     const s = sums("delivery");
     const more = menu.free_delivery_from - s.subtotal;
     return {
       body: ls.map(({ item, qty }) => h("div", { class: "cart-line" },
-        h("span", { class: `diet ${item.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": item.veg ? "Vegetarian" : "Non-vegetarian" }),
+        h("span", { class: `diet ${item.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": item.veg ? t("Vegetarian") : t("Non-vegetarian") }),
         h("div", { class: "cart-info" }, h("p", { class: "cart-name" }, item.name), h("p", { class: "muted" }, fmt(item.price * qty))),
         stepper(item.id, qty))),
       foot: [
-        more > 0 ? h("p", { class: "free-hint" }, `Add ${fmt(more)} more for free delivery`) : h("p", { class: "free-hint ok" }, "Free delivery unlocked"),
-        h("div", { class: "sum-row" }, h("span", {}, "Item total"), h("span", {}, fmt(s.subtotal))),
-        h("div", { class: "sum-row" }, h("span", {}, "Delivery fee"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
-        h("div", { class: "sum-row total" }, h("span", {}, "To pay"), h("span", {}, fmt(s.total))),
-        h("a", { class: "btn btn-primary block", href: "#/checkout", onclick: closeCart }, "Checkout")],
+        more > 0 ? h("p", { class: "free-hint" }, t("Add {amount} more for free delivery", { amount: fmt(more) })) : h("p", { class: "free-hint ok" }, t("Free delivery unlocked")),
+        h("div", { class: "sum-row" }, h("span", {}, t("Item total")), h("span", {}, fmt(s.subtotal))),
+        h("div", { class: "sum-row" }, h("span", {}, t("Delivery fee")), h("span", {}, s.fee ? fmt(s.fee) : t("Free"))),
+        h("div", { class: "sum-row total" }, h("span", {}, t("To pay")), h("span", {}, fmt(s.total))),
+        h("a", { class: "btn btn-primary block", href: "#/checkout", onclick: closeCart }, t("Checkout"))],
     };
   }
 
@@ -106,13 +107,14 @@
     if (side) {
       const body = h("div", { class: "side-body" }), foot = h("div", { class: "side-foot" });
       fill(body, foot);
-      side.replaceChildren(h("h2", {}, "Your cart"), body, foot);
+      side.replaceChildren(h("h2", {}, t("Your cart")), body, foot);
     }
     const bar = $("cart-bar");
     const page = (location.hash || "#/").split("/")[1] || "";
     bar.hidden = !count || page !== "";
-    bar.replaceChildren(h("span", {}, `${count} item${count === 1 ? "" : "s"} · ${fmt(sums("delivery").total)}`),
-      h("strong", {}, "View cart"));
+    bar.replaceChildren(h("span", {}, count === 1 ? t("1 item · {total}", { total: fmt(sums("delivery").total) })
+        : t("{count} items · {total}", { count, total: fmt(sums("delivery").total) })),
+      h("strong", {}, t("View cart")));
   }
   function openCart() {
     $("cart").hidden = false; $("scrim").hidden = false;
@@ -129,15 +131,15 @@
     const qty = cart[m.id];
     return h("li", { class: "dish" },
       h("div", { class: "dish-info" },
-        h("span", { class: `diet ${m.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": m.veg ? "Vegetarian" : "Non-vegetarian" }),
+        h("span", { class: `diet ${m.veg ? "veg" : "nonveg"}`, role: "img", "aria-label": m.veg ? t("Vegetarian") : t("Non-vegetarian") }),
         h("h3", {}, m.name),
         h("p", { class: "dish-price" }, fmt(m.price)),
-        h("p", { class: "dish-desc" }, m.desc)),
+        h("p", { class: "dish-desc" }, t(m.desc))),
       h("div", { class: "dish-pic" },
         h("div", { class: "pic", "aria-hidden": "true" }, m.emoji),
         qty ? stepper(m.id, qty)
-          : h("button", { class: "add", type: "button", "aria-label": `Add ${m.name} to cart`,
-                          onclick: () => { setQty(m.id, 1); toast(`${m.name} added`); } }, "ADD")));
+          : h("button", { class: "add", type: "button", "aria-label": t("Add {name} to cart", { name: m.name }),
+                          onclick: () => { setQty(m.id, 1); toast(t("{name} added", { name: m.name })); } }, t("ADD"))));
   }
 
   function clearSearch() {
@@ -150,34 +152,34 @@
     const q = query.trim().toLowerCase();
     const cats = [...new Set(menu.items.map((m) => m.category))];
     const shown = menu.items.filter((m) => (category === "All" || m.category === category)
-      && (!q || `${m.name} ${m.desc}`.toLowerCase().includes(q)));
+      && (!q || `${m.name} ${m.desc} ${t(m.desc)}`.toLowerCase().includes(q)));
     const groups = cats.map((c) => [c, shown.filter((m) => m.category === c)]).filter(([, list]) => list.length);
     view.replaceChildren(
       h("section", { class: "store wrap" },
         h("div", { class: "store-text" },
           h("h1", {}, "FeastFleet Kitchen"),
-          h("p", { class: "muted" }, "Biryani, South Indian, curries, street food, pizza, Japanese, Middle Eastern and East African"),
+          h("p", { class: "muted" }, t("Biryani, South Indian, curries, street food, pizza, Japanese, Middle Eastern and East African")),
           h("ul", { class: "store-meta" },
-            h("li", {}, h("strong", {}, "30–35 min"), " delivery"),
-            h("li", {}, "Free delivery above ", h("strong", {}, fmt(menu.free_delivery_from))),
-            h("li", {}, "Card or cash on delivery"))),
+            h("li", {}, h("strong", {}, t("30–35 min delivery"))),
+            h("li", {}, t("Free delivery above {amount}", { amount: fmt(menu.free_delivery_from) })),
+            h("li", {}, t("Card or cash on delivery")))),
         h("button", { class: "help-card", type: "button", "data-open-chat": "" },
-          h("strong", {}, "Questions about an order?"),
-          h("span", {}, "Ask our AI assistant in हिन्दी, தமிழ், العربية, Kiswahili and six more languages"))),
+          h("strong", {}, t("Questions about an order?")),
+          h("span", {}, t("Ask our AI assistant in your language. It speaks ten, including हिन्दी, தமிழ், العربية and Kiswahili.")))),
       h("div", { class: "layout wrap" },
         h("div", { class: "menu-col" },
-          h("nav", { class: "cats", "aria-label": "Categories" }, ["All", ...cats].map((c) =>
+          h("nav", { class: "cats", "aria-label": t("Categories") }, ["All", ...cats].map((c) =>
             h("button", { type: "button", class: "cat", "aria-pressed": String(c === category),
-                          onclick: () => { category = c; route(false); } }, c))),
+                          onclick: () => { category = c; route(false); } }, t(c)))),
           groups.length
-            ? groups.map(([c, list]) => h("section", { class: "menu-sec", "aria-label": c },
-                h("h2", {}, c, h("span", { class: "count" }, ` (${list.length})`)),
+            ? groups.map(([c, list]) => h("section", { class: "menu-sec", "aria-label": t(c) },
+                h("h2", {}, t(c), h("span", { class: "count" }, ` (${list.length})`)),
                 h("ul", { class: "dishes" }, list.map(dishRow))))
             : h("div", { class: "no-results" },
-                h("p", { class: "empty-title" }, `No dishes match “${query}”`),
-                h("p", { class: "muted" }, "Try another dish or clear the search."),
-                h("button", { class: "btn btn-ghost", type: "button", onclick: clearSearch }, "Clear search"))),
-        h("aside", { class: "cart-side", id: "cart-side", "aria-label": "Your cart" })));
+                h("p", { class: "empty-title" }, t("No dishes match “{query}”", { query })),
+                h("p", { class: "muted" }, t("Try another dish or clear the search.")),
+                h("button", { class: "btn btn-ghost", type: "button", onclick: clearSearch }, t("Clear search")))),
+        h("aside", { class: "cart-side", id: "cart-side", "aria-label": t("Your cart") })));
   }
 
   function field(label, input, hint) {
@@ -205,15 +207,15 @@
 
   function renderCheckout() {
     if (!lines().length) {
-      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "Checkout"),
-        h("p", {}, "Your cart is empty."), h("a", { class: "btn btn-primary", href: "#/" }, "Browse the menu")));
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, t("Checkout")),
+        h("p", {}, t("Your cart is empty.")), h("a", { class: "btn btn-primary", href: "#/" }, t("Browse the menu"))));
       return;
     }
     let payMethod = "card";
     const name = h("input", { id: "c-name", autocomplete: "name", maxlength: "80", required: true });
     const phone = h("input", { id: "c-phone", type: "tel", autocomplete: "tel", maxlength: "25", required: true, placeholder: "+91 98765 43210" });
     const address = h("textarea", { id: "c-address", autocomplete: "street-address", rows: "2", maxlength: "200" });
-    const notes = h("input", { id: "c-notes", maxlength: "200", placeholder: "Gate code, floor, allergies…" });
+    const notes = h("input", { id: "c-notes", maxlength: "200", placeholder: t("Gate code, floor, allergies…") });
     // Card fields: autocomplete off so the browser neither fills in nor saves a real card here.
     const cardNo = h("input", { id: "p-number", inputmode: "numeric", autocomplete: "off", maxlength: "23", placeholder: "4242 4242 4242 4242" });
     const cardName = h("input", { id: "p-name", autocomplete: "off", maxlength: "60" });
@@ -228,15 +230,15 @@
     });
     cvc.addEventListener("input", () => (cvc.value = cvc.value.replace(/\D/g, "")));
 
-    const addressField = field("Delivery address", address);
+    const addressField = field(t("Delivery address"), address);
     const cardPanel = h("div", { class: "card-panel" },
-      h("p", { class: "test-mode" }, h("strong", {}, "Test mode"),
-        " Use 4242 4242 4242 4242 with any future date and any CVC (4000 0000 0000 0002 is declined). Card details stay on this page; only the last four digits are sent."),
-      field("Card number", cardNo),
-      field("Name on card", cardName),
-      h("div", { class: "two" }, field("Expiry", expiry), field("CVC", cvc)));
-    const codTitle = h("strong", {}, "Cash on delivery");
-    const codSub = h("span", { class: "muted" }, "Pay the rider when your food arrives");
+      h("p", { class: "test-mode" }, h("strong", {}, t("Test mode")),
+        " ", t("Use 4242 4242 4242 4242 with any future date and any CVC (4000 0000 0000 0002 is declined). Card details stay on this page; only the last four digits are sent.")),
+      field(t("Card number"), cardNo),
+      field(t("Name on card"), cardName),
+      h("div", { class: "two" }, field(t("Expiry"), expiry), field("CVC", cvc)));
+    const codTitle = h("strong", {}, t("Cash on delivery"));
+    const codSub = h("span", { class: "muted" }, t("Pay the rider when your food arrives"));
     const codCard = h("label", { class: "radio-card" },
       h("input", { type: "radio", name: "pay", value: "cod", onchange: () => setPay("cod") }), h("span", {}, codTitle, codSub));
     const payError = h("p", { class: "error", id: "pay-error", role: "alert" });
@@ -248,8 +250,8 @@
     function setMode(m) {
       fulfilment = m;
       addressField.hidden = m !== "delivery";
-      codTitle.textContent = m === "pickup" ? "Pay at pickup" : "Cash on delivery";
-      codSub.textContent = m === "pickup" ? "Pay in the shop when you collect" : "Pay the rider when your food arrives";
+      codTitle.textContent = m === "pickup" ? t("Pay at pickup") : t("Cash on delivery");
+      codSub.textContent = m === "pickup" ? t("Pay in the shop when you collect") : t("Pay the rider when your food arrives");
       renderSummary();
     }
     function renderSummary() {
@@ -257,10 +259,10 @@
       summary.replaceChildren(...lines().map(({ item, qty }) =>
         h("div", { class: "sum-row" }, h("span", {}, `${qty} × ${item.name}`), h("span", {}, fmt(item.price * qty)))),
         h("hr"),
-        h("div", { class: "sum-row" }, h("span", {}, "Item total"), h("span", {}, fmt(s.subtotal))),
-        h("div", { class: "sum-row" }, h("span", {}, fulfilment === "pickup" ? "Pickup" : "Delivery fee"), h("span", {}, s.fee ? fmt(s.fee) : "Free")),
-        h("div", { class: "sum-row total" }, h("span", {}, "To pay"), h("span", {}, fmt(s.total))));
-      placeBtn.textContent = `Place order · ${fmt(s.total)}`;
+        h("div", { class: "sum-row" }, h("span", {}, t("Item total")), h("span", {}, fmt(s.subtotal))),
+        h("div", { class: "sum-row" }, h("span", {}, fulfilment === "pickup" ? t("Pickup") : t("Delivery fee")), h("span", {}, s.fee ? fmt(s.fee) : t("Free"))),
+        h("div", { class: "sum-row total" }, h("span", {}, t("To pay")), h("span", {}, fmt(s.total))));
+      placeBtn.textContent = t("Place order · {total}", { total: fmt(s.total) });
     }
     function mark(input, message) {
       $(`${input.id}-error`).textContent = message || "";
@@ -272,16 +274,16 @@
       const [mm, yy] = expiry.value.split("/").map(Number);
       const now = new Date(), expEnd = new Date(2000 + yy, mm, 1);
       const checks = [
-        mark(name, name.value.trim() ? "" : "Please enter your name."),
-        mark(phone, (phone.value.match(/\d/g) || []).length >= 7 && /^\+?[0-9 ()-]+$/.test(phone.value.trim()) ? "" : "Please enter a valid phone number."),
-        mark(address, fulfilment === "pickup" || address.value.trim() ? "" : "Please enter your delivery address."),
+        mark(name, name.value.trim() ? "" : t("Please enter your name.")),
+        mark(phone, (phone.value.match(/\d/g) || []).length >= 7 && /^\+?[0-9 ()-]+$/.test(phone.value.trim()) ? "" : t("Please enter a valid phone number.")),
+        mark(address, fulfilment === "pickup" || address.value.trim() ? "" : t("Please enter your delivery address.")),
       ];
       if (payMethod === "card") {
         checks.push(
-          mark(cardNo, luhn(digits) ? "" : "This card number is not valid."),
-          mark(cardName, cardName.value.trim() ? "" : "Please enter the name on the card."),
-          mark(expiry, mm >= 1 && mm <= 12 && expEnd > now ? "" : "Please enter a valid expiry date."),
-          mark(cvc, new RegExp(brand(digits) === "Amex" ? "^\\d{4}$" : "^\\d{3}$").test(cvc.value) ? "" : "Please enter the security code."));
+          mark(cardNo, luhn(digits) ? "" : t("This card number is not valid.")),
+          mark(cardName, cardName.value.trim() ? "" : t("Please enter the name on the card.")),
+          mark(expiry, mm >= 1 && mm <= 12 && expEnd > now ? "" : t("Please enter a valid expiry date.")),
+          mark(cvc, new RegExp(brand(digits) === "Amex" ? "^\\d{4}$" : "^\\d{3}$").test(cvc.value) ? "" : t("Please enter the security code.")));
       }
       const ok = checks.every(Boolean);
       if (!ok) view.querySelector("[aria-invalid=true]")?.focus();
@@ -296,7 +298,7 @@
       const payment = payMethod === "card" ? { method: "card", card_brand: brand(digits), card_last4: digits.slice(-4) }
                                            : { method: "cod" };
       placeBtn.disabled = true;
-      placeBtn.textContent = "Placing your order…";
+      placeBtn.textContent = t("Placing your order…");
       try {
         const order = await api("/api/orders", { method: "POST", body: JSON.stringify({
           items: lines().map(({ item, qty }) => ({ id: item.id, qty })), fulfilment,
@@ -310,7 +312,7 @@
         location.hash = `#/order/${order.id}`;
       } catch (err) {
         const target = err.status === 402 ? payError : formError;
-        target.textContent = err.message;
+        target.textContent = t(err.message);  // server messages are in i18n.json too
         target.scrollIntoView({ behavior: "smooth", block: "center" });
         placeBtn.disabled = false;
         renderSummary();
@@ -318,80 +320,83 @@
     }
 
     view.replaceChildren(h("section", { class: "wrap page" },
-      h("a", { class: "back", href: "#/" }, "← Back to menu"),
-      h("h1", {}, "Checkout"),
+      h("a", { class: "back", href: "#/" }, t("← Back to menu")),
+      h("h1", {}, t("Checkout")),
       h("form", { class: "checkout", novalidate: true, onsubmit: submit },
         h("div", { class: "checkout-main" },
-          h("fieldset", {}, h("legend", {}, "1. How would you like it?"),
+          h("fieldset", {}, h("legend", {}, t("1. How would you like it?")),
             h("div", { class: "radio-row" },
-              radioCard("mode", "delivery", "Delivery", `About 30 min · ${fmt(menu.delivery_fee)}, free over ${fmt(menu.free_delivery_from)}`, fulfilment === "delivery", () => setMode("delivery")),
-              radioCard("mode", "pickup", "Pickup", "Ready in about 15 min · free", fulfilment === "pickup", () => setMode("pickup")))),
-          h("fieldset", {}, h("legend", {}, "2. Your details"),
-            h("div", { class: "two" }, field("Full name", name), field("Phone", phone)),
+              radioCard("mode", "delivery", t("Delivery"), t("About 30 min · {fee}, free over {amount}", { fee: fmt(menu.delivery_fee), amount: fmt(menu.free_delivery_from) }), fulfilment === "delivery", () => setMode("delivery")),
+              radioCard("mode", "pickup", t("Pickup"), t("Ready in about 15 min · free"), fulfilment === "pickup", () => setMode("pickup")))),
+          h("fieldset", {}, h("legend", {}, t("2. Your details")),
+            h("div", { class: "two" }, field(t("Full name"), name), field(t("Phone"), phone)),
             addressField,
-            field("Notes for the kitchen or rider (optional)", notes)),
-          h("fieldset", {}, h("legend", {}, "3. Payment"),
+            field(t("Notes for the kitchen or rider (optional)"), notes)),
+          h("fieldset", {}, h("legend", {}, t("3. Payment")),
             h("div", { class: "radio-row" },
-              radioCard("pay", "card", "Card", "Visa, Mastercard, Amex", true, () => setPay("card")), codCard),
+              radioCard("pay", "card", t("Card"), "Visa, Mastercard, Amex", true, () => setPay("card")), codCard),
             cardPanel, payError)),
-        h("aside", { class: "checkout-summary" }, h("h2", {}, "Your order"), summary, formError, placeBtn,
-          h("p", { class: "muted small" }, "By placing your order you agree to be contacted about this delivery.")))));
+        h("aside", { class: "checkout-summary" }, h("h2", {}, t("Your order")), summary, formError, placeBtn,
+          h("p", { class: "muted small" }, t("By placing your order you agree to be contacted about this delivery."))))));
     setMode(fulfilment);
     refreshCheckout = renderSummary;
   }
 
   async function renderOrder(id) {
-    view.replaceChildren(h("section", { class: "wrap page narrow" }, h("p", { class: "muted" }, "Loading your order…")));
+    view.replaceChildren(h("section", { class: "wrap page narrow" }, h("p", { class: "muted" }, t("Loading your order…"))));
     let order;
     try {
       order = await api(`/api/orders/${encodeURIComponent(id)}`);
     } catch (err) {
-      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "Order not found"),
-        h("p", {}, `We couldn't find an order with the number ${id}. Check the number on your confirmation.`),
-        h("a", { class: "btn btn-primary", href: "#/track" }, "Try another number")));
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, t("Order not found")),
+        h("p", {}, t("We couldn't find an order with the number {id}. Check the number on your confirmation.", { id })),
+        h("a", { class: "btn btn-primary", href: "#/track" }, t("Try another number"))));
       return;
     }
     const last = read(sessionStorage, LAST_ORDER_KEY);
     const fresh = last && last.id === order.id;
     const done = order.step === order.steps.length - 1;
-    const etaText = done ? (order.fulfilment === "pickup" ? "Ready for pickup" : "Delivered. Enjoy your meal!")
-      : `${order.fulfilment === "pickup" ? "Ready" : "Arriving"} in about ${Math.max(1, order.eta_minutes)} min`;
-    const pay = order.payment.method === "card" ? "Paid by card" : order.fulfilment === "pickup" ? "Pay at pickup" : "Cash on delivery";
+    const pickup = order.fulfilment === "pickup", min = Math.max(1, order.eta_minutes);
+    const etaText = done ? (pickup ? t("Ready for pickup") : t("Delivered. Enjoy your meal!"))
+      : pickup ? t("Ready in about {min} min", { min }) : t("Arriving in about {min} min", { min });
+    const pay = order.payment.method === "card" ? t("Paid by card") : pickup ? t("Pay at pickup") : t("Cash on delivery");
+    const placed = new Date(order.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     view.replaceChildren(h("section", { class: "wrap page narrow" },
       h("div", { class: "order-head" },
         h("div", { class: "check", "aria-hidden": "true" }, "✓"),
-        h("div", {}, h("h1", {}, fresh ? `Thanks, ${last.name}! Your order is in.` : `Order ${order.id}`),
-          h("p", { class: "muted" }, fresh ? `Order number ${order.id}. Keep it to track your order or ask our assistant.` : `${order.fulfilment === "pickup" ? "Pickup" : "Delivery"} · placed ${new Date(order.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`))),
+        h("div", {}, h("h1", {}, fresh ? t("Thanks, {name}! Your order is in.", { name: last.name }) : t("Order {id}", { id: order.id })),
+          h("p", { class: "muted" }, fresh ? t("Order number {id}. Keep it to track your order or ask our assistant.", { id: order.id })
+            : (pickup ? t("Pickup · placed {time}", { time: placed }) : t("Delivery · placed {time}", { time: placed }))))),
       h("div", { class: "eta" }, etaText),
       h("ol", { class: "timeline" }, order.steps.map((s, i) =>
-        h("li", { class: i < order.step ? "done" : i === order.step ? "current" : "" }, STEP_LABELS[s]))),
+        h("li", { class: i < order.step ? "done" : i === order.step ? "current" : "" }, t(STEP_LABELS[s])))),
       h("div", { class: "order-box" },
-        h("h2", {}, "Order details"),
+        h("h2", {}, t("Order details")),
         order.items.map((it) => h("div", { class: "sum-row" }, h("span", {}, `${it.qty} × ${it.name}`),
-          h("span", {}, it.price == null ? "Priced at the kitchen" : fmt(it.price * it.qty)))),
+          h("span", {}, it.price == null ? t("Priced at the kitchen") : fmt(it.price * it.qty)))),
         h("hr"),
         order.totals.subtotal ? [
-          h("div", { class: "sum-row" }, h("span", {}, order.fulfilment === "pickup" ? "Pickup" : "Delivery"),
-            h("span", {}, order.totals.delivery_fee ? fmt(order.totals.delivery_fee) : "Free")),
-          h("div", { class: "sum-row total" }, h("span", {}, "Total"), h("span", {}, fmt(order.totals.total)))] : null,
+          h("div", { class: "sum-row" }, h("span", {}, pickup ? t("Pickup") : t("Delivery")),
+            h("span", {}, order.totals.delivery_fee ? fmt(order.totals.delivery_fee) : t("Free"))),
+          h("div", { class: "sum-row total" }, h("span", {}, t("Total")), h("span", {}, fmt(order.totals.total)))] : null,
         h("p", { class: "muted" }, pay)),
       h("div", { class: "hero-actions" },
-        h("a", { class: "btn btn-ghost", href: "#/" }, "Order something else"),
-        h("button", { class: "btn btn-ghost", type: "button", "data-open-chat": `Where is my order ${order.id}?` }, "Get help with this order"))));
+        h("a", { class: "btn btn-ghost", href: "#/" }, t("Order something else")),
+        h("button", { class: "btn btn-ghost", type: "button", "data-open-chat": t("Where is my order {id}?", { id: order.id }) }, t("Get help with this order")))));
     if (!done) pollTimer = setInterval(() => { if (location.hash === `#/order/${id}`) renderOrder(id); }, 30000);
   }
 
   function renderTrack() {
     const input = h("input", { id: "t-id", placeholder: "FF-2001", autocomplete: "off", maxlength: "12", required: true });
     view.replaceChildren(h("section", { class: "wrap page narrow" },
-      h("h1", {}, "Track your order"),
-      h("p", { class: "muted" }, "Enter the order number from your confirmation."),
+      h("h1", {}, t("Track your order")),
+      h("p", { class: "muted" }, t("Enter the order number from your confirmation.")),
       h("form", { class: "track-form", onsubmit: (e) => {
         e.preventDefault();
         if (input.value.trim()) location.hash = `#/order/${encodeURIComponent(input.value.trim().toUpperCase())}`;
-      } }, h("label", { class: "sr-only", for: "t-id" }, "Order number"), input,
-        h("button", { class: "btn btn-primary", type: "submit" }, "Track")),
-      h("p", { class: "muted small" }, "You can also ask our assistant: it answers in ten languages.")));
+      } }, h("label", { class: "sr-only", for: "t-id" }, t("Order number")), input,
+        h("button", { class: "btn btn-primary", type: "submit" }, t("Track"))),
+      h("p", { class: "muted small" }, t("You can also ask our assistant: it answers in ten languages."))));
     input.focus();
   }
 
@@ -419,22 +424,24 @@
       const { id, qty } = e.detail || {};
       if (!menu?.byId[id]) return;
       setQty(id, (cart[id] || 0) + (qty || 1));
-      toast(`${menu.byId[id].name} added to cart`);
+      toast(t("{name} added to cart", { name: menu.byId[id].name }));
     });
     $("search").addEventListener("input", (e) => {
       query = e.target.value;
       category = "All";
       if ((location.hash || "#/") !== "#/") location.hash = "#/"; else route(false);
     });
+    window.addEventListener("feastfleet:lang", () => route(false));  // the store language changed (i18n.js)
     renderCart();
+    await window.FF_I18N.ready;
     try {
       menu = await api("/api/menu");
       menu.byId = Object.fromEntries(menu.items.map((m) => [m.id, m]));
       for (const id of Object.keys(cart)) if (!menu.byId[id]) delete cart[id];  // dishes removed from the menu
     } catch {
-      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, "We'll be right back"),
-        h("p", {}, "The menu could not be loaded. Please try again in a moment."),
-        h("button", { class: "btn btn-primary", type: "button", onclick: () => location.reload() }, "Try again")));
+      view.replaceChildren(h("section", { class: "wrap page narrow" }, h("h1", {}, t("We'll be right back")),
+        h("p", {}, t("The menu could not be loaded. Please try again in a moment.")),
+        h("button", { class: "btn btn-primary", type: "button", onclick: () => location.reload() }, t("Try again"))));
       return;
     }
     renderCart();

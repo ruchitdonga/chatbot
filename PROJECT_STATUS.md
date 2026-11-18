@@ -234,6 +234,13 @@ Upgraded from the first demo page to a working storefront at `http://localhost:8
 - Checked: `pytest` 70 passed; component self-check; `rasa test core --e2e` 29/29, 117/117.
 - Still not covered: the store pages (menu, cart, checkout) are English only; no native-speaker review of any language; the second live check ran before the demo-order change (it only affects how old FF-1001 looks).
 
+**Store in ten languages; translation review set up (2026-11-18, user: "the store pages ... are English only, and no native speaker has reviewed any of the languages. fix it"):**
+- The whole store is translated: header, menu (categories and the 20 dish descriptions; dish names stay as product names), cart, checkout (labels, the 7 form errors, test-mode notice), the server's messages (card declined, address required), order page and timeline, tracking page, footer. A language picker in the header; the choice is remembered in the browser, else the browser's language is used. Arabic switches the page to right-to-left (layout rules moved to start/end properties; the cart opens from the left).
+- One source for all page texts: `demo/i18n.json` (161 texts keyed by the English text, nine translations each, loaded by `demo/i18n.js`); the chat widget's texts moved there too, and the chat starts in the store's language until a conversation's language is known. `tests/test_i18n.py`: every text in every language with the same placeholders, and every text the page code asks for exists.
+- Checked in the browser: Hindi menu, cart, checkout, all form errors, the declined-card message and order page; Arabic right-to-left at desktop and 375 px; Tamil at 375 px; no page scrolls sideways (one bug found and fixed: the hidden skip link made Arabic pages scroll sideways).
+- **Native-speaker review: not done, and it cannot be done by an AI.** What is in place: `python -m src.i18n.review_sheets export` writes one sheet per language (`reports/translation_review/<locale>.csv`, 185 rows each: the assistant's replies, store and chat texts, suggested phrases) with approved / correction / note columns, and `apply` writes reviewers' corrections back into `rasa/domain.yml`, `demo/i18n.json` and `demo/chat.js` (skipping any text changed since export). Instructions in `reports/translation_review/README.md`; the round trip is tested. Review status: all nine languages not yet reviewed.
+- `pytest` 73 passed.
+
 ### First demo page (2026-11-16, superseded by the website above)
 
 A FeastFleet storefront (`demo/`) with a chat widget, served by a fourth service `web` (`nginx:1.27-alpine`, `docker/nginx.conf`).

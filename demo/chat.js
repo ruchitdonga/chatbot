@@ -19,21 +19,18 @@
     "am-ET": ["ፒዛ ማዘዝ እፈልጋለሁ", "ትዕዛዜ የት ደረሰ", "ምግቡ ቀዝቅዞ ደረሰ ገንዘቤ ይመለስልኝ", "የማድረሻ ክፍያ ስንት ነው?"],
     "ta-IN": ["எனக்கு பிட்சா ஆர்டர் செய்ய வேண்டும்", "என் ஆர்டர் எங்கே இருக்கிறது", "உணவு குளிர்ந்து வந்தது, எனக்கு பணம் திரும்ப வேண்டும்", "டெலிவரி கட்டணம் எவ்வளவு?"],
   };
-  // The widget's own texts (AI-written, not yet reviewed by native speakers). Keys, in order:
-  // ai, wait, agent, queue, busy, unreachable, closed, notSent, down, checkout, type, toAgent, fresh, empty.
-  const KEYS = ["ai", "wait", "agent", "queue", "busy", "unreachable", "closed", "notSent", "down", "checkout", "type", "toAgent", "fresh", "empty"];
-  const UI = Object.fromEntries(Object.entries({
-    "en-US": ["AI assistant, not a person", "Waiting for a person", "Connected to a person", "You're now in the queue for a person. Write here and an agent will reply in this chat.", "All agents are busy right now. Please try again shortly.", "We couldn't reach an agent right now. Please try again shortly.", "The agent closed this chat. You're back with the AI assistant.", "Your message didn't reach the agent. Please try again.", "The assistant is unavailable right now. Please try again in a moment.", "View cart and check out", "Type a message…", "Message the agent…", "New conversation", "Order food, track an order or get help, in any of ten languages."],
-    "es-ES": ["Asistente de IA, no una persona", "Esperando a una persona", "Conectado con una persona", "Estás en la cola para hablar con una persona. Escribe aquí y un agente te responderá en este chat.", "Todos los agentes están ocupados. Inténtalo de nuevo en un momento.", "No hemos podido contactar con un agente. Inténtalo de nuevo en un momento.", "El agente cerró este chat. Vuelves a hablar con el asistente de IA.", "Tu mensaje no llegó al agente. Inténtalo de nuevo.", "El asistente no está disponible ahora. Inténtalo de nuevo en un momento.", "Ver carrito y pagar", "Escribe un mensaje…", "Escribe al agente…", "Nueva conversación", "Pide comida, sigue un pedido u obtén ayuda en cualquiera de diez idiomas."],
-    "de-DE": ["KI-Assistent, kein Mensch", "Warten auf eine Person", "Mit einer Person verbunden", "Sie sind jetzt in der Warteschlange für eine Person. Schreiben Sie hier, ein Mitarbeiter antwortet in diesem Chat.", "Alle Mitarbeiter sind gerade beschäftigt. Bitte versuchen Sie es gleich noch einmal.", "Wir konnten gerade keinen Mitarbeiter erreichen. Bitte versuchen Sie es gleich noch einmal.", "Der Mitarbeiter hat den Chat beendet. Sie sprechen wieder mit dem KI-Assistenten.", "Ihre Nachricht hat den Mitarbeiter nicht erreicht. Bitte versuchen Sie es noch einmal.", "Der Assistent ist gerade nicht erreichbar. Bitte versuchen Sie es gleich noch einmal.", "Warenkorb ansehen und bezahlen", "Nachricht schreiben…", "Nachricht an den Mitarbeiter…", "Neues Gespräch", "Essen bestellen, eine Bestellung verfolgen oder Hilfe bekommen, in zehn Sprachen."],
-    "fr-FR": ["Assistant IA, pas une personne", "En attente d'une personne", "En contact avec une personne", "Vous êtes dans la file d'attente pour une personne. Écrivez ici, un conseiller vous répondra dans ce chat.", "Tous les conseillers sont occupés. Réessayez dans un instant.", "Impossible de joindre un conseiller pour le moment. Réessayez dans un instant.", "Le conseiller a fermé ce chat. Vous êtes de nouveau avec l'assistant IA.", "Votre message n'est pas parvenu au conseiller. Réessayez.", "L'assistant n'est pas disponible pour le moment. Réessayez dans un instant.", "Voir le panier et payer", "Écrivez un message…", "Écrire au conseiller…", "Nouvelle conversation", "Commandez, suivez une commande ou obtenez de l'aide, dans dix langues."],
-    "ja-JP": ["AIアシスタント（人間ではありません）", "担当者を待っています", "担当者につながりました", "担当者の順番待ちに入りました。ここに書き込むと、担当者がこのチャットで返信します。", "ただいま担当者が全員対応中です。しばらくしてからもう一度お試しください。", "担当者に接続できませんでした。しばらくしてからもう一度お試しください。", "担当者がこのチャットを終了しました。AIアシスタントに戻ります。", "メッセージが担当者に届きませんでした。もう一度お試しください。", "アシスタントは現在ご利用いただけません。しばらくしてからもう一度お試しください。", "カートを見て注文する", "メッセージを入力…", "担当者へのメッセージ…", "新しい会話", "料理の注文、注文の確認、お問い合わせを10の言語で。"],
-    "hi-IN": ["एआई सहायक, इंसान नहीं", "किसी व्यक्ति का इंतज़ार", "एक व्यक्ति से जुड़े हैं", "आप किसी व्यक्ति से बात करने की कतार में हैं। यहाँ लिखें, एक एजेंट इसी चैट में जवाब देगा।", "अभी सभी एजेंट व्यस्त हैं। कृपया थोड़ी देर में फिर कोशिश करें।", "अभी किसी एजेंट से संपर्क नहीं हो सका। कृपया थोड़ी देर में फिर कोशिश करें।", "एजेंट ने यह चैट बंद कर दी। अब आप फिर से एआई सहायक से बात कर रहे हैं।", "आपका संदेश एजेंट तक नहीं पहुँचा। कृपया फिर कोशिश करें।", "सहायक अभी उपलब्ध नहीं है। कृपया थोड़ी देर में फिर कोशिश करें।", "कार्ट देखें और चेकआउट करें", "संदेश लिखें…", "एजेंट को संदेश…", "नई बातचीत", "खाना ऑर्डर करें, ऑर्डर ट्रैक करें या मदद लें, दस भाषाओं में।"],
-    "ar-SA": ["مساعد ذكاء اصطناعي، ليس إنسانًا", "في انتظار موظف", "متصل بموظف", "أنت الآن في قائمة الانتظار للتحدث مع موظف. اكتب هنا وسيرد عليك موظف في هذه المحادثة.", "جميع الموظفين مشغولون الآن. يرجى المحاولة بعد قليل.", "تعذّر الوصول إلى موظف الآن. يرجى المحاولة بعد قليل.", "أنهى الموظف هذه المحادثة. عدت الآن إلى مساعد الذكاء الاصطناعي.", "لم تصل رسالتك إلى الموظف. يرجى المحاولة مرة أخرى.", "المساعد غير متاح الآن. يرجى المحاولة بعد قليل.", "عرض السلة وإتمام الطلب", "اكتب رسالة…", "اكتب رسالة إلى الموظف…", "محادثة جديدة", "اطلب الطعام أو تتبّع طلبك أو احصل على المساعدة بعشر لغات."],
-    "sw-KE": ["Msaidizi wa AI, si binadamu", "Unasubiri mtu", "Umeunganishwa na mtu", "Sasa uko kwenye foleni ya kuongea na mtu. Andika hapa na wakala atakujibu kwenye gumzo hili.", "Mawakala wote wana shughuli sasa. Tafadhali jaribu tena baada ya muda mfupi.", "Hatukuweza kumpata wakala sasa. Tafadhali jaribu tena baada ya muda mfupi.", "Wakala amefunga gumzo hili. Umerudi kwa msaidizi wa AI.", "Ujumbe wako haukumfikia wakala. Tafadhali jaribu tena.", "Msaidizi hapatikani sasa. Tafadhali jaribu tena baada ya muda mfupi.", "Angalia kikapu na ulipe", "Andika ujumbe…", "Mwandikie wakala…", "Mazungumzo mapya", "Agiza chakula, fuatilia oda au pata msaada, kwa lugha kumi."],
-    "am-ET": ["የAI ረዳት፣ ሰው አይደለም", "ሰው በመጠባበቅ ላይ", "ከሰው ጋር ተገናኝተዋል", "አሁን ከሰው ጋር ለመነጋገር ወረፋ ላይ ነዎት። እዚህ ይጻፉ፤ ወኪል በዚህ ውይይት ይመልስልዎታል።", "ሁሉም ወኪሎች አሁን ሥራ ላይ ናቸው። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።", "አሁን ወኪል ማግኘት አልቻልንም። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።", "ወኪሉ ይህን ውይይት ዘግቷል። ወደ AI ረዳቱ ተመልሰዋል።", "መልዕክትዎ ወኪሉ ጋር አልደረሰም። እባክዎ እንደገና ይሞክሩ።", "ረዳቱ አሁን አይገኝም። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።", "ጋሪውን ይመልከቱ እና ይክፈሉ", "መልዕክት ይጻፉ…", "ለወኪሉ ይጻፉ…", "አዲስ ውይይት", "ምግብ ይዘዙ፣ ትዕዛዝ ይከታተሉ ወይም እርዳታ ያግኙ፣ በአስር ቋንቋዎች።"],
-    "ta-IN": ["AI உதவியாளர், மனிதர் அல்ல", "ஒரு நபருக்காகக் காத்திருக்கிறது", "ஒரு நபருடன் இணைக்கப்பட்டுள்ளீர்கள்", "ஒரு நபருடன் பேச நீங்கள் வரிசையில் உள்ளீர்கள். இங்கே எழுதுங்கள், ஒரு முகவர் இந்த அரட்டையில் பதிலளிப்பார்.", "எல்லா முகவர்களும் இப்போது பணியில் உள்ளனர். சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.", "இப்போது ஒரு முகவரைத் தொடர்பு கொள்ள முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.", "முகவர் இந்த அரட்டையை முடித்துவிட்டார். நீங்கள் மீண்டும் AI உதவியாளருடன் இருக்கிறீர்கள்.", "உங்கள் செய்தி முகவரைச் சென்றடையவில்லை. மீண்டும் முயற்சிக்கவும்.", "உதவியாளர் இப்போது கிடைக்கவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.", "கார்ட்டைப் பார்த்து செக்அவுட் செய்யவும்", "ஒரு செய்தியை எழுதுங்கள்…", "முகவருக்கு எழுதுங்கள்…", "புதிய உரையாடல்", "உணவை ஆர்டர் செய்யுங்கள், ஆர்டரைக் கண்காணியுங்கள் அல்லது உதவி பெறுங்கள், பத்து மொழிகளில்."],
-  }).map(([lang, texts]) => [lang, Object.fromEntries(KEYS.map((k, i) => [k, texts[i]]))]));
+  // The widget's own texts: English here, translations in i18n.json (via i18n.js).
+  const EN = {
+    ai: "AI assistant, not a person", wait: "Waiting for a person", agent: "Connected to a person",
+    queue: "You're now in the queue for a person. Write here and an agent will reply in this chat.",
+    busy: "All agents are busy right now. Please try again shortly.",
+    unreachable: "We couldn't reach an agent right now. Please try again shortly.",
+    closed: "The agent closed this chat. You're back with the AI assistant.",
+    notSent: "Your message didn't reach the agent. Please try again.",
+    down: "The assistant is unavailable right now. Please try again in a moment.",
+    checkout: "View cart and check out", type: "Type a message…", toAgent: "Message the agent…",
+    fresh: "New conversation", empty: "Order food, track an order or get help, in any of ten languages.",
+  };
 
   const $ = (id) => document.getElementById(id);
   const chat = $("chat"), launcher = $("chat-launcher"), messages = $("messages"), input = $("input");
@@ -43,8 +40,9 @@
   let agent = null;  // {id, next, timer, connected} while a person has the chat (orders API /api/handoffs)
   let convLang = null;  // the conversation's language, from the assistant's first reply (custom.lang) in Auto-detect
   const sub = chat.querySelector(".chat-sub");
-  const lang = () => langSelect.value || convLang || "en-US";
-  const ui = (key) => (UI[lang()] || UI["en-US"])[key];
+  // The chat's language: chosen in the chat, else detected for this conversation, else the store's language.
+  const lang = () => langSelect.value || convLang || window.FF_I18N.lang();
+  const ui = (key) => window.FF_I18N.t(EN[key], {}, lang());
 
   // Status line, placeholder and suggestions in the conversation's language.
   function refreshUi() {
@@ -241,6 +239,8 @@
     if (messages.querySelector(".msg")) restart(`${ui("fresh")}: ${langSelect.selectedOptions[0].text}`);
     else refreshUi();
   });
+  window.addEventListener("feastfleet:lang", refreshUi);  // the store language changed (i18n.js)
+  window.FF_I18N.ready.then(refreshUi);
   refreshUi();
 
   launcher.addEventListener("click", () => openChat());
