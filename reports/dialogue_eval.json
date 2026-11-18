@@ -9,11 +9,11 @@
    "added_to_cart"
   ],
   "got": [
-   "ask_order_id"
+   "added_to_cart"
   ],
-  "intent": "takeaway_query",
+  "intent": "takeaway_order",
   "detected_language": "en-US",
-  "failure": "misroute"
+  "failure": null
  },
  {
   "conversation": "en-order-ask",
@@ -1097,11 +1097,11 @@
    "ask_order_id"
   ],
   "got": [
-   "handoff"
+   "ask_order_id"
   ],
-  "intent": "nlu_fallback",
+  "intent": "takeaway_query",
   "detected_language": "sw-KE",
-  "failure": "handoff instead of answer"
+  "failure": null
  },
  {
   "conversation": "sw-status",
@@ -1164,8 +1164,8 @@
    "added_to_cart"
   ],
   "intent": "takeaway_order",
-  "detected_language": "en-US",
-  "failure": "wrong language detected"
+  "detected_language": "sw-KE",
+  "failure": null
  },
  {
   "conversation": "am-order-full",

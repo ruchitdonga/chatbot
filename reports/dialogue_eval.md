@@ -6,23 +6,23 @@ A conversation is completed when every turn gives exactly the scripted replies, 
 
 | Measure | Result |
 |---|---|
-| Task completion (order / order-status conversations) | 32/35 (91%) |
-| All conversations completed | 57/64 (89%) |
-| Turns correct | 82/89 (92%) |
+| Task completion (order / order-status conversations) | 35/35 (100%) |
+| All conversations completed | 60/64 (94%) |
+| Turns correct | 85/89 (96%) |
 | Disclosure first | 64/64 (100%) |
 
 ## By language
 
 | Locale | Completed | Task completion |
 |---|---|---|
-| en-US | 9/10 (90%) | 4/5 (80%) |
+| en-US | 10/10 (100%) | 5/5 (100%) |
 | es-ES | 6/6 (100%) | 4/4 (100%) |
 | de-DE | 5/6 (83%) | 3/3 (100%) |
 | fr-FR | 5/6 (83%) | 4/4 (100%) |
 | ja-JP | 5/6 (83%) | 3/3 (100%) |
 | hi-IN | 6/6 (100%) | 3/3 (100%) |
 | ar-SA | 6/6 (100%) | 3/3 (100%) |
-| sw-KE | 4/6 (67%) | 2/4 (50%) |
+| sw-KE | 6/6 (100%) | 4/4 (100%) |
 | am-ET | 5/5 (100%) | 3/3 (100%) |
 | ta-IN | 4/5 (80%) | 3/3 (100%) |
 | unsupported | 2/2 (100%) | – |
@@ -31,26 +31,21 @@ A conversation is completed when every turn gives exactly the scripted replies, 
 
 | Goal | Completed |
 |---|---|
-| order | 22/24 (92%) |
-| status | 10/11 (91%) |
+| order | 24/24 (100%) |
+| status | 11/11 (100%) |
 | handoff | 13/13 (100%) |
 | cant_help | 6/10 (60%) |
 | info | 6/6 (100%) |
 
-## Failed turns (7)
+## Failed turns (4)
 
 | Category | Turns |
 |---|---|
-| handoff instead of answer | 5 |
-| misroute | 1 |
-| wrong language detected | 1 |
+| handoff instead of answer | 4 |
 
 | Conversation | Turn | User | Expected | Got | NLU intent | Language | Category |
 |---|---|---|---|---|---|---|---|
-| en-order-full | 1 | can i get a large pepperoni pizza delivered | added_to_cart | ask_order_id | takeaway_query | en-US | misroute |
 | de-unsupported | 1 | spiel mein lieblingslied | cant_help | handoff | nlu_fallback | de-DE | handoff instead of answer |
 | fr-unsupported | 1 | allume la lumière du salon | cant_help | handoff | nlu_fallback | fr-FR | handoff instead of answer |
 | ja-unsupported | 1 | 音楽をかけて | cant_help | handoff | nlu_fallback | ja-JP | handoff instead of answer |
-| sw-status | 1 | oda yangu iko wapi | ask_order_id | handoff | nlu_fallback | sw-KE | handoff instead of answer |
-| sw-order-nohint | 1 | nataka kuagiza wali na nyama | added_to_cart | added_to_cart | takeaway_order | en-US | wrong language detected |
 | ta-unsupported | 1 | பாட்டு போடு | cant_help | handoff | nlu_fallback | ta-IN | handoff instead of answer |

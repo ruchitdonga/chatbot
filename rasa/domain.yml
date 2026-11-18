@@ -76,16 +76,16 @@ actions:
 
 responses:
   utter_disclosure:
-  - text: "Hello! I am an AI assistant, not a human. If I can't help you, I will connect you to a person."
-  - {condition: [{type: slot, name: language, value: es-ES}], text: "¡Hola! Soy un asistente de inteligencia artificial, no una persona. Si no puedo ayudarte, te pondré en contacto con una persona."}
-  - {condition: [{type: slot, name: language, value: de-DE}], text: "Hallo! Ich bin ein KI-Assistent, kein Mensch. Wenn ich Ihnen nicht helfen kann, verbinde ich Sie mit einer Person."}
-  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Bonjour ! Je suis un assistant d'intelligence artificielle, pas un humain. Si je ne peux pas vous aider, je vous mettrai en relation avec une personne."}
-  - {condition: [{type: slot, name: language, value: ja-JP}], text: "こんにちは！私はAIアシスタントで、人間ではありません。お手伝いできない場合は、担当者におつなぎします。"}
-  - {condition: [{type: slot, name: language, value: hi-IN}], text: "नमस्ते! मैं एक एआई सहायक हूँ, इंसान नहीं। अगर मैं आपकी मदद नहीं कर पाया, तो मैं आपको किसी व्यक्ति से जोड़ दूँगा।"}
-  - {condition: [{type: slot, name: language, value: ar-SA}], text: "مرحبًا! أنا مساعد ذكاء اصطناعي ولست إنسانًا. إذا لم أتمكن من مساعدتك، فسأحوّلك إلى موظف بشري."}
-  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Habari! Mimi ni msaidizi wa akili bandia (AI), si binadamu. Nisipoweza kukusaidia, nitakuunganisha na mtu."}
-  - {condition: [{type: slot, name: language, value: am-ET}], text: "ሰላም! እኔ የሰው ሰራሽ አስተውሎት (AI) ረዳት ነኝ፣ ሰው አይደለሁም። ልረዳዎት ካልቻልኩ ከሰው ጋር አገናኝዎታለሁ።"}
-  - {condition: [{type: slot, name: language, value: ta-IN}], text: "வணக்கம்! நான் ஒரு செயற்கை நுண்ணறிவு (AI) உதவியாளர், மனிதர் அல்ல. என்னால் உதவ முடியாவிட்டால், உங்களை ஒரு நபருடன் இணைப்பேன்."}
+  - {text: "Hello! I am an AI assistant, not a human. If I can't help you, I will connect you to a person.", custom: {lang: en-US}}
+  - {condition: [{type: slot, name: language, value: es-ES}], text: "¡Hola! Soy un asistente de inteligencia artificial, no una persona. Si no puedo ayudarte, te pondré en contacto con una persona.", custom: {lang: es-ES}}
+  - {condition: [{type: slot, name: language, value: de-DE}], text: "Hallo! Ich bin ein KI-Assistent, kein Mensch. Wenn ich Ihnen nicht helfen kann, verbinde ich Sie mit einer Person.", custom: {lang: de-DE}}
+  - {condition: [{type: slot, name: language, value: fr-FR}], text: "Bonjour ! Je suis un assistant d'intelligence artificielle, pas un humain. Si je ne peux pas vous aider, je vous mettrai en relation avec une personne.", custom: {lang: fr-FR}}
+  - {condition: [{type: slot, name: language, value: ja-JP}], text: "こんにちは！私はAIアシスタントで、人間ではありません。お手伝いできない場合は、担当者におつなぎします。", custom: {lang: ja-JP}}
+  - {condition: [{type: slot, name: language, value: hi-IN}], text: "नमस्ते! मैं एक एआई सहायक हूँ, इंसान नहीं। अगर मैं आपकी मदद नहीं कर पाया, तो मैं आपको किसी व्यक्ति से जोड़ दूँगा।", custom: {lang: hi-IN}}
+  - {condition: [{type: slot, name: language, value: ar-SA}], text: "مرحبًا! أنا مساعد ذكاء اصطناعي ولست إنسانًا. إذا لم أتمكن من مساعدتك، فسأحوّلك إلى موظف بشري.", custom: {lang: ar-SA}}
+  - {condition: [{type: slot, name: language, value: sw-KE}], text: "Habari! Mimi ni msaidizi wa akili bandia (AI), si binadamu. Nisipoweza kukusaidia, nitakuunganisha na mtu.", custom: {lang: sw-KE}}
+  - {condition: [{type: slot, name: language, value: am-ET}], text: "ሰላም! እኔ የሰው ሰራሽ አስተውሎት (AI) ረዳት ነኝ፣ ሰው አይደለሁም። ልረዳዎት ካልቻልኩ ከሰው ጋር አገናኝዎታለሁ።", custom: {lang: am-ET}}
+  - {condition: [{type: slot, name: language, value: ta-IN}], text: "வணக்கம்! நான் ஒரு செயற்கை நுண்ணறிவு (AI) உதவியாளர், மனிதர் அல்ல. என்னால் உதவ முடியாவிட்டால், உங்களை ஒரு நபருடன் இணைப்பேன்.", custom: {lang: ta-IN}}
 
   utter_greet:
   - text: "Hi! I can help you order food or check on an order."

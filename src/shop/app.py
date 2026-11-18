@@ -310,12 +310,11 @@ def public(order):
 def create_app():
     app = FastAPI(title="FeastFleet orders")
     orders, ids = {}, itertools.count(2001)
-    seeded = datetime.now(timezone.utc) - timedelta(minutes=10)
-    for oid, item in (("FF-1001", "margherita"), ("FF-1002", "sushi")):  # existing orders for the order-status flow
+    demo = ("FF-1001", "FF-1002")  # existing orders for the order-status flow, always 10 minutes old (see track)
+    for oid, item in zip(demo, ("margherita", "sushi")):
         lines = [{"id": item, "name": MENU_BY_ID[item]["name"], "qty": 1, "price": MENU_BY_ID[item]["price"]}]
         orders[oid] = {"id": oid, "items": lines, "fulfilment": "delivery", "contact": None, "source": "web",
-                       "payment": {"method": "cod"}, "totals": totals(lines, "delivery"),
-                       "created_at": seeded.isoformat()}
+                       "payment": {"method": "cod"}, "totals": totals(lines, "delivery")}
 
     def save(order):
         order["id"] = f"FF-{next(ids)}"
@@ -365,6 +364,8 @@ def create_app():
         order = orders.get(order_id.strip().upper())
         if order is None:
             raise HTTPException(404, "Order not found.")
+        if order["id"] in demo:  # the demo orders never finish, however long the site has been running
+            order["created_at"] = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
         return public(order)
 
     # ---- Human handoff: an agent reads and answers a chat the assistant handed off -------------------------

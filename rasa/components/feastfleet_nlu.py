@@ -51,7 +51,7 @@ def with_faq(text, intent, faq, dish=None):
     Overrides out_of_scope too: the out-of-scope training data covered payment and allergy problems, so the model
     sends "how can I pay?" to a person. Complaint words keep real complaints with a person (0 of the 110
     challenge-set items match an FAQ topic without one, measured 2026-11-17)."""
-    t = text.casefold()
+    t = " ".join(ORDER_ID.sub(" ", text).casefold().split())  # "oda yangu FF-1001 iko wapi" matches "oda yangu iko"
     if any(_has(t, w) for w in faq["complaint_words"]):
         return intent
     for topic, words in faq["topics"].items():  # file order is priority order
@@ -192,6 +192,11 @@ if __name__ == "__main__":  # self-check, run inside the Rasa image: python -m c
     assert with_order_number("FF-2016 arrived cold, refund me", complaint, [])[0]["name"] == "out_of_scope"
     assert with_order_number("pizza", low, []) == (low, [])
     faq = read_yaml_file("/configs/faq.yaml")
+    scope = {"name": "out_of_scope", "confidence": 0.9}
+    assert with_faq("¿Dónde está mi pedido FF-1001?", scope, faq)["name"] == "takeaway_query"  # number ignored
+    assert with_faq("Oda yangu FF-1001 iko wapi?", scope, faq)["name"] == "takeaway_query"
+    assert with_faq("FF-1001 arrived cold, where is my refund", scope, faq) == scope  # complaint: to a person
+    assert with_faq("wimbo unaocheza sasa ni upi", scope, faq) == scope  # Swahili "upi" (which) is not UPI
     order = {"name": "takeaway_order", "confidence": 0.9}
     for words, name in [("how much is delivery?", "faq_fees"), ("डिलीवरी चार्ज कितना है?", "faq_fees"),
                         ("can i pay cash on delivery", "faq_payment"), ("how much is the biryani", "faq_price"),

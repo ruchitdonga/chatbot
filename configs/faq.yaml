@@ -66,11 +66,14 @@ topics:
     - délai de livraison
     - どのくらいかかり
     - 何分かかり
+    - 時間がかかり
     - كم من الوقت
     - كم يستغرق
     - itachukua muda gani
     - inachukua muda gani
+    - chukua muda gani
     - ምን ያህል ጊዜ
+    - ስንት ጊዜ
   payment:   # -> utter_faq_payment
     - payment kaise
     - pay kaise
@@ -88,7 +91,17 @@ topics:
     - pay by card
     - pay with card
     - pay cash
-    - upi
+    - upi se
+    - by upi
+    - via upi
+    - with upi
+    - upi payment
+    - upi pay
+    - upi chalega
+    - upi chalta
+    - use upi
+    - accept upi
+    - upi accept
     - भुगतान कैसे
     - पेमेंट कैसे
     - कैश ऑन डिलीवरी
@@ -102,12 +115,15 @@ topics:
     - zahlungsmethode
     - barzahlung
     - comment payer
+    - puis-je payer
+    - je peux payer
     - moyens de paiement
     - paiement à la livraison
     - 支払い方法
     - 代金引換
     - طرق الدفع
     - كيف أدفع
+    - يمكنني الدفع
     - الدفع عند الاستلام
     - nawezaje kulipa
     - njia za malipo
@@ -206,7 +222,7 @@ topics:
     - mna nini
     - ምናሌ
 
-  track:   # -> takeaway_query (Hinglish order tracking; an FF-#### number is handled before this)
+  track:   # -> takeaway_query (order tracking; an FF-#### number in the message is ignored when matching)
     - order kahan
     - order kaha
     - kahan hai mera order
@@ -222,6 +238,14 @@ topics:
     - wo ist meine bestellung
     - wo bleibt meine bestellung
     - wann kommt meine bestellung
+    - where is my order
+    - dónde está mi pedido
+    - où est ma commande
+    - 注文はどこ
+    - ऑर्डर कहाँ
+    - أين طلبي
+    - ትዕዛዜ የት
+    - ஆர்டர் எங்கே
   order:   # -> takeaway_order, only when the message also names a dish on the menu ("I want" in every language)
     - chahiye
     - order karna
