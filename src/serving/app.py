@@ -32,9 +32,10 @@ def create_app(nlu=None, lid=None, cfg=None):
         nlu = OnnxNLU(ROOT / cfg["serving"]["onnx_dir"] / run, threads=cfg["serving"]["intra_op_threads"],
                       quantized=cfg["serving"]["quantized"])
     if lid is None:
-        from src.serving.language_id import LanguageId
+        from src.serving.language_id import LanguageId, read_words
         lid = LanguageId(ROOT / cfg["serving"]["language_id_model"], locales,
-                         cfg["fallback"]["unsupported_language_min_prob"])
+                         cfg["fallback"]["unsupported_language_min_prob"],
+                         read_words(ROOT / cfg["serving"]["swahili_words"]))
     fallback, allowed = cfg["fallback"], cfg["logging"]["allowed_fields"]
     log_path = ROOT / cfg["serving"]["event_log"]
     log_path.parent.mkdir(parents=True, exist_ok=True)

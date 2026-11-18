@@ -80,7 +80,7 @@ ALIASES = {
     "doro-wat": ["doro wat", "doro wot", "ዶሮ ወጥ", "ዶሮ", "injera", "እንጀራ"],
     "chips-mayai": ["chips mayai", "chipsi mayai", "chipsi", "mayai"],
     "gulab-jamun": ["gulab jamun", "jamun", "गुलाब जामुन", "मिठाई", "dessert", "postre", "nachtisch"],
-    "lassi": ["lassi", "लस्सी", "லஸ்ஸி", "لاسي"],
+    "lassi": ["lassi", "लस्सी", "லஸ்ஸி", "لاسي", "ラッシー", "ላሲ"],
 }
 
 

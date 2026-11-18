@@ -134,6 +134,8 @@ ORDERS = [
     ("3 ፒዛ እና 2 ብርያኒ እፈልጋለሁ", [("margherita", 3), ("biryani", 2)]),
     ("a pizza and a chicken pizza", [("margherita", 1), ("tikka-pizza", 1)]),  # two dishes, not one variant
     ("biryani x2", [("biryani", 2)]),
+    ("ビリヤニを2つとラッシーをください", [("biryani", 2), ("lassi", 1)]),
+    ("2 ብርያኒ እና ላሲ እፈልጋለሁ", [("biryani", 2), ("lassi", 1)]),
 ]
 
 

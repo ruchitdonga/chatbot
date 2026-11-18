@@ -214,7 +214,15 @@ topics:
     - order kab tak
     - khana kab aayega
     - order status
-  order:   # -> takeaway_order, only when the message also names a dish on the menu (Hinglish, Hindi, Tamil, English)
+    - oda yangu iko
+    - oda yangu ipo
+    - oda iko wapi
+    - chakula changu kiko wapi
+    - itafika lini
+    - wo ist meine bestellung
+    - wo bleibt meine bestellung
+    - wann kommt meine bestellung
+  order:   # -> takeaway_order, only when the message also names a dish on the menu ("I want" in every language)
     - chahiye
     - order karna
     - order kar do
@@ -238,6 +246,17 @@ topics:
     - can i get
     - can i have
     - give me
+    - quiero
+    - ich möchte
+    - ich will
+    - je veux
+    - je voudrais
+    - ください
+    - 注文
+    - ほしい
+    - أريد
+    - nataka
+    - እፈልጋለሁ
 
 complaint_words:
   - refund
@@ -312,6 +331,13 @@ complaint_words:
   - إلغاء
   - imeshindwa
   - imechelewa
+  - chelewa
+  - baridi
+  - mbaya
+  - sijapokea
+  - haijafika
+  - malalamiko
+  - wakala
   - mzio
   - kughairi
   - ዘግይቷል
@@ -327,6 +353,26 @@ complaint_words:
   - shikayat
   - insaan se baat
   - agent se baat
+  - geld zurück
+  - kalt
+  - beschwerde
+  - frío
+  - fría
+  - queja
+  - froid
+  - rembours
+  - plainte
+  - 冷め
+  - 満足できない
+  - 苦情
+  - بارد
+  - شكوى
+  - ቀዝቅዞ
+  - ቅሬታ
+  - குளிர்ந்து
+  - புகார்
+  - ठंडा
+  - शिकायत
 
 # Romanised Hindi marker words: with two or more of them in a Latin-script message (and no language chosen in the
 # chat), replies are set to English, since fastText reads Hinglish as Spanish or Indonesian and so on.

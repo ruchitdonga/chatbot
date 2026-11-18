@@ -105,6 +105,8 @@ serving:
   # SHA-256 7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e. Swahili detection is only ~67%
   # on MASSIVE dev, so a language hint from the client overrides detection.
   language_id_model: artifacts/models/lid.176.bin
+  # Words that mark a message as Swahili before fastText is asked (built by python -m src.serving.swahili_words).
+  swahili_words: configs/swahili_words.txt
   event_log: logs/nlu_events.jsonl
 
 paths:
